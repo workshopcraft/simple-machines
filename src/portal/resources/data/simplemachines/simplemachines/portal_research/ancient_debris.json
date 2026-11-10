@@ -1,0 +1,10 @@
+{
+  "kind": "resource",
+  "name": "Ancient Debris",
+  "item": "minecraft:netherite_scrap",
+  "count": 128,
+  "energy_per_item": 30000,
+  "unlocks": [
+    "ore:minecraft:ancient_debris"
+  ]
+}

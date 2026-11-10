@@ -109,6 +109,9 @@ public class SimpleMachinesNeoForge {
         //? if ship {
         com.workshopcraft.simplemachines.neoforge.ship.ShipNeoForge.init(modBus);
         //?}
+        //? if portal {
+        com.workshopcraft.simplemachines.neoforge.portal.PortalNeoForge.init(modBus);
+        //?}
     }
 
     private static void onUseBlock(PlayerInteractEvent.RightClickBlock e) {

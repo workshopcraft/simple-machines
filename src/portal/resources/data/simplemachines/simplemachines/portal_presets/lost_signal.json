@@ -1,0 +1,19 @@
+{
+  "name": "Lost Signal",
+  "terrain": "overworld",
+  "biomes": [
+    "minecraft:old_growth_spruce_taiga",
+    "minecraft:taiga",
+    "minecraft:snowy_taiga"
+  ],
+  "tier": 1,
+  "min_frame": "iron",
+  "richness": 1.2,
+  "weight": 0,
+  "loot": "simplemachines:chests/portal_cache",
+  "objective": {
+    "distance": 96,
+    "block": "simplemachines:objective_core",
+    "site_block": "minecraft:mossy_stone_bricks"
+  }
+}

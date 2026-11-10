@@ -1,0 +1,34 @@
+{
+  "name": "Ember Hollows",
+  "terrain": "nether",
+  "biomes": [
+    "#minecraft:is_nether"
+  ],
+  "tier": 2,
+  "min_frame": "steel",
+  "richness": 1.5,
+  "weight": 12,
+  "ores": [
+    {
+      "block": "minecraft:nether_quartz_ore",
+      "per_chunk": 8,
+      "size": 8,
+      "min_y": 10,
+      "max_y": 118
+    },
+    {
+      "block": "minecraft:nether_gold_ore",
+      "per_chunk": 6,
+      "size": 8,
+      "min_y": 10,
+      "max_y": 118
+    },
+    {
+      "block": "minecraft:ancient_debris",
+      "per_chunk": 0.3,
+      "size": 2,
+      "min_y": 8,
+      "max_y": 30
+    }
+  ]
+}

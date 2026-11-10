@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "S": "#c:plates/steel",
+    "G": "minecraft:spyglass",
+    "C": "simplemachines:control_board",
+    "X": "simplemachines:steel_chassis",
+    "R": "#c:rods/steel"
+  },
+  "pattern": [
+    "SGS",
+    "CXC",
+    "SRS"
+  ],
+  "result": {
+    "id": "simplemachines:research_station"
+  }
+}

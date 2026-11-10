@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "T": "#c:plates/titanium",
+    "E": "simplemachines:entangled_ingot",
+    "D": "simplemachines:diamond_core"
+  },
+  "pattern": [
+    "TET",
+    "EDE",
+    "TET"
+  ],
+  "result": {
+    "id": "simplemachines:entangled_core"
+  }
+}

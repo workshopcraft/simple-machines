@@ -1,0 +1,18 @@
+{
+  "name": "Silent Spire",
+  "terrain": "floating_islands",
+  "biomes": [
+    "minecraft:end_highlands",
+    "minecraft:end_midlands"
+  ],
+  "tier": 3,
+  "min_frame": "titanium",
+  "richness": 1.8,
+  "weight": 0,
+  "loot": "simplemachines:chests/portal_vault",
+  "objective": {
+    "distance": 160,
+    "block": "simplemachines:objective_core",
+    "site_block": "minecraft:purpur_block"
+  }
+}

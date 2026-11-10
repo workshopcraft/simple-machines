@@ -1,0 +1,9 @@
+{
+  "kind": "mob",
+  "name": "Blaze Study",
+  "entity": "minecraft:blaze",
+  "scans": 4,
+  "unlocks": [
+    "mob:minecraft:blaze"
+  ]
+}

@@ -1,0 +1,40 @@
+{
+  "name": "Sunscorched Badlands",
+  "terrain": "overworld",
+  "biomes": [
+    "minecraft:badlands",
+    "minecraft:eroded_badlands",
+    "minecraft:desert",
+    "minecraft:savanna"
+  ],
+  "tier": 1,
+  "min_frame": "iron",
+  "richness": 1.25,
+  "weight": 20,
+  "ores": [
+    {
+      "block": "minecraft:gold_ore",
+      "per_chunk": 4,
+      "size": 7,
+      "min_y": -32,
+      "max_y": 80
+    },
+    {
+      "block": "minecraft:redstone_ore",
+      "per_chunk": 3,
+      "size": 6,
+      "min_y": -56,
+      "max_y": 0
+    }
+  ],
+  "mobs": {
+    "monster": [
+      {
+        "type": "minecraft:husk",
+        "weight": 40,
+        "min": 1,
+        "max": 3
+      }
+    ]
+  }
+}

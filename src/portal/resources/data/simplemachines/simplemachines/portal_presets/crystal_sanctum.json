@@ -1,0 +1,34 @@
+{
+  "name": "Crystal Sanctum",
+  "terrain": "caves",
+  "biomes": [
+    "minecraft:lush_caves"
+  ],
+  "tier": 4,
+  "min_frame": "netherite",
+  "richness": 2.5,
+  "weight": 0,
+  "requires_research": true,
+  "loot": "simplemachines:chests/portal_vault",
+  "ores": [
+    {
+      "block": "minecraft:amethyst_block",
+      "per_chunk": 6,
+      "size": 8,
+      "min_y": -60,
+      "max_y": 100
+    },
+    {
+      "block": "minecraft:deepslate_diamond_ore",
+      "per_chunk": 3,
+      "size": 6,
+      "min_y": -60,
+      "max_y": 0
+    }
+  ],
+  "objective": {
+    "distance": 64,
+    "block": "simplemachines:objective_core",
+    "site_block": "minecraft:calcite"
+  }
+}

@@ -1,0 +1,37 @@
+{
+  "name": "Deep Caverns",
+  "terrain": "caves",
+  "biomes": [
+    "minecraft:lush_caves",
+    "minecraft:dripstone_caves",
+    "minecraft:deep_dark"
+  ],
+  "tier": 3,
+  "min_frame": "titanium",
+  "richness": 2.0,
+  "weight": 8,
+  "requires_research": true,
+  "ores": [
+    {
+      "block": "simplemachines:deepslate_titanium_ore",
+      "per_chunk": 4,
+      "size": 6,
+      "min_y": -60,
+      "max_y": 0
+    },
+    {
+      "block": "minecraft:deepslate_diamond_ore",
+      "per_chunk": 2,
+      "size": 5,
+      "min_y": -60,
+      "max_y": -16
+    },
+    {
+      "block": "minecraft:deepslate_emerald_ore",
+      "per_chunk": 1,
+      "size": 3,
+      "min_y": -60,
+      "max_y": 40
+    }
+  ]
+}

@@ -88,7 +88,10 @@ public abstract class PoweredBlockEntity extends WorkBlockEntity {
             cachedFor = copy;
             cached = empty ? null : find(level, in);
         }
-        final Job job = cached;
+        Job job = cached;
+        //? if portal {
+        if (job != null && tier != Tier.STEEL && com.workshopcraft.simplemachines.portal.Titanium.needsSteel(in)) job = null;
+        //?}
         boolean ready = job != null && fits(inputs, job.result());
         if (ready) for (int i = 0; i < job.counts().length; i++) if (items.get(i).getCount() < job.counts()[i]) ready = false;
         boolean working = false;

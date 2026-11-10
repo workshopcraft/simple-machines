@@ -1,0 +1,11 @@
+{
+  "type": "simplemachines:rolling",
+  "input": {
+    "ingredient": "#c:ingots/titanium"
+  },
+  "result": {
+    "id": "simplemachines:titanium_rod",
+    "count": 2
+  },
+  "cooking_time": 160
+}

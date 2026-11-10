@@ -1,0 +1,5 @@
+{
+  "kind": "story",
+  "name": "Ember Vault",
+  "preset": "simplemachines:ember_vault"
+}

@@ -1,0 +1,10 @@
+{
+  "kind": "resource",
+  "name": "Deep Survey",
+  "item": "minecraft:amethyst_block",
+  "count": 256,
+  "energy_per_item": 8000,
+  "unlocks": [
+    "preset:simplemachines:deep_caverns"
+  ]
+}

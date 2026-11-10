@@ -95,6 +95,9 @@ public record PowerInfo(int accepts, int sends, int out, int use, int steelUse, 
             final int t = ((CableBlock) b).tier;
             m.put(b, new PowerInfo(t, t, Voltage.RATE[t], 0, 0, 0, Unit.CABLE, 0, false));
         }
+        //? if portal {
+        com.workshopcraft.simplemachines.portal.Portal.powerInfo(m);
+        //?}
         m.remove(null);
         return m;
     }

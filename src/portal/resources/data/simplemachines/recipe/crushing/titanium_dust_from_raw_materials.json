@@ -1,0 +1,8 @@
+{
+  "type": "simplemachines:crushing",
+  "ingredient": "#c:raw_materials/titanium",
+  "result": "#c:dusts/titanium",
+  "count": 2,
+  "bonus": 0.1,
+  "cooking_time": 300
+}

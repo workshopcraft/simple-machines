@@ -58,6 +58,9 @@ public class SimpleMachinesFabricClient implements ClientModInitializer {
         //? if ship {
         com.workshopcraft.simplemachines.fabric.ship.ShipFabricClient.init();
         //?}
+        //? if portal {
+        com.workshopcraft.simplemachines.fabric.portal.PortalFabricClient.init();
+        //?}
     }
 
     @SuppressWarnings("unchecked")

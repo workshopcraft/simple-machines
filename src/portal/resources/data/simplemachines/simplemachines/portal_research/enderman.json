@@ -1,0 +1,9 @@
+{
+  "kind": "mob",
+  "name": "Enderman Study",
+  "entity": "minecraft:enderman",
+  "scans": 4,
+  "unlocks": [
+    "mob:minecraft:enderman"
+  ]
+}

@@ -1,0 +1,48 @@
+{
+  "name": "Frozen Reach",
+  "terrain": "amplified",
+  "biomes": [
+    "minecraft:frozen_peaks",
+    "minecraft:jagged_peaks",
+    "minecraft:snowy_slopes",
+    "minecraft:grove",
+    "minecraft:ice_spikes"
+  ],
+  "tier": 2,
+  "min_frame": "steel",
+  "richness": 1.4,
+  "weight": 15,
+  "ores": [
+    {
+      "block": "simplemachines:titanium_ore",
+      "per_chunk": 2,
+      "size": 4,
+      "min_y": -48,
+      "max_y": 32
+    },
+    {
+      "block": "minecraft:diamond_ore",
+      "per_chunk": 1,
+      "size": 4,
+      "min_y": -60,
+      "max_y": -16
+    },
+    {
+      "block": "minecraft:lapis_ore",
+      "per_chunk": 3,
+      "size": 6,
+      "min_y": -32,
+      "max_y": 32
+    }
+  ],
+  "mobs": {
+    "monster": [
+      {
+        "type": "minecraft:stray",
+        "weight": 40,
+        "min": 1,
+        "max": 3
+      }
+    ]
+  }
+}

@@ -30,6 +30,10 @@ public class ElectricFurnaceBlockEntity extends PoweredBlockEntity {
 
     @Override
     protected @Nullable Job find(ServerLevel level, ItemStack input) {
+        //? if portal {
+        final ItemStack titanium = com.workshopcraft.simplemachines.portal.Titanium.smelt(input);
+        if (!titanium.isEmpty()) return new Job(titanium, 1, 300);
+        //?}
         final SingleRecipeInput in = new SingleRecipeInput(input);
         return check.getRecipeFor(in, level)
                 .map(r -> new Job(r.value().assemble(in), 1, Math.max(1, r.value().cookingTime() * 3 / 4)))
@@ -38,6 +42,9 @@ public class ElectricFurnaceBlockEntity extends PoweredBlockEntity {
 
     @Override
     protected boolean accepts(ServerLevel level, ItemStack stack) {
+        //? if portal {
+        if (!com.workshopcraft.simplemachines.portal.Titanium.smelt(stack).isEmpty()) return true;
+        //?}
         //? if >=26.1 {
         return level.recipeAccess().propertySet(RecipePropertySet.FURNACE_INPUT).test(stack);
         //?} else {

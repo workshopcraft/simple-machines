@@ -1,0 +1,9 @@
+{
+  "values": [
+    "simplemachines:titanium_block",
+    {
+      "id": "#c:storage_blocks/titanium",
+      "required": false
+    }
+  ]
+}

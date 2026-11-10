@@ -1,0 +1,39 @@
+{
+  "name": "Shattered Isles",
+  "terrain": "floating_islands",
+  "biomes": [
+    "minecraft:end_highlands",
+    "minecraft:end_midlands",
+    "minecraft:the_end"
+  ],
+  "tier": 3,
+  "min_frame": "titanium",
+  "richness": 1.7,
+  "weight": 8,
+  "ores": [
+    {
+      "block": "simplemachines:titanium_ore",
+      "per_chunk": 3,
+      "size": 5,
+      "min_y": 20,
+      "max_y": 200
+    },
+    {
+      "block": "minecraft:emerald_ore",
+      "per_chunk": 1,
+      "size": 3,
+      "min_y": 20,
+      "max_y": 200
+    }
+  ],
+  "mobs": {
+    "monster": [
+      {
+        "type": "minecraft:enderman",
+        "weight": 30,
+        "min": 1,
+        "max": 2
+      }
+    ]
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "minecraft:paper",
+    "minecraft:paper",
+    "simplemachines:entangled_pellet",
+    "#c:plates/iron"
+  ],
+  "result": {
+    "id": "simplemachines:jump_card"
+  }
+}

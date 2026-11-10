@@ -1,0 +1,6 @@
+{
+  "type": "simplemachines:crushing",
+  "ingredient": "#c:ingots/titanium",
+  "result": "#c:dusts/titanium",
+  "cooking_time": 150
+}

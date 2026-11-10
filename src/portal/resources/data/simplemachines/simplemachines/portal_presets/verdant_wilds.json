@@ -1,0 +1,48 @@
+{
+  "name": "Verdant Wilds",
+  "terrain": "overworld",
+  "biomes": [
+    "minecraft:forest",
+    "minecraft:birch_forest",
+    "minecraft:flower_forest",
+    "minecraft:meadow",
+    "minecraft:plains"
+  ],
+  "tier": 1,
+  "min_frame": "iron",
+  "richness": 1.0,
+  "weight": 30,
+  "surface_block": "minecraft:moss_block",
+  "ores": [
+    {
+      "block": "minecraft:copper_ore",
+      "per_chunk": 6,
+      "size": 8,
+      "min_y": 0,
+      "max_y": 96
+    },
+    {
+      "block": "minecraft:iron_ore",
+      "per_chunk": 4,
+      "size": 6,
+      "min_y": -32,
+      "max_y": 64
+    }
+  ],
+  "mobs": {
+    "creature": [
+      {
+        "type": "minecraft:sheep",
+        "weight": 12,
+        "min": 2,
+        "max": 4
+      },
+      {
+        "type": "minecraft:cow",
+        "weight": 8,
+        "min": 2,
+        "max": 4
+      }
+    ]
+  }
+}

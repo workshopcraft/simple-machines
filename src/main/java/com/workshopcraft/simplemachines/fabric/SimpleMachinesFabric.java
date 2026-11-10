@@ -141,6 +141,9 @@ public class SimpleMachinesFabric implements ModInitializer {
         //? if ship {
         com.workshopcraft.simplemachines.fabric.ship.ShipFabric.init();
         //?}
+        //? if portal {
+        com.workshopcraft.simplemachines.fabric.portal.PortalFabric.init();
+        //?}
     }
 
     private static <T extends WorkBlockEntity> void work(BlockEntityType<T> type) {

@@ -77,6 +77,9 @@ public class SimpleMachinesNeoForgeClient {
         //? if ship {
         com.workshopcraft.simplemachines.neoforge.ship.ShipNeoForgeClient.init(modBus);
         //?}
+        //? if portal {
+        com.workshopcraft.simplemachines.neoforge.portal.PortalNeoForgeClient.init(modBus);
+        //?}
     }
 
     @SuppressWarnings("unchecked")

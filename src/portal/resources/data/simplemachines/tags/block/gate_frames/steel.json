@@ -1,0 +1,9 @@
+{
+  "values": [
+    "simplemachines:steel_block",
+    {
+      "id": "#c:storage_blocks/steel",
+      "required": false
+    }
+  ]
+}

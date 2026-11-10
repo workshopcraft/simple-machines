@@ -1,0 +1,9 @@
+{
+  "kind": "mob",
+  "name": "Warden Study",
+  "entity": "minecraft:warden",
+  "scans": 1,
+  "unlocks": [
+    "preset:simplemachines:crystal_sanctum"
+  ]
+}

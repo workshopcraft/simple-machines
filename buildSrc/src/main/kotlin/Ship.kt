@@ -16,34 +16,51 @@ object Ship {
     fun enabled(mc: String) = mc in VERSIONS
 }
 
-/** Adds src/ship/java and src/ship/resources to the source set. */
-fun SourceSet.applyShip(root: File) {
-    java.srcDir(File(root, "src/ship/java"))
-    resources.srcDir(File(root, "src/ship/resources"))
+/** Simple Machines 2.3 portal core (M2): src/portal, same versions and rules as Ship. Stonecutter constant `portal`. */
+object Portal {
+    val VERSIONS = setOf("26.1.2")
+    fun enabled(mc: String) = mc in VERSIONS
 }
 
-/** A json file that exists in both src/main/resources and src/ship/resources is merged: objects key by key, arrays joined. */
-fun ProcessResources.mergeShipJson(root: File) {
-    val main = File(root, "src/main/resources")
-    val ship = File(root, "src/ship/resources")
-    if (!ship.isDirectory) return
-    ship.walk().filter { it.isFile && it.extension == "json" }.forEach { f ->
-        val rel = f.relativeTo(ship).invariantSeparatorsPath
-        val m = File(main, rel)
-        if (m.isFile) filesMatching(rel) { filter(mapOf("main" to m.absolutePath, "ship" to f.absolutePath), JsonMerge::class.java) }
+/** The extra source dirs a version builds, in merge order. */
+fun extraDirs(mc: String): List<String> = buildList {
+    if (Ship.enabled(mc)) add("src/ship")
+    if (Portal.enabled(mc)) add("src/portal")
+}
+
+/** Adds src/<extra>/java and src/<extra>/resources to the source set. */
+fun SourceSet.applyShip(root: File, dirs: List<String> = listOf("src/ship")) {
+    for (d in dirs) {
+        java.srcDir(File(root, "$d/java"))
+        resources.srcDir(File(root, "$d/resources"))
     }
 }
 
-/** Ignores its input and writes main merged with ship, so it gives the same result whichever copy Gradle keeps. */
+/** A json file that exists in more than one of src/main/resources and the extra resource dirs is merged: objects key by key, arrays joined. */
+fun ProcessResources.mergeShipJson(root: File, dirs: List<String> = listOf("src/ship")) {
+    val roots = listOf(File(root, "src/main/resources")) + dirs.map { File(root, "$it/resources") }.filter { it.isDirectory }
+    val byRel = LinkedHashMap<String, MutableList<File>>()
+    for (r in roots) r.walk().filter { it.isFile && it.extension == "json" }.forEach { f ->
+        byRel.getOrPut(f.relativeTo(r).invariantSeparatorsPath) { mutableListOf() }.add(f)
+    }
+    for ((rel, files) in byRel) if (files.size > 1) {
+        filesMatching(rel) { filter(mapOf("files" to files.joinToString(File.pathSeparator) { it.absolutePath }), JsonMerge::class.java) }
+    }
+}
+
+/** Ignores its input and writes the listed files merged in order, so it gives the same result whichever copy Gradle keeps. */
 class JsonMerge(input: Reader) : FilterReader(input) {
-    var main: String = ""
-    var ship: String = ""
+    var files: String = ""
     private var merged: Reader? = null
 
     private fun src(): Reader {
         merged?.let { return it }
         val slurper = JsonSlurper()
-        val out = merge(slurper.parse(File(main)), slurper.parse(File(ship)))
+        var out: Any? = null
+        for (f in files.split(File.pathSeparator)) {
+            val v = slurper.parse(File(f))
+            out = if (out == null) v else merge(out, v)
+        }
         return StringReader(JsonOutput.prettyPrint(JsonOutput.toJson(out))).also { merged = it }
     }
 

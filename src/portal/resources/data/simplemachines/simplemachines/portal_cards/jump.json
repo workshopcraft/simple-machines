@@ -1,0 +1,7 @@
+{
+  "kind": "jump",
+  "name": "Jump Card",
+  "pool": [
+    "*"
+  ]
+}

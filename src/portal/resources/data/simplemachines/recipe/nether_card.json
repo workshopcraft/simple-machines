@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "minecraft:paper",
+    "simplemachines:entangled_pellet",
+    "minecraft:obsidian",
+    "minecraft:obsidian"
+  ],
+  "result": {
+    "id": "simplemachines:nether_card"
+  }
+}

@@ -1,0 +1,6 @@
+{
+  "type": "simplemachines:compressing",
+  "ingredient": "#c:ingots/titanium",
+  "result": "simplemachines:titanium_sheet",
+  "cooking_time": 160
+}

@@ -1,0 +1,27 @@
+{
+  "name": "Ember Vault",
+  "terrain": "nether",
+  "biomes": [
+    "minecraft:basalt_deltas",
+    "minecraft:crimson_forest"
+  ],
+  "tier": 2,
+  "min_frame": "steel",
+  "richness": 1.6,
+  "weight": 0,
+  "loot": "simplemachines:chests/portal_vault",
+  "ores": [
+    {
+      "block": "minecraft:ancient_debris",
+      "per_chunk": 0.5,
+      "size": 2,
+      "min_y": 8,
+      "max_y": 30
+    }
+  ],
+  "objective": {
+    "distance": 128,
+    "block": "simplemachines:objective_core",
+    "site_block": "minecraft:polished_blackstone_bricks"
+  }
+}

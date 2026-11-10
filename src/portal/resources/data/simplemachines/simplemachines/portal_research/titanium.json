@@ -1,0 +1,10 @@
+{
+  "kind": "resource",
+  "name": "Titanium Deposits",
+  "item": "simplemachines:titanium_block",
+  "count": 96,
+  "energy_per_item": 16000,
+  "unlocks": [
+    "ore:simplemachines:titanium_ore"
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "kind": "resource",
+  "name": "Emerald Deposits",
+  "item": "minecraft:emerald_block",
+  "count": 64,
+  "energy_per_item": 20000,
+  "unlocks": [
+    "ore:minecraft:emerald_ore"
+  ]
+}

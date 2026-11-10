@@ -6,6 +6,7 @@ val modVersion = providers.gradleProperty("version").orNull ?: sc.properties.get
 val mc = sc.current.version
 val modern = sc.current.parsed >= "26.1"
 val ship = Ship.enabled(mc)
+val extras = extraDirs(mc)
 version = modVersion
 group = property("mod.group") as String
 base.archivesName = "${property("mod.id")}-fabric-$mc"
@@ -44,7 +45,7 @@ loom {
 }
 
 sourceSets.main {
-    if (ship) applyShip(rootProject.file("."))
+    if (extras.isNotEmpty()) applyShip(rootProject.file("."), extras)
     java.exclude("com/workshopcraft/simplemachines/neoforge/**", "com/workshopcraft/simplemachines/forge/**")
     if (!modern) resources.setSrcDirs(listOf("1.20.1", "1.21.1").filter { sc.current.parsed < "1.21" || it == "1.21.1" }.map { rootProject.file("src/legacy/$it") } + rootProject.file("src/main/resources"))
     if (sc.current.parsed < "1.21") resources.srcDir(tasks.register<Data120>("data120") {
@@ -65,7 +66,7 @@ java {
 
 tasks {
     processResources {
-        if (ship) mergeShipJson(rootProject.file("."))
+        if (extras.isNotEmpty()) mergeShipJson(rootProject.file("."), extras)
         val props = mapOf(
             "id" to sc.properties.get<String>("mod.id"),
             "name" to sc.properties.get<String>("mod.name"),
