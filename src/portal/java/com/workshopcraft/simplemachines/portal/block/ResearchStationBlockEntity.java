@@ -181,7 +181,7 @@ public class ResearchStationBlockEntity extends WorkBlockEntity implements com.w
             unlocked = count >= need || data.unlocked(owner, "research:" + r.id());
             show(r);
             final ItemStack in = items.get(SLOT_INPUT);
-            // an unowned station (placed before alpha.5) does nothing until a player opens it and claims it
+            // an unowned station (from a command, not placed by a player) has nobody to research for
             if (owner != null && !mob && !unlocked && r.takes(in)) {
                 final int step = Math.min(PER_TICK, Math.min(energy.energy, r.energyPerItem() - spent));
                 if (step > 0 || r.energyPerItem() == 0) {
@@ -245,12 +245,7 @@ public class ResearchStationBlockEntity extends WorkBlockEntity implements com.w
 
     @Override
     public boolean canOpen(net.minecraft.world.entity.player.Player player) {
-        if (owner == null && player instanceof ServerPlayer sp) {
-            // stations from before per-player research belong to the first player who opens them
-            setOwner(sp.getUUID());
-            sp.sendSystemMessage(Component.translatable("message.simplemachines.research.claimed"));
-        }
-        if (priv && owner != null && !owner.equals(player.getUUID())) {
+        if (!com.workshopcraft.simplemachines.portal.PortalApi.mayControl(this, player)) {
             player.sendOverlayMessage(Component.translatable("message.simplemachines.owned_not_owner").withStyle(ChatFormatting.RED));
             return false;
         }

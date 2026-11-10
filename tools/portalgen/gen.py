@@ -204,7 +204,10 @@ PAGES = [
      'On some servers the gate is run by the story. It has no card slot and only needs pellets and power; the destination is set for you. '
      'There the gate travels with a ship between star systems. Each world it opens to is a planet of the system the ship is in, '
      'and it stays the same planet every time you go back, until the ship moves on. Then those planets are gone for good. '
-     'While the ship is between systems the gate shows In transit and will not open.',
+     'While the ship is between systems the gate shows In transit and will not open.\n\n'
+     'A gate belongs to whoever placed it, like an entangled code. It starts public. Its owner can make it private with a screwdriver: '
+     'then only they can open its screen, change its card, open or close it and drop its rift. Hoppers cannot put cards into a private gate. '
+     'Anyone can still walk through an open gate or rift.',
      [('craft', 'portal_gate_controller'), ('craft', 'entangled_core'), ('craft', 'entangled_pellet')]),
     ('portal_rift', 'Return Rifts', 'The way home, while the fuel lasts',
      'There is no gate on the far side. The gate you left from holds a rift open beside the spot where you land. Walk into it to go back.\n\n'
@@ -229,7 +232,8 @@ PAGES = [
      'When a project is done, its world types and resources unlock for you.\n\n'
      'Mob research needs scans. Charge a Mob Scanner in a charger and use it on a mob. Scans count for whoever holds the scanner, '
      'and each player can scan a mob once.\n\n'
-     'A station is public: anyone may use it to imprint cards with what its owner has learned. The owner can make it private with a screwdriver.\n\n'
+     'A station starts public: anyone may use it to imprint cards with what its owner has learned. The owner can make it private with a screwdriver, '
+     'and then only they can open it.\n\n'
      'Put a blank Jump Card in the card slot and press Imprint to program it with the chosen project. '
      'A gate also belongs to whoever placed it and picks world types from its owner\'s research.',
      [('craft', 'research_station'), ('craft', 'mob_scanner')]),

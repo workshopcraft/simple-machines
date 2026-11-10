@@ -94,10 +94,20 @@ public class GateScreen extends AbstractContainerScreen<GateMenu> {
                 menu.frameWidth(), menu.frameHeight());
         graphics.text(font, frame, 30, 31, TEXT, false);
         if (menu.needPellets() > 0) {
-            graphics.text(font, Component.translatable(menu.needPellets() == 1 ? "gui.simplemachines.portal.cost_pellet"
-                    : "gui.simplemachines.portal.cost_pellets", menu.needPellets()), 30, 42, TEXT, false);
-            graphics.text(font, Component.translatable("gui.simplemachines.portal.cost_energy", shortFe(menu.needEnergy())), 30, 51, TEXT, false);
+            graphics.text(font, Component.translatable(menu.needPellets() == 1 ? "gui.simplemachines.portal.cost_one" : "gui.simplemachines.portal.cost",
+                    menu.needPellets(), shortFe(menu.needEnergy())), 30, 42, TEXT, false);
         }
+        if (menu.hasOwner()) {
+            final String who = Component.translatable(menu.isPrivate() ? "gui.simplemachines.research.owner_private" : "gui.simplemachines.research.owner_public",
+                    ownerName(menu.owner())).getString();
+            graphics.text(font, font.plainSubstrByWidth(who, BAR_X - 32), 30, 51, 0xFF2D5AA0, false);
+        }
+    }
+
+    private Component ownerName(java.util.UUID id) {
+        if (minecraft.player != null && minecraft.player.getUUID().equals(id)) return Component.literal(minecraft.player.getGameProfile().name());
+        final var info = minecraft.getConnection() == null ? null : minecraft.getConnection().getPlayerInfo(id);
+        return info != null ? Component.literal(info.getProfile().name()) : Component.translatable("gui.simplemachines.entangled_someone");
     }
 
     /** 95 as 1:35, 3725 as 1:02:05. */

@@ -69,6 +69,11 @@ public class GateMenu extends AbstractContainerMenu {
     @Override
     public boolean clickMenuButton(Player player, int id) {
         if (gate == null || !(player instanceof ServerPlayer sp) || !(player.level() instanceof ServerLevel level)) return false;
+        if (!PortalApi.mayControl(gate, sp)) {
+            // made private while this screen was open
+            sp.sendSystemMessage(Component.translatable("message.simplemachines.owned_not_owner"), true);
+            return true;
+        }
         if (id == BUTTON_OPEN) {
             if (!gate.playersMayOpen()) {
                 sp.sendSystemMessage(Component.translatable("message.simplemachines.portal.closed_mode_no_open"), true);
@@ -158,6 +163,23 @@ public class GateMenu extends AbstractContainerMenu {
     }
 
     /** Seconds of fuel the rift has left, or -1 while not yet known. */
+    public boolean hasOwner() {
+        return (data.get(11) & 32) != 0;
+    }
+
+    public boolean isPrivate() {
+        return (data.get(11) & 64) != 0;
+    }
+
+    public java.util.UUID owner() {
+        long hi = 0, lo = 0;
+        for (int i = 0; i < 4; i++) {
+            hi = hi << 16 | (data.get(13 + i) & 0xFFFF);
+            lo = lo << 16 | (data.get(17 + i) & 0xFFFF);
+        }
+        return new java.util.UUID(hi, lo);
+    }
+
     public int riftSeconds() {
         final int v = data.get(12) & 0xFFFF;
         return v == 0xFFFF ? -1 : v;

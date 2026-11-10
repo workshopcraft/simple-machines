@@ -297,8 +297,7 @@ public final class PortalApi {
     /*
      * Research is per player, like entangled codes. A Research Station researches for its owner (whoever placed it), a
      * Mob Scanner for whoever uses it, and a gate rolls and checks world types with its owner's unlocks. A quest reward
-     * should unlock for the rewarded player. The shared pool (data from before alpha.5, and the old server-wide forms
-     * below) counts for every player.
+     * should unlock for the rewarded player. Keys unlocked for everyone count for every player.
      */
 
     /**
@@ -309,19 +308,28 @@ public final class PortalApi {
         return PortalData.get(server).unlock(player, key);
     }
 
-    /** Takes a key back from one player. A key in the shared pool still counts for them. */
+    /** Takes a key back from one player. A key unlocked for everyone still counts for them. */
     public static boolean lock(MinecraftServer server, UUID player, String key) {
         return PortalData.get(server).lock(player, key);
     }
 
-    /** Whether the player has the key, their own or shared. */
+    /** Whether the player has the key, their own or unlocked for everyone. */
     public static boolean isUnlocked(MinecraftServer server, UUID player, String key) {
         return PortalData.get(server).unlocked(player, key);
     }
 
-    /** Everything the player has unlocked, shared keys included. */
+    /** Everything the player has unlocked, keys for everyone included. */
     public static Set<String> unlocks(MinecraftServer server, UUID player) {
         return PortalData.get(server).unlocks(player);
+    }
+
+    /**
+     * Whether player may control a gate or Research Station: it is public, or theirs, or they are in creative or an op.
+     * Only the screen and its buttons are checked; anyone may walk through an open gate or rift.
+     */
+    public static boolean mayControl(com.workshopcraft.simplemachines.machine.Owned block, net.minecraft.world.entity.player.Player player) {
+        if (!block.isPrivate() || block.owner() == null || block.owner().equals(player.getUUID()) || player.isCreative()) return true;
+        return player instanceof net.minecraft.server.level.ServerPlayer sp && net.minecraft.commands.Commands.LEVEL_GAMEMASTERS.check(sp.permissions());
     }
 
     /** The owner of a gate or Research Station (whose research it uses), or null. */
@@ -332,16 +340,13 @@ public final class PortalApi {
         return null;
     }
 
-    /** Server wide: unlocks the key for every player (the shared pool). Prefer the per-player form. */
-    @Deprecated
-    public static boolean unlock(MinecraftServer server, String key) {
+    /** Unlocks a key for every player, now and later (a pack maker's grant). lockForEveryone takes it back. */
+    public static boolean unlockForEveryone(MinecraftServer server, String key) {
         return PortalData.get(server).unlockShared(key);
     }
 
-    /** Whether the key is in the shared pool (unlocked for everyone). Prefer the per-player form. */
-    @Deprecated
-    public static boolean isUnlocked(MinecraftServer server, String key) {
-        return PortalData.get(server).sharedUnlocks().contains(key);
+    public static boolean lockForEveryone(MinecraftServer server, String key) {
+        return PortalData.get(server).lockShared(key);
     }
 
     // --- used by the mod ---

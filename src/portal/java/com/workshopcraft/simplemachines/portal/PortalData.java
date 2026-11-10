@@ -29,8 +29,7 @@ import java.util.UUID;
 /**
  * Server-wide portal state: the runtime worlds that exist, and research unlocks and scan counts per player.
  * Research is per player, like entangled codes: a station researches for its owner, a scanner for whoever uses it.
- * Unlocks and scans saved before 2.3.0-alpha.5 were server wide; they stay as the shared pool ("unlocks", "scans"),
- * which counts for every player on top of their own. The old server-wide API forms add to that pool too.
+ * Keys unlocked for everyone (a pack maker's grant, "everyone_unlocks") count for every player on top of their own.
  * Kept in data/simplemachines_portal.dat so the worlds can be made again when the server starts.
  */
 public class PortalData extends SavedData {
@@ -150,8 +149,7 @@ public class PortalData extends SavedData {
 
     public static final Codec<PortalData> CODEC = RecordCodecBuilder.create(i -> i.group(
             World.CODEC.listOf().optionalFieldOf("worlds", List.of()).forGetter(d -> List.copyOf(d.worlds.values())),
-            Codec.STRING.listOf().optionalFieldOf("unlocks", List.of()).forGetter(d -> List.copyOf(d.unlocks)),
-            Codec.unboundedMap(Codec.STRING, Codec.INT).optionalFieldOf("scans", Map.of()).forGetter(d -> d.scans),
+            Codec.STRING.listOf().optionalFieldOf("everyone_unlocks", List.of()).forGetter(d -> List.copyOf(d.unlocks)),
             Codec.STRING.listOf().optionalFieldOf("pending_delete", List.of()).forGetter(d -> d.pendingDelete),
             Codec.INT.optionalFieldOf("next", 1).forGetter(d -> d.next),
             Codec.unboundedMap(Codec.STRING, UUIDUtil.STRING_CODEC.listOf()).optionalFieldOf("occupants", Map.of()).forGetter(d -> d.occupants),
@@ -178,7 +176,6 @@ public class PortalData extends SavedData {
 
     final Map<String, World> worlds = new LinkedHashMap<>();
     final Set<String> unlocks = new LinkedHashSet<>();
-    final Map<String, Integer> scans = new LinkedHashMap<>();
     final List<String> pendingDelete = new ArrayList<>();
     int next = 1;
     final Map<String, List<UUID>> occupants = new LinkedHashMap<>();
@@ -188,14 +185,13 @@ public class PortalData extends SavedData {
     public PortalData() {
     }
 
-    private PortalData(List<World> worlds, List<String> unlocks, Map<String, Integer> scans, List<String> pending, int next,
+    private PortalData(List<World> worlds, List<String> unlocks, List<String> pending, int next,
                        Map<String, List<UUID>> occupants, List<Rift> rifts, Map<UUID, PlayerResearch> research) {
         this.research.putAll(research);
         for (Rift r : rifts) this.rifts.put(r.gate, r);
         for (Map.Entry<String, List<UUID>> e : occupants.entrySet()) this.occupants.put(e.getKey(), new ArrayList<>(e.getValue()));
         for (World w : worlds) this.worlds.put(w.id, w);
         this.unlocks.addAll(unlocks);
-        this.scans.putAll(scans);
         this.pendingDelete.addAll(pending);
         this.next = next;
     }
@@ -228,20 +224,20 @@ public class PortalData extends SavedData {
         return w;
     }
 
-    // --- research: the shared pool (old server-wide data, server-wide grants) counts for everyone ---
+    // --- research: per player, plus keys unlocked for everyone ---
 
     private PlayerResearch of(UUID player) {
         return research.computeIfAbsent(player, k -> new PlayerResearch());
     }
 
-    /** Whether player has key, their own or from the shared pool. A null player only sees the shared pool. */
+    /** Whether player has key, their own or unlocked for everyone. A null player (an unowned block) only has the latter. */
     public boolean unlocked(@Nullable UUID player, String key) {
         if (unlocks.contains(key)) return true;
         final PlayerResearch r = player == null ? null : research.get(player);
         return r != null && r.unlocks.contains(key);
     }
 
-    /** Everything player has unlocked, shared pool included. */
+    /** Everything player has unlocked, keys for everyone included. */
     public Set<String> unlocks(@Nullable UUID player) {
         final Set<String> all = new LinkedHashSet<>(unlocks);
         final PlayerResearch r = player == null ? null : research.get(player);
@@ -283,10 +279,10 @@ public class PortalData extends SavedData {
         return removed;
     }
 
-    /** The player's progress on an entry: their own count on top of the shared count. */
+    /** How far the player has got with an entry (items fed or mobs scanned). */
     public int scans(@Nullable UUID player, String research) {
         final PlayerResearch r = player == null ? null : this.research.get(player);
-        return scans.getOrDefault(research, 0) + (r == null ? 0 : r.scans.getOrDefault(research, 0));
+        return r == null ? 0 : r.scans.getOrDefault(research, 0);
     }
 
     public int addScan(UUID player, String research) {

@@ -28,8 +28,8 @@ import java.util.function.Consumer;
 
 /**
  * Mob Scanner: a powered handheld tool, charged in a Charger. Use it on a mob to scan it for mob research.
- * Scans count for the player using the scanner. Each mob can be scanned once per player (a tag on the mob per player;
- * mobs tagged before alpha.5 count as scanned by everyone). With scanner_kills_mob the scan kills it.
+ * Scans count for the player using the scanner. Each mob can be scanned once per player (a tag on the mob per player).
+ * With scanner_kills_mob the scan kills it.
  */
 public class MobScannerItem extends Item {
     public static final int CAPACITY = 40_000;
@@ -56,7 +56,7 @@ public class MobScannerItem extends Item {
         if (!(player instanceof ServerPlayer sp) || !(player.level() instanceof ServerLevel level)) return InteractionResult.SUCCESS;
         final ItemStack held = player.getItemInHand(hand);
         final String tag = SCANNED + "." + sp.getUUID();
-        if (target.entityTags().contains(SCANNED) || target.entityTags().contains(tag)) {
+        if (target.entityTags().contains(tag)) {
             sp.sendSystemMessage(Component.translatable("message.simplemachines.scanner.already"), true);
             return InteractionResult.FAIL;
         }

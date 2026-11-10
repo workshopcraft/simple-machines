@@ -76,9 +76,6 @@
   "commands.simplemachines.portal.unlocked_all": "Unlocked %s entries for %s",
   "commands.simplemachines.portal.gave_card": "Gave card %s to %s",
   "commands.simplemachines.portal.cost": "Card %s: %s pellets, %s FE per jump",
-  "gui.simplemachines.portal.cost_pellet": "Jump: %s pellet",
-  "gui.simplemachines.portal.cost_pellets": "Jump: %s pellets",
-  "gui.simplemachines.portal.cost_energy": "and %s FE",
   "message.simplemachines.research.imprinted": "Card programmed with %s",
   "gui.simplemachines.portal.status.underfed": "Browned out: needs HV power",
   "gui.simplemachines.portal.hv_only": "HV power only",
@@ -118,9 +115,9 @@
   "commands.simplemachines.portal.nobody": "nobody",
   "gui.simplemachines.research.owner_public": "Public. Owner: %s",
   "gui.simplemachines.research.owner_private": "Private. Owner: %s",
-  "message.simplemachines.research.claimed": "This Research Station is now yours. Its research counts for you",
-  "message.simplemachines.portal.gate_claimed": "This gate is now yours. It uses your research for world types",
   "message.simplemachines.owned_not_owner": "This belongs to someone else",
   "message.simplemachines.owned_now_private": "%s is now private",
-  "message.simplemachines.owned_now_public": "%s is now public"
+  "message.simplemachines.owned_now_public": "%s is now public",
+  "gui.simplemachines.portal.cost_one": "%s pellet, %s FE",
+  "gui.simplemachines.portal.cost": "%s pellets, %s FE"
 }

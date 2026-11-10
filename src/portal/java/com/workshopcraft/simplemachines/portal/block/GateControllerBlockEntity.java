@@ -56,12 +56,13 @@ import java.util.List;
  * on every jump, until the gate departs. Departed means in transit: the gate will not open until it arrives somewhere.
  * A player who comes out on the far side opens a return rift there (PortalRifts), paid for from this gate while it is open.
  */
-public class GateControllerBlockEntity extends WorkBlockEntity {
+public class GateControllerBlockEntity extends WorkBlockEntity implements com.workshopcraft.simplemachines.machine.Owned {
     public static final int CAPACITY = 32_000_000;
     public static final int MAX_IN = Voltage.RATE[Voltage.HV];
     public static final int UPKEEP = 0;
     public static final int SLOT_CORE = 0, SLOT_CARD = 1, FIRST_PELLET = 2, SLOTS = 5;
-    public static final int DATA_COUNT = 13;
+    /** 13..20 the owner in 8 shorts; flags 32 has an owner, 64 private. */
+    public static final int DATA_COUNT = 21;
 
     public static final int OK = 0, OPEN = 1, NO_FRAME = 2, NO_CORE = 3, NO_CARD = 4, WEAK_FRAME = 5, NO_PELLETS = 6, NO_ENERGY = 7,
             DISABLED = 8, LOCKED = 9, STARTING = 10, NO_WORLD = 11, UNDERFED = 12, NO_TARGET = 13, IN_TRANSIT = 14;
@@ -76,8 +77,9 @@ public class GateControllerBlockEntity extends WorkBlockEntity {
      * Star systems (Homebound): the system the gate's ship is in, null when it has none. inTransit is between depart and
      * arrive. While in a system each hidden jump card resolves to one planet (systemWorlds), the same on every jump.
      */
-    /** Whose research the gate uses for world types (the placer; an older gate is claimed by the first player to use it). */
+    /** The placer: whose research the gate uses for world types, and who may control it while it is private. */
     private java.util.@Nullable UUID owner;
+    private boolean priv;
     private @Nullable String system;
     private boolean inTransit;
     private final java.util.Map<String, String> systemWorlds = new java.util.LinkedHashMap<>();
@@ -116,7 +118,12 @@ public class GateControllerBlockEntity extends WorkBlockEntity {
                 case 10 -> frame == null ? 0 : frame.width() << 8 | frame.height();
                 case 11 -> flags();
                 case 12 -> riftSeconds();
-                default -> 0;
+                default -> {
+                    if (id < 13 || id > 20 || owner == null) yield 0;
+                    final int i = id - 13;
+                    final long half = i < 4 ? owner.getMostSignificantBits() : owner.getLeastSignificantBits();
+                    yield (int) (half >>> (48 - 16 * (i % 4))) & 0xFFFF;
+                }
             };
         }
 
@@ -131,7 +138,7 @@ public class GateControllerBlockEntity extends WorkBlockEntity {
 
     /** Bits for the screen: 1 enabled, 2 closed mode, 4 players may open, 8 rift open, 16 rift flickering. */
     private int flags() {
-        int f = (enabled ? 1 : 0) | (closedMode() ? 2 : 0) | (playersMayOpen() ? 4 : 0);
+        int f = (enabled ? 1 : 0) | (closedMode() ? 2 : 0) | (playersMayOpen() ? 4 : 0) | (owner != null ? 32 : 0) | (priv ? 64 : 0);
         if (level instanceof ServerLevel s) {
             final PortalData.Rift r = PortalRifts.of(s, worldPosition);
             if (r != null) f |= 8 | (r.low ? 16 : 0);
@@ -416,17 +423,32 @@ public class GateControllerBlockEntity extends WorkBlockEntity {
         setChanged();
     }
 
-    /** A gate from before per-player research belongs to the first player who opens its screen or starts a jump. */
-    public void claim(ServerPlayer player) {
-        if (owner != null) return;
-        setOwner(player.getUUID());
-        player.sendSystemMessage(Component.translatable("message.simplemachines.portal.gate_claimed"));
+    @Override
+    public boolean isPrivate() {
+        return priv;
     }
 
     @Override
+    public void setPrivate(boolean on) {
+        priv = on;
+        setChanged();
+    }
+
+    /** A private gate only opens its screen for its owner (creative players and ops too). Walking through is never checked. */
+    @Override
     public boolean canOpen(net.minecraft.world.entity.player.Player player) {
-        if (owner == null && player instanceof ServerPlayer sp) claim(sp);
+        if (!PortalApi.mayControl(this, player)) {
+            player.sendOverlayMessage(Component.translatable("message.simplemachines.owned_not_owner").withStyle(net.minecraft.ChatFormatting.RED));
+            return false;
+        }
         return super.canOpen(player);
+    }
+
+    /** Hoppers and pipes belong to nobody, so a private gate takes no cards from them; pellets, power and cores still go in. */
+    @Override
+    public boolean canPlaceItemThroughFace(int slot, ItemStack stack, @Nullable Direction side) {
+        if (priv && slot == SLOT_CARD) return false;
+        return super.canPlaceItemThroughFace(slot, stack, side);
     }
 
     // --- star systems ---
@@ -639,7 +661,7 @@ public class GateControllerBlockEntity extends WorkBlockEntity {
     /** Starts a jump. Returns a translation key for the problem, or null when it started. */
     public @Nullable String tryOpen(@Nullable ServerPlayer player) {
         if (!(level instanceof ServerLevel server)) return "message.simplemachines.portal.no_gate";
-        if (owner == null && player != null) claim(player);
+        if (player != null && !PortalApi.mayControl(this, player)) return "message.simplemachines.owned_not_owner";
         if (openTicks > 0) return "message.simplemachines.portal.already_open";
         frame = GateFrame.find(server, worldPosition, Math.max(2, PortalConfig.integer(server.getServer(), PortalConfig.MAX_OPENING)));
         final PortalData.Rift rift = PortalRifts.of(server, worldPosition);
@@ -821,6 +843,7 @@ public class GateControllerBlockEntity extends WorkBlockEntity {
         enabled = input.getBooleanOr("enabled", true);
         closed = input.getBooleanOr("closed", false);
         owner = input.read("owner", net.minecraft.core.UUIDUtil.CODEC).orElse(null);
+        priv = input.getBooleanOr("private", false);
         worldId = input.getString("world").orElse(null);
         target = input.getString("target").map(Identifier::tryParse)
                 .map(id -> ResourceKey.create(net.minecraft.core.registries.Registries.DIMENSION, id)).orElse(null);
@@ -844,6 +867,7 @@ public class GateControllerBlockEntity extends WorkBlockEntity {
         output.putBoolean("enabled", enabled);
         output.putBoolean("closed", closed);
         if (owner != null) output.store("owner", net.minecraft.core.UUIDUtil.CODEC, owner);
+        if (priv) output.putBoolean("private", true);
         if (worldId != null) output.putString("world", worldId);
         if (target != null) output.putString("target", target.identifier().toString());
         if (nextPreset != null) output.putString("next_preset", nextPreset.toString());

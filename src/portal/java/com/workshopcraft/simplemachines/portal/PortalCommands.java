@@ -80,7 +80,7 @@ public final class PortalCommands {
         portal.then(gate("enable", (g, b) -> b.then(Commands.argument("on", BoolArgumentType.bool()).executes(c -> enable(c, g)))));
         portal.then(gate("closedmode", (g, b) -> b.then(Commands.argument("on", BoolArgumentType.bool()).executes(c -> closedMode(c, g)))));
         portal.then(gate("info", (g, b) -> b.executes(c -> info(c, g))));
-        // research is per player: a player target (default @s), or everyone for the shared pool that counts for all
+        // research is per player: a player target (default @s), or everyone for keys that count for every player
         portal.then(Commands.literal("unlock")
                 .then(Commands.literal("all").executes(c -> unlockAll(c, self(c))))
                 .then(Commands.literal("everyone")
@@ -329,7 +329,7 @@ public final class PortalCommands {
         return List.of(c.getSource().getPlayerOrException());
     }
 
-    /** targets null: the shared pool, which counts for every player. */
+    /** targets null: unlock for everyone. */
     private static int unlock(CommandContext<CommandSourceStack> c, java.util.@Nullable Collection<ServerPlayer> targets, boolean on) {
         final String key = StringArgumentType.getString(c, "key").trim();
         final PortalData data = PortalData.get(c.getSource().getServer());
@@ -417,7 +417,7 @@ public final class PortalCommands {
         final PortalData data = PortalData.get(c.getSource().getServer());
         final ServerPlayer who = c.getSource().getPlayer();
         for (WorldPreset p : all) {
-            // locked for the player running it (the shared pool only from the console)
+            // locked for the player running it (only keys for everyone from the console)
             final boolean locked = p.needsResearch() && !data.unlocked(who == null ? null : who.getUUID(), "preset:" + p.id());
             c.getSource().sendSuccess(() -> Component.literal(p.id() + "  tier " + p.tier() + ", " + p.minFrame().id() + " frame, richness "
                     + p.richness() + (locked ? ", locked" : "")), false);
