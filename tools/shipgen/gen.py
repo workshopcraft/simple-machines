@@ -59,6 +59,8 @@ def el(frm, to, tex, faces=FACES, shade=True, light=None, rot=None, uv=None):
         face = {'texture': t}
         if uv and f in uv:
             face['uv'] = uv[f]
+        elif min(frm + to) < 0 or max(frm + to) > 16:
+            face['uv'] = [0, 0, 16, 16]  # auto UVs fall outside the texture for elements past the block
         e['faces'][f] = face
     if not shade:
         e['shade'] = False

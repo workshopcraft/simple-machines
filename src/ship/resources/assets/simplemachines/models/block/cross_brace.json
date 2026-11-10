@@ -18,22 +18,58 @@
       ],
       "faces": {
         "north": {
-          "texture": "#side"
+          "texture": "#side",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
         },
         "south": {
-          "texture": "#side"
+          "texture": "#side",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
         },
         "east": {
-          "texture": "#side"
+          "texture": "#side",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
         },
         "west": {
-          "texture": "#side"
+          "texture": "#side",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
         },
         "up": {
-          "texture": "#side"
+          "texture": "#side",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
         },
         "down": {
-          "texture": "#side"
+          "texture": "#side",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
         }
       },
       "rotation": {
@@ -59,22 +95,58 @@
       ],
       "faces": {
         "north": {
-          "texture": "#side"
+          "texture": "#side",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
         },
         "south": {
-          "texture": "#side"
+          "texture": "#side",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
         },
         "east": {
-          "texture": "#side"
+          "texture": "#side",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
         },
         "west": {
-          "texture": "#side"
+          "texture": "#side",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
         },
         "up": {
-          "texture": "#side"
+          "texture": "#side",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
         },
         "down": {
-          "texture": "#side"
+          "texture": "#side",
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ]
         }
       },
       "rotation": {

@@ -73,7 +73,7 @@ public class SlidingDoorRenderer implements BlockEntityRenderer<SlidingDoorBlock
             final Quads q = new Quads(p, vc, s.lightCoords, OverlayTexture.NO_OVERLAY);
             switch (s.kind) {
                 case HATCH -> box(q, 0, 13, -move, 16, 16, 16 - move, ShipSprites.get(s.name), edge, true);
-                case SHUTTER -> box(q, 0, move, 0, 16, 16 + move, 16, ShipSprites.get(s.name), edge, false);
+                case SHUTTER -> box(q, 0, move, 0, 16, 16 + move, 16, ShipSprites.get(s.name), ShipSprites.get(s.name), false);
                 default -> {
                     box(q, move, 0, 6, 16 + move, 16, 10, ShipSprites.get(s.name.withSuffix("_lower")), edge, false);
                     box(q, move, 16, 6, 16 + move, 32, 10, ShipSprites.get(s.name.withSuffix("_upper")), edge, false);
