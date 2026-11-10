@@ -26,6 +26,10 @@ public final class PortalConfig {
     public static final String CLEANUP_UNBOUND = "portal_cleanup_unbound_worlds";
     /** Story attempt worlds left without the objective and replaced by a new attempt are deleted once empty. On by default. */
     public static final String CLEANUP_FAILED_STORY = "portal_cleanup_failed_story_worlds";
+    /** Low voltage (LV/MV) feeding the HV gate drains it and burns out the cables. Off: the energy is only refused. */
+    public static final String LOW_VOLTAGE_DAMAGE = "portal_low_voltage_damage";
+    /** Percent of stored energy a brownout costs. */
+    public static final String BROWNOUT_LOSS = "portal_brownout_loss_percent";
     public static final String EMPTY_WORLD_SECONDS = "portal_empty_world_seconds";
 
     private PortalConfig() {}
@@ -40,6 +44,8 @@ public final class PortalConfig {
         ServerConfig.define(MAX_OPENING, "6");
         ServerConfig.define(CLEANUP_UNBOUND, "false");
         ServerConfig.define(CLEANUP_FAILED_STORY, "true");
+        ServerConfig.define(LOW_VOLTAGE_DAMAGE, "true");
+        ServerConfig.define(BROWNOUT_LOSS, "10");
         ServerConfig.define(EMPTY_WORLD_SECONDS, "120");
     }
 

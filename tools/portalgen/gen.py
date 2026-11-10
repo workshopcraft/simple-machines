@@ -175,7 +175,11 @@ PAGES = [
      'Build a rectangle of frame blocks standing upright, with the Portal Gate Controller as one of its blocks. The inside must be empty, '
      'at least 2 wide and 3 tall.\n\nFrames: Iron, Steel or Titanium blocks (Netherite if the server allows it). Wood and other blocks do not form a gate. '
      'Some worlds need a better frame. Bigger frames need more power to open.\n\n'
-     'The controller is an HV machine. Put an Entangled Core and a card in it, and Entangled Pellets for fuel. Each jump uses pellets and a lot of energy; '
+     'The controller takes HV power only, from HV cables, the HV side of a transformer or an HV relay. '
+     'LV or MV power browns it out: it sparks, loses some of its stored energy and will not open. Any LV or MV cable '
+     'touching it burns out and can start a fire. A generator placed right against it browns it out too. '
+     'Step power up with transformers first.\n\n'
+     'Put an Entangled Core and a card in it, and Entangled Pellets for fuel. Each jump uses pellets and a lot of energy; '
      'rich, high tier worlds cost more. Press Open and walk through. A Return Beacon waits where you land: use it to come home.',
      [('craft', 'portal_gate_controller'), ('craft', 'entangled_core'), ('craft', 'entangled_pellet')]),
     ('portal_cards', 'Cards and Worlds', 'Every card is one world',

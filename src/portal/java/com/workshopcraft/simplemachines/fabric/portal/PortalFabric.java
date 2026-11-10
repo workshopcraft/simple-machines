@@ -46,7 +46,13 @@ public final class PortalFabric {
         Portal.registerMenus(direct(BuiltInRegistries.MENU));
         Portal.registerChunkGenerators(direct(BuiltInRegistries.CHUNK_GENERATOR));
         Portal.registerPlacementModifiers(direct(BuiltInRegistries.PLACEMENT_MODIFIER_TYPE));
-        EnergyStorage.SIDED.registerForBlockEntity((be, side) -> new BufferEnergyStorage(be.energy(), true, false), Portal.GATE_ENTITY);
+        EnergyStorage.SIDED.registerForBlockEntity((be, side) -> new BufferEnergyStorage(be.energy(), true, false) {
+            // HV only: anything lower is refused and browns the gate out
+            @Override
+            public long insert(long amount, net.fabricmc.fabric.api.transfer.v1.transaction.TransactionContext tx) {
+                return amount > 0 && !be.acceptsFrom(side) ? 0 : super.insert(amount, tx);
+            }
+        }, Portal.GATE_ENTITY);
         EnergyStorage.SIDED.registerForBlockEntity((be, side) -> new BufferEnergyStorage(be.energy(), true, false), Portal.RESEARCH_ENTITY);
         ItemStorage.SIDED.registerForBlockEntity((be, side) -> ContainerStorage.of(be, side), Portal.GATE_ENTITY);
         ItemStorage.SIDED.registerForBlockEntity((be, side) -> ContainerStorage.of(be, side), Portal.RESEARCH_ENTITY);

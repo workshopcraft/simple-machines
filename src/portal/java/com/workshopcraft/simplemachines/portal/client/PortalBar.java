@@ -24,10 +24,16 @@ final class PortalBar {
     }
 
     static void hover(GuiGraphicsExtractor graphics, Font font, int energy, int capacity, int tier, boolean sendsOnly, int mouseX, int mouseY) {
+        hover(graphics, font, energy, capacity, tier, sendsOnly, mouseX, mouseY, List.of());
+    }
+
+    static void hover(GuiGraphicsExtractor graphics, Font font, int energy, int capacity, int tier, boolean sendsOnly, int mouseX, int mouseY,
+                      List<Component> extra) {
         final List<Component> lines = new ArrayList<>();
         lines.add(Component.literal(PowerTooltip.num(energy) + " / " + PowerTooltip.num(capacity) + " FE"));
         if (tier >= 0) lines.add(Component.translatable(sendsOnly ? "gui.simplemachines.tier_sends" : "gui.simplemachines.tier_accepts",
                 PowerTooltip.tier(tier), PowerTooltip.num(Voltage.RATE[tier])).withStyle(ChatFormatting.GRAY));
+        lines.addAll(extra);
         graphics.setComponentTooltipForNextFrame(font, lines, mouseX, mouseY);
     }
 }

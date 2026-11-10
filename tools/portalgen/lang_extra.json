@@ -79,5 +79,8 @@
   "gui.simplemachines.portal.cost_pellet": "Jump: %s pellet",
   "gui.simplemachines.portal.cost_pellets": "Jump: %s pellets",
   "gui.simplemachines.portal.cost_energy": "and %s FE",
-  "message.simplemachines.research.imprinted": "Card programmed with %s"
+  "message.simplemachines.research.imprinted": "Card programmed with %s",
+  "gui.simplemachines.portal.status.underfed": "Browned out: needs HV power",
+  "gui.simplemachines.portal.hv_only": "HV power only",
+  "gui.simplemachines.portal.hv_warning": "LV or MV browns the gate out and burns out the cables"
 }

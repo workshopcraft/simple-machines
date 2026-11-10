@@ -58,9 +58,11 @@ public class GateControllerBlockEntity extends WorkBlockEntity {
     public static final int DATA_COUNT = 12;
 
     public static final int OK = 0, OPEN = 1, NO_FRAME = 2, NO_CORE = 3, NO_CARD = 4, WEAK_FRAME = 5, NO_PELLETS = 6, NO_ENERGY = 7,
-            DISABLED = 8, LOCKED = 9, STARTING = 10, NO_WORLD = 11;
+            DISABLED = 8, LOCKED = 9, STARTING = 10, NO_WORLD = 11, UNDERFED = 12;
     public static final String[] STATUS = {"ready", "open", "no_frame", "no_core", "no_card", "weak_frame", "no_pellets", "no_energy",
-            "disabled", "locked", "starting", "no_world"};
+            "disabled", "locked", "starting", "no_world", "underfed"};
+    /** Ticks the gate stays browned out after the last low voltage feed, and between brownout hits. */
+    private static final int UNDERFED_TICKS = 100, BROWNOUT_COOLDOWN = 40;
 
     private @Nullable Identifier hiddenCard;
     private List<String> hiddenForced = List.of();
@@ -135,6 +137,64 @@ public class GateControllerBlockEntity extends WorkBlockEntity {
         return false;
     }
 
+    // --- HV only ---
+    private int lowSides;
+    private int underfed;
+    private int brownoutCooldown;
+
+    /**
+     * The gate takes HV only. Asked by the energy handler on every insert: true when the neighbour on side sends HV
+     * (an HV cable, the HV side of an MV/HV transformer, an HV relay; the same Voltage.sending rule the quarry uses
+     * for its MV only input). Anything lower, and anything not from this mod (which counts as LV), is refused and
+     * noted, so the next tick browns the gate out. A null side is direct access (commands, tests) and is allowed.
+     */
+    public boolean acceptsFrom(@Nullable Direction side) {
+        if (side == null || level == null) return true;
+        if (Voltage.sending(level, worldPosition.relative(side), side.getOpposite()) >= Voltage.HV) return true;
+        lowSides |= 1 << side.ordinal();
+        return false;
+    }
+
+    public boolean underfed() {
+        return underfed > 0;
+    }
+
+    /** A low voltage feed: sparks and a buzz, a share of the stored energy lost, and LV/MV cables on those sides burn out. */
+    private void brownout(ServerLevel level, BlockPos pos, int sides) {
+        final boolean damage = PortalConfig.bool(level.getServer(), PortalConfig.LOW_VOLTAGE_DAMAGE);
+        if (openTicks > 0) close(level);
+        level.playSound(null, pos, net.minecraft.sounds.SoundEvents.BEACON_DEACTIVATE, net.minecraft.sounds.SoundSource.BLOCKS, 1.0F, 0.5F);
+        level.playSound(null, pos, net.minecraft.sounds.SoundEvents.REDSTONE_TORCH_BURNOUT, net.minecraft.sounds.SoundSource.BLOCKS, 0.8F, 0.6F);
+        level.sendParticles(net.minecraft.core.particles.ParticleTypes.ELECTRIC_SPARK, pos.getX() + 0.5, pos.getY() + 0.7, pos.getZ() + 0.5,
+                24, 0.5, 0.4, 0.5, 0.2);
+        level.sendParticles(net.minecraft.core.particles.ParticleTypes.SMOKE, pos.getX() + 0.5, pos.getY() + 1.0, pos.getZ() + 0.5, 8, 0.3, 0.1, 0.3, 0.02);
+        if (!damage) return;
+        final int loss = energy.energy * Math.clamp(PortalConfig.integer(level.getServer(), PortalConfig.BROWNOUT_LOSS), 0, 100) / 100;
+        if (loss > 0) {
+            energy.energy -= loss;
+            setChanged();
+        }
+        for (Direction d : Direction.values()) {
+            if ((sides & 1 << d.ordinal()) == 0) continue;
+            final BlockPos at = pos.relative(d);
+            final BlockState s = level.getBlockState(at);
+            if (s.getBlock() instanceof com.workshopcraft.simplemachines.cable.CableBlock cable && cable.tier < Voltage.HV) burnOut(level, at, d);
+        }
+    }
+
+    /** An LV or MV cable feeding the gate overloads: it is gone (no drop), with smoke, a fizz and a small fire where it was. */
+    private static void burnOut(ServerLevel level, BlockPos at, Direction fromGate) {
+        level.removeBlock(at, false);
+        level.playSound(null, at, net.minecraft.sounds.SoundEvents.FIRE_EXTINGUISH, net.minecraft.sounds.SoundSource.BLOCKS, 1.0F, 1.4F);
+        level.playSound(null, at, net.minecraft.sounds.SoundEvents.FIRECHARGE_USE, net.minecraft.sounds.SoundSource.BLOCKS, 0.7F, 1.6F);
+        level.sendParticles(net.minecraft.core.particles.ParticleTypes.LARGE_SMOKE, at.getX() + 0.5, at.getY() + 0.5, at.getZ() + 0.5, 16, 0.25, 0.25, 0.25, 0.03);
+        level.sendParticles(net.minecraft.core.particles.ParticleTypes.LAVA, at.getX() + 0.5, at.getY() + 0.5, at.getZ() + 0.5, 4, 0.2, 0.2, 0.2, 0.0);
+        // a small fire where the cable was, or on top of the block under it
+        if (net.minecraft.world.level.block.BaseFireBlock.canBePlacedAt(level, at, fromGate)) {
+            level.setBlockAndUpdate(at, net.minecraft.world.level.block.BaseFireBlock.getState(level, at));
+        }
+    }
+
     @Override
     public Tier tier() {
         return Tier.IRON;
@@ -151,6 +211,20 @@ public class GateControllerBlockEntity extends WorkBlockEntity {
 
     @Override
     protected void work(ServerLevel level, BlockPos pos, BlockState state, Tier tier) {
+        if (brownoutCooldown > 0) brownoutCooldown--;
+        if (lowSides != 0) {
+            final int sides = lowSides;
+            lowSides = 0;
+            final boolean was = underfed > 0;
+            underfed = UNDERFED_TICKS;
+            if (brownoutCooldown == 0) {
+                brownoutCooldown = BROWNOUT_COOLDOWN;
+                brownout(level, pos, sides);
+            }
+            if (!was) refreshStatus(level);
+        } else if (underfed > 0 && --underfed == 0) {
+            refreshStatus(level);
+        }
         if (++scan >= 10 || frame == null && scan >= 5) {
             scan = 0;
             final GateFrame f = GateFrame.find(level, pos, Math.max(2, PortalConfig.integer(level.getServer(), PortalConfig.MAX_OPENING)));
@@ -311,6 +385,7 @@ public class GateControllerBlockEntity extends WorkBlockEntity {
         needPellets = 0;
         needEnergy = 0;
         if (!enabled) return DISABLED;
+        if (underfed > 0) return UNDERFED;
         if (frame == null) return NO_FRAME;
         if (!items.get(SLOT_CORE).is(Portal.entangledCore)) return NO_CORE;
         final Identifier cardId = activeCard();

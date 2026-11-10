@@ -51,7 +51,13 @@ public final class PortalNeoForge {
             e.register(Registries.PLACEMENT_MODIFIER_TYPE, h -> Portal.registerPlacementModifiers(h::register));
         });
         modBus.addListener((RegisterCapabilitiesEvent e) -> {
-            e.registerBlockEntity(Capabilities.Energy.BLOCK, Portal.GATE_ENTITY, (be, side) -> new BufferEnergyHandler(be.energy(), true, false));
+            e.registerBlockEntity(Capabilities.Energy.BLOCK, Portal.GATE_ENTITY, (be, side) -> new BufferEnergyHandler(be.energy(), true, false) {
+                // HV only: anything lower is refused and browns the gate out
+                @Override
+                public int insert(int amount, net.neoforged.neoforge.transfer.transaction.TransactionContext tx) {
+                    return amount > 0 && !be.acceptsFrom(side) ? 0 : super.insert(amount, tx);
+                }
+            });
             e.registerBlockEntity(Capabilities.Energy.BLOCK, Portal.RESEARCH_ENTITY, (be, side) -> new BufferEnergyHandler(be.energy(), true, false));
             e.registerBlockEntity(Capabilities.Item.BLOCK, Portal.GATE_ENTITY, WorldlyContainerWrapper::new);
             e.registerBlockEntity(Capabilities.Item.BLOCK, Portal.RESEARCH_ENTITY, WorldlyContainerWrapper::new);

@@ -58,7 +58,9 @@ public class GateScreen extends AbstractContainerScreen<GateMenu> {
         }
         PortalBar.tag(graphics, font, x, y, BAR_X, BAR_Y, BAR_W, menu.voltage());
         if (mouseX >= x + BAR_X && mouseX < x + BAR_X + BAR_W && mouseY >= y + BAR_Y && mouseY < y + BAR_Y + BAR_H) {
-            PortalBar.hover(graphics, font, menu.energy(), menu.capacity(), menu.voltage(), false, mouseX, mouseY);
+            PortalBar.hover(graphics, font, menu.energy(), menu.capacity(), menu.voltage(), false, mouseX, mouseY, java.util.List.of(
+                    Component.translatable("gui.simplemachines.portal.hv_only").withStyle(net.minecraft.ChatFormatting.GOLD),
+                    Component.translatable("gui.simplemachines.portal.hv_warning").withStyle(net.minecraft.ChatFormatting.RED)));
         }
     }
 
