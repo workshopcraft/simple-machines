@@ -37,6 +37,13 @@ public class ResearchStationBlock extends MachineBlock {
     }
 
     @Override
+    public void setPlacedBy(Level level, BlockPos pos, BlockState state, net.minecraft.world.entity.@Nullable LivingEntity placer, net.minecraft.world.item.ItemStack stack) {
+        super.setPlacedBy(level, pos, state, placer, stack);
+        if (!level.isClientSide() && placer instanceof net.minecraft.world.entity.player.Player p
+                && level.getBlockEntity(pos) instanceof ResearchStationBlockEntity be) be.setOwner(p.getUUID());
+    }
+
+    @Override
     public void animateTick(BlockState state, Level level, BlockPos pos, RandomSource random) {
         if (state.getValue(LIT) && random.nextInt(3) == 0) {
             level.addParticle(ParticleTypes.ENCHANT, pos.getX() + 0.5, pos.getY() + 1.2, pos.getZ() + 0.5,

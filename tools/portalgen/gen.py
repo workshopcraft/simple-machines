@@ -225,9 +225,13 @@ PAGES = [
      [('craft', 'jump_card'), ('craft', 'nether_card'), ('craft', 'end_card')]),
     ('portal_research', 'Research', 'Feed it to learn',
      'The Research Station is a powered machine that eats resources. Choose a project with the arrows and feed it the items it asks for. '
-     'When it is done, new world types and resources unlock for everyone on the server.\n\n'
-     'Mob research needs scans. Charge a Mob Scanner in a charger and use it on a mob. Each mob can only be scanned once.\n\n'
-     'Put a blank Jump Card in the card slot and press Imprint to program it with the chosen project.',
+     'Research is yours alone, like an entangled code: a station belongs to whoever placed it, and everything it eats counts for its owner. '
+     'When a project is done, its world types and resources unlock for you.\n\n'
+     'Mob research needs scans. Charge a Mob Scanner in a charger and use it on a mob. Scans count for whoever holds the scanner, '
+     'and each player can scan a mob once.\n\n'
+     'A station is public: anyone may use it to imprint cards with what its owner has learned. The owner can make it private with a screwdriver.\n\n'
+     'Put a blank Jump Card in the card slot and press Imprint to program it with the chosen project. '
+     'A gate also belongs to whoever placed it and picks world types from its owner\'s research.',
      [('craft', 'research_station'), ('craft', 'mob_scanner')]),
 ]
 

@@ -52,10 +52,21 @@ public class ResearchScreen extends AbstractContainerScreen<ResearchMenu> {
         }
     }
 
+    private Component ownerName(java.util.UUID id) {
+        if (minecraft.player != null && minecraft.player.getUUID().equals(id)) return Component.literal(minecraft.player.getGameProfile().name());
+        final var info = minecraft.getConnection() == null ? null : minecraft.getConnection().getPlayerInfo(id);
+        return info != null ? Component.literal(info.getProfile().name()) : Component.translatable("gui.simplemachines.entangled_someone");
+    }
+
     @Override
     protected void extractLabels(GuiGraphicsExtractor graphics, int xm, int ym) {
         graphics.text(font, title, 8, 6, TEXT, false);
         graphics.text(font, playerInventoryTitle, inventoryLabelX, inventoryLabelY, TEXT, false);
+        if (menu.hasOwner()) {
+            final Component who = Component.translatable(menu.isPrivate() ? "gui.simplemachines.research.owner_private" : "gui.simplemachines.research.owner_public",
+                    ownerName(menu.owner()));
+            graphics.text(font, who, imageWidth - 8 - font.width(who), inventoryLabelY, 0xFF2D5AA0, false);
+        }
         final ItemStack shown = menu.shown();
         if (shown.isEmpty()) {
             graphics.text(font, Component.translatable("gui.simplemachines.research.none"), 62, 21, TEXT, false);

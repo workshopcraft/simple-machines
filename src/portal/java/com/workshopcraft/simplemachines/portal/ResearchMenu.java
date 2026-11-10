@@ -123,6 +123,23 @@ public class ResearchMenu extends AbstractContainerMenu {
         return data.get(10);
     }
 
+    public boolean hasOwner() {
+        return (data.get(19) & 1) != 0;
+    }
+
+    public boolean isPrivate() {
+        return (data.get(19) & 2) != 0;
+    }
+
+    public java.util.UUID owner() {
+        long hi = 0, lo = 0;
+        for (int i = 0; i < 4; i++) {
+            hi = hi << 16 | (data.get(11 + i) & 0xFFFF);
+            lo = lo << 16 | (data.get(15 + i) & 0xFFFF);
+        }
+        return new java.util.UUID(hi, lo);
+    }
+
     @Override
     public boolean stillValid(Player player) {
         return container.stillValid(player);

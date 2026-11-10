@@ -232,6 +232,19 @@ public final class Assembly {
             }
             return true;
         }
+        if (!sneak && level.getBlockEntity(pos) instanceof com.workshopcraft.simplemachines.machine.Owned o && o.owner() != null) {
+            if (!level.isClientSide()) {
+                if (!o.owner().equals(player.getUUID())) {
+                    player.sendOverlayMessage(Component.translatable("message.simplemachines.owned_not_owner"));
+                } else {
+                    o.setPrivate(!o.isPrivate());
+                    player.sendOverlayMessage(Component.translatable(o.isPrivate() ? "message.simplemachines.owned_now_private" : "message.simplemachines.owned_now_public",
+                            level.getBlockState(pos).getBlock().getName()));
+                    ratchet(level, pos);
+                }
+            }
+            return true;
+        }
         if (state.getBlock() instanceof PoweredMachineBlock && level.getBlockEntity(pos) instanceof WorkBlockEntity be && be.hasOutputs()) {
             if (!level.isClientSide()) {
                 final boolean on = be.toggleOutput(face);

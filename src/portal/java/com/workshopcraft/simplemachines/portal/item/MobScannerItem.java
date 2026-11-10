@@ -28,7 +28,8 @@ import java.util.function.Consumer;
 
 /**
  * Mob Scanner: a powered handheld tool, charged in a Charger. Use it on a mob to scan it for mob research.
- * Each mob can only be scanned once (the scan is tagged on the mob). With scanner_kills_mob the scan kills it.
+ * Scans count for the player using the scanner. Each mob can be scanned once per player (a tag on the mob per player;
+ * mobs tagged before alpha.5 count as scanned by everyone). With scanner_kills_mob the scan kills it.
  */
 public class MobScannerItem extends Item {
     public static final int CAPACITY = 40_000;
@@ -54,7 +55,8 @@ public class MobScannerItem extends Item {
     public InteractionResult interactLivingEntity(ItemStack stack, Player player, LivingEntity target, InteractionHand hand) {
         if (!(player instanceof ServerPlayer sp) || !(player.level() instanceof ServerLevel level)) return InteractionResult.SUCCESS;
         final ItemStack held = player.getItemInHand(hand);
-        if (target.entityTags().contains(SCANNED)) {
+        final String tag = SCANNED + "." + sp.getUUID();
+        if (target.entityTags().contains(SCANNED) || target.entityTags().contains(tag)) {
             sp.sendSystemMessage(Component.translatable("message.simplemachines.scanner.already"), true);
             return InteractionResult.FAIL;
         }
@@ -69,14 +71,18 @@ public class MobScannerItem extends Item {
             sp.sendSystemMessage(Component.translatable("message.simplemachines.scanner.nothing", target.getType().getDescription()), true);
             return InteractionResult.FAIL;
         }
+        if (!target.addTag(tag)) {
+            // the mob carries the most tags it can; better no scan than one that can repeat
+            sp.sendSystemMessage(Component.translatable("message.simplemachines.scanner.already"), true);
+            return InteractionResult.FAIL;
+        }
         if (!player.isCreative()) held.set(SimpleMachines.ENERGY, energy(held) - PER_SCAN);
-        target.addTag(SCANNED);
         final PortalData data = PortalData.get(level.getServer());
-        final int n = data.addScan(ResearchStationBlockEntity.key(match));
+        final int n = data.addScan(sp.getUUID(), ResearchStationBlockEntity.key(match));
         level.playSound(null, target.blockPosition(), SoundEvents.AMETHYST_BLOCK_RESONATE, SoundSource.PLAYERS, 1.0F, 1.6F);
         sp.sendSystemMessage(Component.translatable("message.simplemachines.scanner.scanned", target.getType().getDescription(),
                 Math.min(n, match.scans()), match.scans()), true);
-        if (n == match.scans()) ResearchStationBlockEntity.complete(level.getServer(), match, sp);
+        if (n == match.scans()) ResearchStationBlockEntity.complete(level.getServer(), match, sp.getUUID());
         if (PortalConfig.bool(level.getServer(), PortalConfig.SCANNER_KILLS_MOB)) target.kill(level);
         return InteractionResult.SUCCESS;
     }

@@ -27,7 +27,10 @@ import java.util.Set;
 import java.util.UUID;
 
 /**
- * Server-wide portal state: the runtime worlds that exist, research unlocks and scan counts.
+ * Server-wide portal state: the runtime worlds that exist, and research unlocks and scan counts per player.
+ * Research is per player, like entangled codes: a station researches for its owner, a scanner for whoever uses it.
+ * Unlocks and scans saved before 2.3.0-alpha.5 were server wide; they stay as the shared pool ("unlocks", "scans"),
+ * which counts for every player on top of their own. The old server-wide API forms add to that pool too.
  * Kept in data/simplemachines_portal.dat so the worlds can be made again when the server starts.
  */
 public class PortalData extends SavedData {
@@ -152,8 +155,24 @@ public class PortalData extends SavedData {
             Codec.STRING.listOf().optionalFieldOf("pending_delete", List.of()).forGetter(d -> d.pendingDelete),
             Codec.INT.optionalFieldOf("next", 1).forGetter(d -> d.next),
             Codec.unboundedMap(Codec.STRING, UUIDUtil.STRING_CODEC.listOf()).optionalFieldOf("occupants", Map.of()).forGetter(d -> d.occupants),
-            Rift.CODEC.listOf().optionalFieldOf("rifts", List.of()).forGetter(d -> List.copyOf(d.rifts.values()))
+            Rift.CODEC.listOf().optionalFieldOf("rifts", List.of()).forGetter(d -> List.copyOf(d.rifts.values())),
+            Codec.unboundedMap(UUIDUtil.STRING_CODEC, PlayerResearch.CODEC).optionalFieldOf("research", Map.of()).forGetter(d -> d.research)
     ).apply(i, PortalData::new));
+
+    /** One player's research: what they have unlocked and how far each entry has got. */
+    public static final class PlayerResearch {
+        static final Codec<PlayerResearch> CODEC = RecordCodecBuilder.create(i -> i.group(
+                Codec.STRING.listOf().optionalFieldOf("unlocks", List.of()).forGetter(r -> List.copyOf(r.unlocks)),
+                Codec.unboundedMap(Codec.STRING, Codec.INT).optionalFieldOf("scans", Map.of()).forGetter(r -> r.scans)
+        ).apply(i, (u, sc) -> {
+            final PlayerResearch r = new PlayerResearch();
+            r.unlocks.addAll(u);
+            r.scans.putAll(sc);
+            return r;
+        }));
+        final Set<String> unlocks = new LinkedHashSet<>();
+        final Map<String, Integer> scans = new LinkedHashMap<>();
+    }
     public static final SavedDataType<PortalData> TYPE = new SavedDataType<>(SimpleMachines.id("portal"), PortalData::new, CODEC,
             DataFixTypes.SAVED_DATA_COMMAND_STORAGE);
 
@@ -164,12 +183,14 @@ public class PortalData extends SavedData {
     int next = 1;
     final Map<String, List<UUID>> occupants = new LinkedHashMap<>();
     final Map<GlobalPos, Rift> rifts = new LinkedHashMap<>();
+    final Map<UUID, PlayerResearch> research = new LinkedHashMap<>();
 
     public PortalData() {
     }
 
     private PortalData(List<World> worlds, List<String> unlocks, Map<String, Integer> scans, List<String> pending, int next,
-                       Map<String, List<UUID>> occupants, List<Rift> rifts) {
+                       Map<String, List<UUID>> occupants, List<Rift> rifts, Map<UUID, PlayerResearch> research) {
+        this.research.putAll(research);
         for (Rift r : rifts) this.rifts.put(r.gate, r);
         for (Map.Entry<String, List<UUID>> e : occupants.entrySet()) this.occupants.put(e.getKey(), new ArrayList<>(e.getValue()));
         for (World w : worlds) this.worlds.put(w.id, w);
@@ -207,35 +228,76 @@ public class PortalData extends SavedData {
         return w;
     }
 
-    public boolean unlocked(String key) {
-        return unlocks.contains(key);
+    // --- research: the shared pool (old server-wide data, server-wide grants) counts for everyone ---
+
+    private PlayerResearch of(UUID player) {
+        return research.computeIfAbsent(player, k -> new PlayerResearch());
     }
 
-    public Set<String> unlocks() {
+    /** Whether player has key, their own or from the shared pool. A null player only sees the shared pool. */
+    public boolean unlocked(@Nullable UUID player, String key) {
+        if (unlocks.contains(key)) return true;
+        final PlayerResearch r = player == null ? null : research.get(player);
+        return r != null && r.unlocks.contains(key);
+    }
+
+    /** Everything player has unlocked, shared pool included. */
+    public Set<String> unlocks(@Nullable UUID player) {
+        final Set<String> all = new LinkedHashSet<>(unlocks);
+        final PlayerResearch r = player == null ? null : research.get(player);
+        if (r != null) all.addAll(r.unlocks);
+        return all;
+    }
+
+    public Set<String> ownUnlocks(UUID player) {
+        final PlayerResearch r = research.get(player);
+        return r == null ? Set.of() : Set.copyOf(r.unlocks);
+    }
+
+    public boolean unlock(UUID player, String key) {
+        final boolean added = of(player).unlocks.add(key);
+        if (added) setDirty();
+        return added;
+    }
+
+    public boolean lock(UUID player, String key) {
+        final PlayerResearch r = research.get(player);
+        final boolean removed = r != null && r.unlocks.remove(key);
+        if (removed) setDirty();
+        return removed;
+    }
+
+    public Set<String> sharedUnlocks() {
         return Set.copyOf(unlocks);
     }
 
-    public boolean unlock(String key) {
+    public boolean unlockShared(String key) {
         final boolean added = unlocks.add(key);
         if (added) setDirty();
         return added;
     }
 
-    public boolean lock(String key) {
+    public boolean lockShared(String key) {
         final boolean removed = unlocks.remove(key);
         if (removed) setDirty();
         return removed;
     }
 
-    public int scans(String research) {
-        return scans.getOrDefault(research, 0);
+    /** The player's progress on an entry: their own count on top of the shared count. */
+    public int scans(@Nullable UUID player, String research) {
+        final PlayerResearch r = player == null ? null : this.research.get(player);
+        return scans.getOrDefault(research, 0) + (r == null ? 0 : r.scans.getOrDefault(research, 0));
     }
 
-    public int addScan(String research) {
-        final int n = scans(research) + 1;
-        scans.put(research, n);
+    public int addScan(UUID player, String research) {
+        of(player).scans.merge(research, 1, Integer::sum);
         setDirty();
-        return n;
+        return scans(player, research);
+    }
+
+    /** Players with research of their own. */
+    public Set<UUID> researchers() {
+        return Set.copyOf(research.keySet());
     }
 
     public boolean hasOccupants(String world) {

@@ -76,6 +76,8 @@ public class GateControllerBlockEntity extends WorkBlockEntity {
      * Star systems (Homebound): the system the gate's ship is in, null when it has none. inTransit is between depart and
      * arrive. While in a system each hidden jump card resolves to one planet (systemWorlds), the same on every jump.
      */
+    /** Whose research the gate uses for world types (the placer; an older gate is claimed by the first player to use it). */
+    private java.util.@Nullable UUID owner;
     private @Nullable String system;
     private boolean inTransit;
     private final java.util.Map<String, String> systemWorlds = new java.util.LinkedHashMap<>();
@@ -402,6 +404,31 @@ public class GateControllerBlockEntity extends WorkBlockEntity {
         return true;
     }
 
+    // --- owner: research (world types) is per player, so the gate uses its owner's ---
+
+    public java.util.@Nullable UUID owner() {
+        return owner;
+    }
+
+    public void setOwner(java.util.@Nullable UUID who) {
+        owner = who;
+        nextPreset = null;
+        setChanged();
+    }
+
+    /** A gate from before per-player research belongs to the first player who opens its screen or starts a jump. */
+    public void claim(ServerPlayer player) {
+        if (owner != null) return;
+        setOwner(player.getUUID());
+        player.sendSystemMessage(Component.translatable("message.simplemachines.portal.gate_claimed"));
+    }
+
+    @Override
+    public boolean canOpen(net.minecraft.world.entity.player.Player player) {
+        if (owner == null && player instanceof ServerPlayer sp) claim(sp);
+        return super.canOpen(player);
+    }
+
     // --- star systems ---
 
     public @Nullable String system() {
@@ -544,7 +571,7 @@ public class GateControllerBlockEntity extends WorkBlockEntity {
             final FrameTier ft = frame == null ? FrameTier.NETHERITE : frame.tier();
             final PortalData data = PortalData.get(server);
             nextPreset = card.roll(level.getRandom(), PortalResources.presets(server),
-                    p -> ft.reaches(p.minFrame()) && (!p.needsResearch() || data.unlocked("preset:" + p.id())));
+                    p -> ft.reaches(p.minFrame()) && (!p.needsResearch() || data.unlocked(owner, "preset:" + p.id())));
             rolledFor = cardId;
             setChanged();
         }
@@ -582,7 +609,7 @@ public class GateControllerBlockEntity extends WorkBlockEntity {
             if (p == null) return NO_WORLD;
             if (p.minFrame().level > need.level) need = p.minFrame();
             final boolean creative = player != null && player.isCreative();
-            if (p.needsResearch() && !creative && !PortalData.get(server).unlocked("preset:" + p.id())) return LOCKED;
+            if (p.needsResearch() && !creative && !PortalData.get(server).unlocked(owner, "preset:" + p.id())) return LOCKED;
             cost = PortalApi.jumpCost(server, p, frame.area());
         }
         needPellets = cost.pellets();
@@ -612,6 +639,7 @@ public class GateControllerBlockEntity extends WorkBlockEntity {
     /** Starts a jump. Returns a translation key for the problem, or null when it started. */
     public @Nullable String tryOpen(@Nullable ServerPlayer player) {
         if (!(level instanceof ServerLevel server)) return "message.simplemachines.portal.no_gate";
+        if (owner == null && player != null) claim(player);
         if (openTicks > 0) return "message.simplemachines.portal.already_open";
         frame = GateFrame.find(server, worldPosition, Math.max(2, PortalConfig.integer(server.getServer(), PortalConfig.MAX_OPENING)));
         final PortalData.Rift rift = PortalRifts.of(server, worldPosition);
@@ -792,6 +820,7 @@ public class GateControllerBlockEntity extends WorkBlockEntity {
         storyAttempts.putAll(input.read("story_attempts", Codec.unboundedMap(Codec.STRING, Codec.STRING)).orElse(java.util.Map.of()));
         enabled = input.getBooleanOr("enabled", true);
         closed = input.getBooleanOr("closed", false);
+        owner = input.read("owner", net.minecraft.core.UUIDUtil.CODEC).orElse(null);
         worldId = input.getString("world").orElse(null);
         target = input.getString("target").map(Identifier::tryParse)
                 .map(id -> ResourceKey.create(net.minecraft.core.registries.Registries.DIMENSION, id)).orElse(null);
@@ -814,6 +843,7 @@ public class GateControllerBlockEntity extends WorkBlockEntity {
         if (!storyAttempts.isEmpty()) output.store("story_attempts", Codec.unboundedMap(Codec.STRING, Codec.STRING), storyAttempts);
         output.putBoolean("enabled", enabled);
         output.putBoolean("closed", closed);
+        if (owner != null) output.store("owner", net.minecraft.core.UUIDUtil.CODEC, owner);
         if (worldId != null) output.putString("world", worldId);
         if (target != null) output.putString("target", target.identifier().toString());
         if (nextPreset != null) output.putString("next_preset", nextPreset.toString());

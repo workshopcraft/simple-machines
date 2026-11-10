@@ -14,6 +14,9 @@ import net.minecraft.world.level.Level;
 import org.jspecify.annotations.Nullable;
 
 import java.util.List;
+import java.util.Set;
+import java.util.UUID;
+import net.minecraft.world.level.block.entity.BlockEntity;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
@@ -291,13 +294,54 @@ public final class PortalApi {
 
     // --- research and unlocks ---
 
-    /** Unlocks a key: "preset:&lt;id&gt;" (a world type, e.g. a designed world from a quest), "ore:&lt;block&gt;" or "mob:&lt;entity&gt;". */
-    public static boolean unlock(MinecraftServer server, String key) {
-        return PortalData.get(server).unlock(key);
+    /*
+     * Research is per player, like entangled codes. A Research Station researches for its owner (whoever placed it), a
+     * Mob Scanner for whoever uses it, and a gate rolls and checks world types with its owner's unlocks. A quest reward
+     * should unlock for the rewarded player. The shared pool (data from before alpha.5, and the old server-wide forms
+     * below) counts for every player.
+     */
+
+    /**
+     * Unlocks a key for one player: "preset:&lt;id&gt;" (a world type, e.g. a designed world from a quest), "ore:&lt;block&gt;",
+     * "mob:&lt;entity&gt;", or "research:&lt;entry&gt;" (marks a research entry done). Returns false if they had it.
+     */
+    public static boolean unlock(MinecraftServer server, UUID player, String key) {
+        return PortalData.get(server).unlock(player, key);
     }
 
+    /** Takes a key back from one player. A key in the shared pool still counts for them. */
+    public static boolean lock(MinecraftServer server, UUID player, String key) {
+        return PortalData.get(server).lock(player, key);
+    }
+
+    /** Whether the player has the key, their own or shared. */
+    public static boolean isUnlocked(MinecraftServer server, UUID player, String key) {
+        return PortalData.get(server).unlocked(player, key);
+    }
+
+    /** Everything the player has unlocked, shared keys included. */
+    public static Set<String> unlocks(MinecraftServer server, UUID player) {
+        return PortalData.get(server).unlocks(player);
+    }
+
+    /** The owner of a gate or Research Station (whose research it uses), or null. */
+    public static @Nullable UUID owner(ServerLevel level, BlockPos pos) {
+        final BlockEntity be = level.getBlockEntity(pos);
+        if (be instanceof GateControllerBlockEntity g) return g.owner();
+        if (be instanceof com.workshopcraft.simplemachines.portal.block.ResearchStationBlockEntity r) return r.owner();
+        return null;
+    }
+
+    /** Server wide: unlocks the key for every player (the shared pool). Prefer the per-player form. */
+    @Deprecated
+    public static boolean unlock(MinecraftServer server, String key) {
+        return PortalData.get(server).unlockShared(key);
+    }
+
+    /** Whether the key is in the shared pool (unlocked for everyone). Prefer the per-player form. */
+    @Deprecated
     public static boolean isUnlocked(MinecraftServer server, String key) {
-        return PortalData.get(server).unlocked(key);
+        return PortalData.get(server).sharedUnlocks().contains(key);
     }
 
     // --- used by the mod ---

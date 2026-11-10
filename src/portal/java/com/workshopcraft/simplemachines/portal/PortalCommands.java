@@ -80,11 +80,24 @@ public final class PortalCommands {
         portal.then(gate("enable", (g, b) -> b.then(Commands.argument("on", BoolArgumentType.bool()).executes(c -> enable(c, g)))));
         portal.then(gate("closedmode", (g, b) -> b.then(Commands.argument("on", BoolArgumentType.bool()).executes(c -> closedMode(c, g)))));
         portal.then(gate("info", (g, b) -> b.executes(c -> info(c, g))));
+        // research is per player: a player target (default @s), or everyone for the shared pool that counts for all
         portal.then(Commands.literal("unlock")
-                .then(Commands.literal("all").executes(PortalCommands::unlockAll))
-                .then(Commands.argument("key", StringArgumentType.greedyString()).executes(c -> unlock(c, true))));
-        portal.then(Commands.literal("lock").then(Commands.argument("key", StringArgumentType.greedyString()).executes(c -> unlock(c, false))));
-        portal.then(Commands.literal("unlocks").executes(PortalCommands::unlocks));
+                .then(Commands.literal("all").executes(c -> unlockAll(c, self(c))))
+                .then(Commands.literal("everyone")
+                        .then(Commands.literal("all").executes(c -> unlockAll(c, null)))
+                        .then(Commands.argument("key", StringArgumentType.greedyString()).executes(c -> unlock(c, null, true))))
+                .then(Commands.argument("targets", EntityArgument.players())
+                        .then(Commands.literal("all").executes(c -> unlockAll(c, EntityArgument.getPlayers(c, "targets"))))
+                        .then(Commands.argument("key", StringArgumentType.greedyString()).executes(c -> unlock(c, EntityArgument.getPlayers(c, "targets"), true))))
+                .then(Commands.argument("key", StringArgumentType.greedyString()).executes(c -> unlock(c, self(c), true))));
+        portal.then(Commands.literal("lock")
+                .then(Commands.literal("everyone").then(Commands.argument("key", StringArgumentType.greedyString()).executes(c -> unlock(c, null, false))))
+                .then(Commands.argument("targets", EntityArgument.players())
+                        .then(Commands.argument("key", StringArgumentType.greedyString()).executes(c -> unlock(c, EntityArgument.getPlayers(c, "targets"), false))))
+                .then(Commands.argument("key", StringArgumentType.greedyString()).executes(c -> unlock(c, self(c), false))));
+        portal.then(Commands.literal("unlocks").executes(c -> unlocks(c, self(c)))
+                .then(Commands.literal("everyone").executes(c -> unlocks(c, null)))
+                .then(Commands.argument("targets", EntityArgument.players()).executes(c -> unlocks(c, EntityArgument.getPlayers(c, "targets")))));
         portal.then(Commands.literal("givecard").then(Commands.argument("card", IdentifierArgument.id()).suggests(CARDS)
                 .executes(c -> giveCard(c, null))
                 .then(Commands.argument("player", EntityArgument.player()).executes(c -> giveCard(c, EntityArgument.getPlayer(c, "player"))))));
@@ -307,35 +320,80 @@ public final class PortalCommands {
         return ok(c, "commands.simplemachines.portal.info", g.getBlockPos().toShortString(),
                 f == null ? "none" : f.tier().id() + " " + f.width() + "x" + f.height(), String.valueOf(g.activeCard()),
                 g.hiddenCardActive() ? "hidden" : "item", next == null ? "-" : next.id().toString(), String.valueOf(g.worldId()),
-                Boolean.toString(g.enabled()), Boolean.toString(g.closedMode()));
+                Boolean.toString(g.enabled()), Boolean.toString(g.closedMode()), ownerName(c, g.owner()));
     }
 
     // --- research and cards ---
 
-    private static int unlock(CommandContext<CommandSourceStack> c, boolean on) {
+    private static java.util.Collection<ServerPlayer> self(CommandContext<CommandSourceStack> c) throws CommandSyntaxException {
+        return List.of(c.getSource().getPlayerOrException());
+    }
+
+    /** targets null: the shared pool, which counts for every player. */
+    private static int unlock(CommandContext<CommandSourceStack> c, java.util.@Nullable Collection<ServerPlayer> targets, boolean on) {
         final String key = StringArgumentType.getString(c, "key").trim();
         final PortalData data = PortalData.get(c.getSource().getServer());
-        if (on) data.unlock(key);
-        else data.lock(key);
-        return ok(c, on ? "commands.simplemachines.portal.unlocked" : "commands.simplemachines.portal.locked", key);
+        if (targets == null) {
+            if (on) data.unlockShared(key);
+            else data.lockShared(key);
+            return ok(c, on ? "commands.simplemachines.portal.unlocked_everyone" : "commands.simplemachines.portal.locked_everyone", key);
+        }
+        for (ServerPlayer p : targets) {
+            if (on) data.unlock(p.getUUID(), key);
+            else data.lock(p.getUUID(), key);
+            if (!on && data.sharedUnlocks().contains(key)) fail(c, "commands.simplemachines.portal.still_shared", key);
+        }
+        return ok(c, on ? "commands.simplemachines.portal.unlocked" : "commands.simplemachines.portal.locked", key, names(targets));
     }
 
-    private static int unlockAll(CommandContext<CommandSourceStack> c) {
+    private static int unlockAll(CommandContext<CommandSourceStack> c, java.util.@Nullable Collection<ServerPlayer> targets) {
         final MinecraftServer server = c.getSource().getServer();
         final PortalData data = PortalData.get(server);
-        int n = 0;
+        final List<String> keys = new java.util.ArrayList<>();
         for (Research r : PortalResources.research(server).values()) {
-            for (String u : r.unlocks()) if (data.unlock(u)) n++;
-            data.unlock("research:" + r.id());
+            keys.addAll(r.unlocks());
+            keys.add("research:" + r.id());
         }
-        for (WorldPreset p : PortalResources.presets(server).values()) if (p.needsResearch() && data.unlock("preset:" + p.id())) n++;
-        return ok(c, "commands.simplemachines.portal.unlocked_all", n);
+        for (WorldPreset p : PortalResources.presets(server).values()) if (p.needsResearch()) keys.add("preset:" + p.id());
+        int n = 0;
+        for (String k : keys) {
+            if (targets == null) {
+                if (data.unlockShared(k) && !k.startsWith("research:")) n++;
+            } else {
+                for (ServerPlayer p : targets) if (data.unlock(p.getUUID(), k) && !k.startsWith("research:")) n++;
+            }
+        }
+        return ok(c, "commands.simplemachines.portal.unlocked_all", n, targets == null
+                ? Component.translatable("commands.simplemachines.portal.everyone") : names(targets));
     }
 
-    private static int unlocks(CommandContext<CommandSourceStack> c) {
-        final var all = PortalData.get(c.getSource().getServer()).unlocks();
-        c.getSource().sendSuccess(() -> Component.literal(all.isEmpty() ? "-" : String.join(", ", all)), false);
-        return all.size();
+    private static int unlocks(CommandContext<CommandSourceStack> c, java.util.@Nullable Collection<ServerPlayer> targets) {
+        final PortalData data = PortalData.get(c.getSource().getServer());
+        if (targets == null) {
+            final var all = data.sharedUnlocks();
+            c.getSource().sendSuccess(() -> Component.translatable("commands.simplemachines.portal.unlocks_everyone",
+                    all.isEmpty() ? "-" : String.join(", ", all)), false);
+            return all.size();
+        }
+        int n = 0;
+        for (ServerPlayer p : targets) {
+            final var own = data.ownUnlocks(p.getUUID());
+            final var shared = data.sharedUnlocks();
+            n += own.size();
+            c.getSource().sendSuccess(() -> Component.translatable("commands.simplemachines.portal.unlocks_player", p.getDisplayName(),
+                    own.isEmpty() ? "-" : String.join(", ", own), shared.isEmpty() ? "-" : String.join(", ", shared)), false);
+        }
+        return n;
+    }
+
+    private static Component ownerName(CommandContext<CommandSourceStack> c, java.util.@Nullable UUID id) {
+        if (id == null) return Component.translatable("commands.simplemachines.portal.nobody");
+        final ServerPlayer p = c.getSource().getServer().getPlayerList().getPlayer(id);
+        return p != null ? p.getDisplayName() : Component.literal(id.toString());
+    }
+
+    private static Component names(java.util.Collection<ServerPlayer> targets) {
+        return targets.size() == 1 ? targets.iterator().next().getDisplayName() : Component.translatable("commands.simplemachines.portal.players", targets.size());
     }
 
     private static int giveCard(CommandContext<CommandSourceStack> c, @Nullable ServerPlayer target) throws CommandSyntaxException {
@@ -357,8 +415,10 @@ public final class PortalCommands {
     private static int presets(CommandContext<CommandSourceStack> c) {
         final var all = PortalResources.presets(c.getSource().getServer()).values();
         final PortalData data = PortalData.get(c.getSource().getServer());
+        final ServerPlayer who = c.getSource().getPlayer();
         for (WorldPreset p : all) {
-            final boolean locked = p.needsResearch() && !data.unlocked("preset:" + p.id());
+            // locked for the player running it (the shared pool only from the console)
+            final boolean locked = p.needsResearch() && !data.unlocked(who == null ? null : who.getUUID(), "preset:" + p.id());
             c.getSource().sendSuccess(() -> Component.literal(p.id() + "  tier " + p.tier() + ", " + p.minFrame().id() + " frame, richness "
                     + p.richness() + (locked ? ", locked" : "")), false);
         }

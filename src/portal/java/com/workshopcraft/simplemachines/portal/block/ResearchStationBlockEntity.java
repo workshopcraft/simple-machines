@@ -35,21 +35,24 @@ import org.jspecify.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.UUID;
 import java.util.Set;
 
 /**
  * Research Station. Pick a research entry with the arrows. Resource entries eat their item from the input slot,
  * one at a time for energy_per_item FE, until count are gone; mob entries fill up from Mob Scanner scans.
- * When an entry completes its unlocks apply server wide. Imprint programs the jump card in the card slot with the entry's
+ * Research is per player: the station belongs to whoever placed it (public or private by screwdriver, like an
+ * entangled code) and everything fed into it counts for its owner. When an entry completes its unlocks go to the owner. Imprint programs the jump card in the card slot with the entry's
  * unlocked ores and mobs (up to three per card) or world type, and the world that card makes reflects it.
  * A card that is already bound to a world cannot be programmed.
  * Slot 2 only shows the chosen entry; it cannot be taken.
  */
-public class ResearchStationBlockEntity extends WorkBlockEntity {
+public class ResearchStationBlockEntity extends WorkBlockEntity implements com.workshopcraft.simplemachines.machine.Owned {
     public static final int CAPACITY = 400_000;
     public static final int PER_TICK = 2_000;
     public static final int SLOT_INPUT = 0, SLOT_CARD = 1, SLOT_SHOW = 2;
-    public static final int DATA_COUNT = 11;
+    /** 11..18 the owner in 8 shorts, 19 flags: 1 has an owner, 2 private. */
+    public static final int DATA_COUNT = 20;
     public static final int MAX_FORCED = 3;
     private static final int[] FACES = {SLOT_INPUT};
 
@@ -58,6 +61,8 @@ public class ResearchStationBlockEntity extends WorkBlockEntity {
     private int count, need, total;
     private boolean unlocked, mob;
     private @Nullable Identifier shown;
+    private @Nullable UUID owner;
+    private boolean priv;
 
     private final ContainerData researchData = new ContainerData() {
         @Override
@@ -74,7 +79,13 @@ public class ResearchStationBlockEntity extends WorkBlockEntity {
                 case 8 -> (unlocked ? 1 : 0) | (mob ? 2 : 0);
                 case 9 -> selected;
                 case 10 -> total;
-                default -> 0;
+                case 19 -> (owner != null ? 1 : 0) | (priv ? 2 : 0);
+                default -> {
+                    if (id < 11 || id > 18 || owner == null) yield 0;
+                    final int i = id - 11;
+                    final long half = i < 4 ? owner.getMostSignificantBits() : owner.getLeastSignificantBits();
+                    yield (int) (half >>> (48 - 16 * (i % 4))) & 0xFFFF;
+                }
             };
         }
 
@@ -165,12 +176,13 @@ public class ResearchStationBlockEntity extends WorkBlockEntity {
             final PortalData data = PortalData.get(level.getServer());
             mob = r.mob();
             need = mob ? r.scans() : r.count();
-            count = data.scans(key(r));
+            count = data.scans(owner, key(r));
             // done by feeding it, or unlocked by a command, a quest reward or the API
-            unlocked = count >= need || data.unlocked("research:" + r.id());
+            unlocked = count >= need || data.unlocked(owner, "research:" + r.id());
             show(r);
             final ItemStack in = items.get(SLOT_INPUT);
-            if (!mob && !unlocked && r.takes(in)) {
+            // an unowned station (placed before alpha.5) does nothing until a player opens it and claims it
+            if (owner != null && !mob && !unlocked && r.takes(in)) {
                 final int step = Math.min(PER_TICK, Math.min(energy.energy, r.energyPerItem() - spent));
                 if (step > 0 || r.energyPerItem() == 0) {
                     energy.energy -= step;
@@ -179,8 +191,8 @@ public class ResearchStationBlockEntity extends WorkBlockEntity {
                     if (spent >= r.energyPerItem()) {
                         spent = 0;
                         in.shrink(1);
-                        count = data.addScan(key(r));
-                        if (count >= need) complete(level.getServer(), r, null);
+                        count = data.addScan(owner, key(r));
+                        if (count >= need) complete(level.getServer(), r, owner);
                     }
                     setChanged();
                 }
@@ -191,20 +203,58 @@ public class ResearchStationBlockEntity extends WorkBlockEntity {
         if (state.getValue(MachineBlock.LIT) != working) level.setBlock(pos, state.setValue(MachineBlock.LIT, working), 3);
     }
 
-    /** Progress is kept server wide, so every station and scanner adds to the same count. */
+    /** Progress is kept per player under the entry id: every station they own and every scan they make adds to it. */
     public static String key(Research r) {
         return r.id().toString();
     }
 
-    public static void complete(MinecraftServer server, Research r, @Nullable ServerPlayer by) {
+    /** The entry is done for player: its unlocks are theirs, and they are told if they are online. */
+    public static void complete(MinecraftServer server, Research r, UUID player) {
         final PortalData data = PortalData.get(server);
         boolean any = false;
-        for (String u : r.unlocks()) any |= data.unlock(u);
-        data.unlock("research:" + r.id());
-        if (any) {
-            final Component msg = Component.translatable("message.simplemachines.research.done", r.name()).withStyle(ChatFormatting.AQUA);
-            server.getPlayerList().broadcastSystemMessage(msg, false);
+        for (String u : r.unlocks()) any |= data.unlock(player, u);
+        data.unlock(player, "research:" + r.id());
+        final ServerPlayer p = server.getPlayerList().getPlayer(player);
+        if (any && p != null) {
+            p.sendSystemMessage(Component.translatable("message.simplemachines.research.done", r.name()).withStyle(ChatFormatting.AQUA));
         }
+    }
+
+    // --- ownership, as entangled devices: public by default, the owner's screwdriver makes it private ---
+
+    @Override
+    public @Nullable UUID owner() {
+        return owner;
+    }
+
+    public void setOwner(@Nullable UUID who) {
+        owner = who;
+        setChanged();
+    }
+
+    @Override
+    public boolean isPrivate() {
+        return priv;
+    }
+
+    @Override
+    public void setPrivate(boolean on) {
+        priv = on;
+        setChanged();
+    }
+
+    @Override
+    public boolean canOpen(net.minecraft.world.entity.player.Player player) {
+        if (owner == null && player instanceof ServerPlayer sp) {
+            // stations from before per-player research belong to the first player who opens them
+            setOwner(sp.getUUID());
+            sp.sendSystemMessage(Component.translatable("message.simplemachines.research.claimed"));
+        }
+        if (priv && owner != null && !owner.equals(player.getUUID())) {
+            player.sendOverlayMessage(Component.translatable("message.simplemachines.owned_not_owner").withStyle(ChatFormatting.RED));
+            return false;
+        }
+        return super.canOpen(player);
     }
 
     private void show(@Nullable Research r) {
@@ -264,7 +314,8 @@ public class ResearchStationBlockEntity extends WorkBlockEntity {
             return false;
         }
         final PortalData data = PortalData.get(player.level().getServer());
-        if (!player.isCreative() && data.scans(key(r)) < (r.mob() ? r.scans() : r.count()) && !data.unlocked("research:" + r.id())) {
+        // the station's owner must have done the research; anyone may use a public station to program with it
+        if (!player.isCreative() && data.scans(owner, key(r)) < (r.mob() ? r.scans() : r.count()) && !data.unlocked(owner, "research:" + r.id())) {
             player.sendSystemMessage(Component.translatable("message.simplemachines.research.not_done"));
             return false;
         }
@@ -309,6 +360,8 @@ public class ResearchStationBlockEntity extends WorkBlockEntity {
         super.loadAdditional(input);
         selected = input.getIntOr("selected", 0);
         spent = input.getIntOr("spent", 0);
+        owner = input.read("owner", net.minecraft.core.UUIDUtil.CODEC).orElse(null);
+        priv = input.getBooleanOr("private", false);
         items.set(SLOT_SHOW, ItemStack.EMPTY);
     }
 
@@ -320,6 +373,8 @@ public class ResearchStationBlockEntity extends WorkBlockEntity {
         items.set(SLOT_SHOW, keep);
         output.putInt("selected", selected);
         output.putInt("spent", spent);
+        if (owner != null) output.store("owner", net.minecraft.core.UUIDUtil.CODEC, owner);
+        if (priv) output.putBoolean("private", true);
     }
 
     @Override
