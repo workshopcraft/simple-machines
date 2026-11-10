@@ -35,8 +35,6 @@ public final class PortalConfig {
     public static final String PLAYER_PROGRAMMING = "portal_player_programming";
     /** In closed mode players may still press Open and Close once a destination is set. Off: only the API and commands open gates. */
     public static final String CLOSED_PLAYER_OPEN = "portal_closed_mode_player_open";
-    /** In closed mode a hidden jump card makes a new world on every jump instead of binding to its first one. */
-    public static final String CLOSED_NEW_WORLDS = "portal_closed_mode_new_world_each_jump";
     /** FE a second the gate pays to hold a return rift open, times the world tier. */
     public static final String RIFT_ENERGY = "portal_rift_energy_per_second";
     /** Seconds of rift time one Entangled Pellet buys. */
@@ -47,7 +45,10 @@ public final class PortalConfig {
     public static final String RIFT_EMPTY_CLOSE = "portal_rift_empty_close_seconds";
     /** The gate keeps its own chunk loaded while its rift is open, so the drain and the timer keep running. */
     public static final String RIFT_CHUNK_LOADING = "portal_rift_chunk_loading";
-    /** One-off worlds (closed mode jumps, API warps) are deleted once their rift has closed and nobody is inside. True keeps them. */
+    /**
+     * Planets of a star system the gate has left are deleted once no rift or open gate points at them and nobody is inside
+     * (after portal_empty_world_seconds). True keeps them on disk.
+     */
     public static final String KEEP_ONE_OFF_WORLDS = "portal_keep_one_off_worlds";
 
     private PortalConfig() {}
@@ -67,7 +68,6 @@ public final class PortalConfig {
         ServerConfig.define(EMPTY_WORLD_SECONDS, "120");
         ServerConfig.define(PLAYER_PROGRAMMING, "true");
         ServerConfig.define(CLOSED_PLAYER_OPEN, "true");
-        ServerConfig.define(CLOSED_NEW_WORLDS, "true");
         ServerConfig.define(RIFT_ENERGY, "20000");
         ServerConfig.define(RIFT_PELLET_SECONDS, "60");
         ServerConfig.define(RIFT_WARNING, "30");

@@ -52,6 +52,8 @@ import java.util.List;
  * and the last attempt is marked superseded. After collection a kept story card goes back to the finished world.
  * Closed mode (brief A7; per gate, or every gate with portal_player_programming off): no card slot, only pellets and
  * energy go in, and the destination comes from a hidden card set by the API, a command or a quest.
+ * Star systems: once a gate has arrived in a system, each hidden jump card is one planet of that system, the same world
+ * on every jump, until the gate departs. Departed means in transit: the gate will not open until it arrives somewhere.
  * A player who comes out on the far side opens a return rift there (PortalRifts), paid for from this gate while it is open.
  */
 public class GateControllerBlockEntity extends WorkBlockEntity {
@@ -62,16 +64,21 @@ public class GateControllerBlockEntity extends WorkBlockEntity {
     public static final int DATA_COUNT = 13;
 
     public static final int OK = 0, OPEN = 1, NO_FRAME = 2, NO_CORE = 3, NO_CARD = 4, WEAK_FRAME = 5, NO_PELLETS = 6, NO_ENERGY = 7,
-            DISABLED = 8, LOCKED = 9, STARTING = 10, NO_WORLD = 11, UNDERFED = 12, NO_TARGET = 13;
+            DISABLED = 8, LOCKED = 9, STARTING = 10, NO_WORLD = 11, UNDERFED = 12, NO_TARGET = 13, IN_TRANSIT = 14;
     public static final String[] STATUS = {"ready", "open", "no_frame", "no_core", "no_card", "weak_frame", "no_pellets", "no_energy",
-            "disabled", "locked", "starting", "no_world", "underfed", "no_target"};
+            "disabled", "locked", "starting", "no_world", "underfed", "no_target", "in_transit"};
     /** Ticks the gate stays browned out after the last low voltage feed, and between brownout hits. */
     private static final int UNDERFED_TICKS = 100, BROWNOUT_COOLDOWN = 40;
 
     private @Nullable Identifier hiddenCard;
     private List<String> hiddenForced = List.of();
-    /** The hidden card makes a fresh one-off world each jump instead of binding (API warp). */
-    private boolean hiddenOneOff;
+    /**
+     * Star systems (Homebound): the system the gate's ship is in, null when it has none. inTransit is between depart and
+     * arrive. While in a system each hidden jump card resolves to one planet (systemWorlds), the same on every jump.
+     */
+    private @Nullable String system;
+    private boolean inTransit;
+    private final java.util.Map<String, String> systemWorlds = new java.util.LinkedHashMap<>();
     private long riftToken;
     /** Hidden card id to the world it is bound to, so applying the same hidden card again goes back to the same world. */
     private final java.util.Map<String, String> hiddenBindings = new java.util.LinkedHashMap<>();
@@ -278,20 +285,16 @@ public class GateControllerBlockEntity extends WorkBlockEntity {
         return items.get(SLOT_CARD).get(Portal.CARD);
     }
 
-    /**
-     * Whether the next jump makes a one-off world: a hidden jump card applied as a warp (API), or any hidden jump card in
-     * closed mode while portal_closed_mode_new_world_each_jump is on. One-off worlds bind to nothing.
-     */
-    public boolean oneOffActive() {
-        if (hiddenCard == null || !(level instanceof ServerLevel s)) return false;
+    /** Whether the next jump uses a planet of the current star system: a hidden jump card on a gate that uses systems. */
+    public boolean systemWorld() {
+        if (hiddenCard == null || system == null || !(level instanceof ServerLevel s)) return false;
         final PortalCard def = PortalResources.cards(s.getServer()).get(hiddenCard);
-        if (def == null || def.kind() != PortalCard.Kind.JUMP) return false;
-        return hiddenOneOff || closedMode() && PortalConfig.bool(s.getServer(), PortalConfig.CLOSED_NEW_WORLDS);
+        return def != null && def.kind() == PortalCard.Kind.JUMP;
     }
 
     /** The world the active card is bound to, or null for a card that has not made one yet. */
     public @Nullable String activeBound() {
-        if (oneOffActive()) return null;
+        if (systemWorld()) return systemWorlds.get(hiddenCard.toString());
         final Identifier card = activeCard();
         if (card != null && level instanceof ServerLevel s) {
             final PortalCard def = PortalResources.cards(s.getServer()).get(card);
@@ -307,7 +310,11 @@ public class GateControllerBlockEntity extends WorkBlockEntity {
     }
 
     private void bind(PortalCard card, String world) {
-        if (oneOffActive()) return;
+        if (systemWorld()) {
+            systemWorlds.put(hiddenCard.toString(), world);
+            setChanged();
+            return;
+        }
         if (card.kind() == PortalCard.Kind.STORY && level instanceof ServerLevel s) {
             final String last = storyAttempts.put(card.id().toString(), world);
             final PortalData data = PortalData.get(s.getServer());
@@ -339,12 +346,7 @@ public class GateControllerBlockEntity extends WorkBlockEntity {
     }
 
     public void setHiddenCard(@Nullable Identifier card, List<String> forced) {
-        setHiddenCard(card, forced, false);
-    }
-
-    public void setHiddenCard(@Nullable Identifier card, List<String> forced, boolean oneOff) {
         hiddenCard = card;
-        hiddenOneOff = card != null && oneOff;
         hiddenForced = card == null ? List.of() : List.copyOf(forced);
         nextPreset = null;
         rolledFor = null;
@@ -398,6 +400,67 @@ public class GateControllerBlockEntity extends WorkBlockEntity {
         if (r == null) return false;
         PortalRifts.collapse(level.getServer(), r, reason);
         return true;
+    }
+
+    // --- star systems ---
+
+    public @Nullable String system() {
+        return system;
+    }
+
+    public boolean inTransit() {
+        return inTransit;
+    }
+
+    public java.util.Map<String, String> systemWorlds() {
+        return java.util.Map.copyOf(systemWorlds);
+    }
+
+    /**
+     * The ship leaves its system. Refused (returns a translation key) while someone is still on the far side of the
+     * rift, unless force: then the rift collapses and they are stranded. The field closes, the system's planets are
+     * retired (deleted once empty) and the gate will not open until arrive.
+     */
+    public @Nullable String depart(boolean force) {
+        if (!(level instanceof ServerLevel s)) return "message.simplemachines.portal.no_gate";
+        final PortalData.Rift r = PortalRifts.of(s, worldPosition);
+        if (r != null && !force && PortalRifts.away(s.getServer(), r) > 0) return "message.simplemachines.portal.players_away";
+        final String old = system;
+        if (r != null) PortalRifts.collapse(s.getServer(), r, PortalRifts.Reason.DEPARTED);
+        close(s);
+        retireSystem(s.getServer());
+        system = null;
+        inTransit = true;
+        status = IN_TRANSIT;
+        setChanged();
+        PortalApi.fireSystem(GlobalPos.of(s.dimension(), worldPosition), old, false);
+        return null;
+    }
+
+    /** The ship arrives in a system. Arriving straight from another system leaves that one first (forced). */
+    public void arrive(String id) {
+        if (!(level instanceof ServerLevel s)) return;
+        if (id.equals(system) && !inTransit) return;
+        if (system != null) depart(true);
+        system = id;
+        inTransit = false;
+        systemWorlds.clear();
+        setChanged();
+        refreshStatus(s);
+        PortalApi.fireSystem(GlobalPos.of(s.dimension(), worldPosition), id, true);
+    }
+
+    /** Marks the planets of the current system as left behind; cleanup deletes each once nobody is in it. */
+    private void retireSystem(MinecraftServer server) {
+        final PortalData data = PortalData.get(server);
+        final GlobalPos here = GlobalPos.of(level.dimension(), worldPosition);
+        for (PortalData.World w : data.worlds()) {
+            if (w.oneOff && !w.retired && (systemWorlds.containsValue(w.id) || system != null && system.equals(w.system) && here.equals(w.gate))) {
+                w.retired = true;
+                data.setDirty();
+            }
+        }
+        systemWorlds.clear();
     }
 
     /** Holds a rift open beside the landing spot of the world this gate last opened, without anyone travelling. */
@@ -502,6 +565,7 @@ public class GateControllerBlockEntity extends WorkBlockEntity {
         needPellets = 0;
         needEnergy = 0;
         if (!enabled) return DISABLED;
+        if (inTransit) return IN_TRANSIT;
         if (underfed > 0) return UNDERFED;
         if (frame == null) return NO_FRAME;
         if (!items.get(SLOT_CORE).is(Portal.entangledCore)) return NO_CORE;
@@ -579,7 +643,10 @@ public class GateControllerBlockEntity extends WorkBlockEntity {
                 w = new PortalData.World(data.newId(), preset.id(), server.getRandom().nextLong(), card.id(),
                         new ArrayList<>(activeForced()), here);
                 w.hiddenCard = hiddenCard != null;
-                w.oneOff = oneOffActive();
+                if (systemWorld()) {
+                    w.oneOff = true;
+                    w.system = system;
+                }
                 data.put(w);
                 bind(card, w.id);
             }
@@ -614,7 +681,7 @@ public class GateControllerBlockEntity extends WorkBlockEntity {
      * players can follow. A new destination needs the rift closed first.
      */
     private @Nullable String reopen(ServerLevel server, PortalData.Rift rift) {
-        int result = !enabled ? DISABLED : underfed > 0 ? UNDERFED : frame == null ? NO_FRAME
+        int result = !enabled ? DISABLED : inTransit ? IN_TRANSIT : underfed > 0 ? UNDERFED : frame == null ? NO_FRAME
                 : !items.get(SLOT_CORE).is(Portal.entangledCore) ? NO_CORE : OK;
         if (result == OK) {
             final PortalApi.JumpCost cost = PortalApi.cost(server.getServer(), rift.tier, 1, frame.area());
@@ -695,7 +762,11 @@ public class GateControllerBlockEntity extends WorkBlockEntity {
     /** The controller is broken or replaced (not just unloaded): its rift collapses. */
     @Override
     public void preRemoveSideEffects(BlockPos pos, BlockState state) {
-        if (level instanceof ServerLevel s) dropRift(s, PortalRifts.Reason.GATE_GONE);
+        if (level instanceof ServerLevel s) {
+            dropRift(s, PortalRifts.Reason.GATE_GONE);
+            // the system was this controller's; its planets are not reachable any more
+            retireSystem(s.getServer());
+        }
         super.preRemoveSideEffects(pos, state);
     }
 
@@ -710,7 +781,10 @@ public class GateControllerBlockEntity extends WorkBlockEntity {
         super.loadAdditional(input);
         hiddenCard = input.getString("hidden_card").map(Identifier::tryParse).orElse(null);
         hiddenForced = input.read("hidden_forced", Codec.STRING.listOf()).orElse(List.of());
-        hiddenOneOff = input.getBooleanOr("hidden_one_off", false);
+        system = input.getString("system").orElse(null);
+        inTransit = input.getBooleanOr("in_transit", false);
+        systemWorlds.clear();
+        systemWorlds.putAll(input.read("system_worlds", Codec.unboundedMap(Codec.STRING, Codec.STRING)).orElse(java.util.Map.of()));
         riftToken = input.getLongOr("rift_token", 0L);
         hiddenBindings.clear();
         hiddenBindings.putAll(input.read("hidden_bindings", Codec.unboundedMap(Codec.STRING, Codec.STRING)).orElse(java.util.Map.of()));
@@ -732,7 +806,9 @@ public class GateControllerBlockEntity extends WorkBlockEntity {
         super.saveAdditional(output);
         if (hiddenCard != null) output.putString("hidden_card", hiddenCard.toString());
         if (!hiddenForced.isEmpty()) output.store("hidden_forced", Codec.STRING.listOf(), hiddenForced);
-        if (hiddenOneOff) output.putBoolean("hidden_one_off", true);
+        if (system != null) output.putString("system", system);
+        if (inTransit) output.putBoolean("in_transit", true);
+        if (!systemWorlds.isEmpty()) output.store("system_worlds", Codec.unboundedMap(Codec.STRING, Codec.STRING), systemWorlds);
         if (riftToken != 0) output.putLong("rift_token", riftToken);
         if (!hiddenBindings.isEmpty()) output.store("hidden_bindings", Codec.unboundedMap(Codec.STRING, Codec.STRING), hiddenBindings);
         if (!storyAttempts.isEmpty()) output.store("story_attempts", Codec.unboundedMap(Codec.STRING, Codec.STRING), storyAttempts);

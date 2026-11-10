@@ -32,6 +32,9 @@ import java.util.OptionalLong;
  * The LevelStem gets NeoForge's seed override so its structure check uses the world's own seed.
  */
 public final class PortalNeoForge {
+    /** Set by the client glue; a dedicated server never receives the countdown. */
+    public static java.util.function.Consumer<com.workshopcraft.simplemachines.portal.RiftHudPayload> hudReceiver = p -> {};
+
     private PortalNeoForge() {}
 
     public static void init(IEventBus modBus) {
@@ -40,6 +43,10 @@ public final class PortalNeoForge {
         PortalPlatform.loaded = level -> NeoForge.EVENT_BUS.post(new LevelEvent.Load(level));
         PortalPlatform.unloaded = level -> NeoForge.EVENT_BUS.post(new LevelEvent.Unload(level));
         PortalPlatform.stem = (type, generator, seed) -> new LevelStem(type, generator, OptionalLong.of(seed));
+        PortalPlatform.sendHud = net.neoforged.neoforge.network.PacketDistributor::sendToPlayer;
+        modBus.addListener((net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent e) -> e.registrar("1").optional().playToClient(
+                com.workshopcraft.simplemachines.portal.RiftHudPayload.TYPE, com.workshopcraft.simplemachines.portal.RiftHudPayload.CODEC,
+                (payload, ctx) -> ctx.enqueueWork(() -> hudReceiver.accept(payload))));
         modBus.addListener((RegisterEvent e) -> {
             e.register(Registries.DATA_COMPONENT_TYPE, h -> Portal.registerComponents(h::register));
             e.register(Registries.BLOCK, h -> Portal.registerBlocks(h::register));

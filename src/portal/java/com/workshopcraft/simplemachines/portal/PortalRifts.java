@@ -36,13 +36,17 @@ import java.util.UUID;
  * the far side is stranded. A rift also closes quietly once everyone who came through it has gone back
  * (portal_rift_empty_close_seconds), unless the API holds it. While a rift is open the gate keeps its own chunk loaded.
  * Rifts are saved in PortalData, so they survive a restart; the chunk tickets are put back when the server starts.
+ * Everyone in the rift's world and near the gate gets a countdown on screen (RiftHudPayload), worked out from the fuel.
  */
 public final class PortalRifts {
     /** Same kind of ticket as the 2.2 Chunk Loader: loads and ticks, never times out, rebuilt from saved data on start. */
     public static final TicketType TICKET = new TicketType(TicketType.NO_TIMEOUT,
             TicketType.FLAG_LOADING | TicketType.FLAG_SIMULATION | TicketType.FLAG_KEEP_DIMENSION_ACTIVE);
 
-    public enum Reason { EMPTY, OUT_OF_FUEL, DROPPED, GATE_GONE, WORLD_GONE }
+    public enum Reason { EMPTY, OUT_OF_FUEL, DROPPED, DEPARTED, GATE_GONE, WORLD_GONE }
+
+    /** Players this close to the gate (and everyone in the rift's world) see the countdown. */
+    private static final double HUD_RANGE = 16;
 
     private static final Set<GlobalPos> TICKETED = new HashSet<>();
 
@@ -130,6 +134,7 @@ public final class PortalRifts {
         final PortalData data = PortalData.get(server);
         if (data.removeRift(r.gate) == null) return;
         release(server, r);
+        hideHud(server, r, Set.of());
         final ServerLevel level = server.getLevel(r.level);
         if (level != null) {
             if (level.isLoaded(r.pos)) {
@@ -144,7 +149,8 @@ public final class PortalRifts {
                 for (UUID u : r.away) {
                     final ServerPlayer p = server.getPlayerList().getPlayer(u);
                     if (p != null && p.level().dimension().equals(r.level)) {
-                        p.sendSystemMessage(Component.translatable("message.simplemachines.portal.rift_collapsed"));
+                        p.sendSystemMessage(Component.translatable(reason == Reason.DEPARTED
+                                ? "message.simplemachines.portal.rift_departed" : "message.simplemachines.portal.rift_collapsed"));
                     }
                 }
             }
@@ -219,6 +225,39 @@ public final class PortalRifts {
             }
             PortalApi.fireRiftLow(r, low);
         }
+        showHud(server, level, g.getBlockPos(), far, r);
+    }
+
+    /** Players who came through the rift and have not gone back, offline ones included. */
+    public static int away(MinecraftServer server, PortalData.Rift r) {
+        return r.away.size();
+    }
+
+    private static void showHud(MinecraftServer server, ServerLevel gateLevel, BlockPos gate, ServerLevel far, PortalData.Rift r) {
+        final Set<UUID> now = new HashSet<>();
+        final RiftHudPayload msg = new RiftHudPayload(Math.max(0, r.secondsLeft), r.low);
+        for (ServerPlayer p : far.players()) {
+            now.add(p.getUUID());
+            PortalPlatform.sendHud.accept(p, msg);
+        }
+        for (ServerPlayer p : gateLevel.players()) {
+            if (!now.contains(p.getUUID()) && p.distanceToSqr(gate.getX() + 0.5, gate.getY() + 0.5, gate.getZ() + 0.5) <= HUD_RANGE * HUD_RANGE) {
+                now.add(p.getUUID());
+                PortalPlatform.sendHud.accept(p, msg);
+            }
+        }
+        hideHud(server, r, now);
+        r.hud.addAll(now);
+    }
+
+    /** Tells everyone shown the countdown but not in keep to hide it. */
+    private static void hideHud(MinecraftServer server, PortalData.Rift r, Set<UUID> keep) {
+        r.hud.removeIf(u -> {
+            if (keep.contains(u)) return false;
+            final ServerPlayer p = server.getPlayerList().getPlayer(u);
+            if (p != null) PortalPlatform.sendHud.accept(p, RiftHudPayload.HIDE);
+            return true;
+        });
     }
 
     /** Puts the flicker state on the rift blocks, when their chunk is loaded. The rift's own tick catches up otherwise. */

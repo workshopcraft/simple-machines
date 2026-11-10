@@ -23,16 +23,18 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * (data/&lt;ns&gt;/simplemachines/portal_cards). A card set here is hidden: it needs no item and players do not see it,
  * and it wins over the item in the card slot. Story success and the objective event work the same for both.
  *
- * Closed mode, as Homebound uses it: setClosedMode(true) (or portal_player_programming=false), then between jumps
- * setTarget(gate, card, forced, true) and open(gate). Players only add pellets and power, and may press Open if
- * portal_closed_mode_player_open allows. Whoever comes out on the far side opens a return rift; onRift reports it opening,
- * flickering and closing, and holdRift/dropRift hold or drop it by hand.
+ * Closed mode, as Homebound uses it: setClosedMode(true) (or portal_player_programming=false), arriveAtSystem(gate, id)
+ * when the ship reaches a system, setTarget(gate, card, forced) for the planet to visit and open(gate). Each card is the
+ * same planet for as long as the ship stays; departSystem puts the gate in transit and lets the planets go. Players
+ * only add pellets and power, and may press Open if portal_closed_mode_player_open allows. Whoever comes out on the far side opens a return rift; onRift reports it opening,
+ * flickering and closing, and holdRift/dropRift hold or drop it by hand. onSystemChanged reports arrivals and departures.
  */
 public final class PortalApi {
     private static final List<TravelListener> TRAVEL = new CopyOnWriteArrayList<>();
     private static final List<ObjectiveListener> OBJECTIVE = new CopyOnWriteArrayList<>();
     private static final List<ClosedModeHook> CLOSED = new CopyOnWriteArrayList<>();
     private static final List<RiftListener> RIFT = new CopyOnWriteArrayList<>();
+    private static final List<SystemListener> SYSTEM = new CopyOnWriteArrayList<>();
 
     private PortalApi() {}
 
@@ -64,7 +66,8 @@ public final class PortalApi {
     /**
      * Return rifts. opened fires when a rift forms (a player came through, or holdRift); low when its fuel warning starts
      * or stops; closed when it goes, with why (EMPTY: everyone went back; OUT_OF_FUEL and DROPPED leave anyone still
-     * on the far side stranded; GATE_GONE: the controller was broken; WORLD_GONE: a level was unloaded).
+     * on the far side stranded; DEPARTED: the ship left the system (forced), stranding them too; GATE_GONE: the controller
+     * was broken; WORLD_GONE: a level was unloaded).
      */
     public interface RiftListener {
         default void opened(GlobalPos gate, ResourceKey<Level> level, BlockPos rift) {}
@@ -115,20 +118,62 @@ public final class PortalApi {
      * its objective is collected. Returns false if there is no gate or no such card.
      */
     public static boolean setTarget(ServerLevel level, BlockPos pos, @Nullable Identifier card, List<String> forced) {
-        return setTarget(level, pos, card, forced, false);
-    }
-
-    /**
-     * As setTarget, but with oneOff a jump card makes a fresh world on every jump and binds to none (a warp to a new
-     * system). One-off worlds are deleted once their rift has closed and nobody is inside, unless portal_keep_one_off_worlds.
-     * In closed mode hidden jump cards are one-off anyway while portal_closed_mode_new_world_each_jump is on.
-     */
-    public static boolean setTarget(ServerLevel level, BlockPos pos, @Nullable Identifier card, List<String> forced, boolean oneOff) {
         final GateControllerBlockEntity g = gate(level, pos);
         if (g == null) return false;
         if (card != null && !PortalResources.cards(level.getServer()).containsKey(card)) return false;
-        g.setHiddenCard(card, forced, oneOff);
+        g.setHiddenCard(card, forced);
         return true;
+    }
+
+    // --- star systems ---
+
+    /**
+     * The ship arrives in a star system. From then on each hidden jump card is one planet of that system: the first jump
+     * makes it, every later jump to the same card goes back to it. Arriving straight from another system departs it first.
+     * Returns false with no gate.
+     */
+    public static boolean arriveAtSystem(ServerLevel level, BlockPos pos, String system) {
+        final GateControllerBlockEntity g = gate(level, pos);
+        if (g == null) return false;
+        g.arrive(system);
+        return true;
+    }
+
+    /**
+     * The ship leaves its system and is in transit: the gate will not open until arriveAtSystem. The system's planets are
+     * deleted once nobody is in them (unless portal_keep_one_off_worlds). While anyone is still on the far side of the
+     * rift this is refused, unless force, which collapses the rift and strands them. Returns the problem as a
+     * translation key, or null.
+     */
+    public static @Nullable String departSystem(ServerLevel level, BlockPos pos, boolean force) {
+        final GateControllerBlockEntity g = gate(level, pos);
+        return g == null ? "message.simplemachines.portal.no_gate" : g.depart(force);
+    }
+
+    /** The system the gate is in, or null (none, or in transit). */
+    public static @Nullable String getSystem(ServerLevel level, BlockPos pos) {
+        final GateControllerBlockEntity g = gate(level, pos);
+        return g == null ? null : g.system();
+    }
+
+    public static boolean isInTransit(ServerLevel level, BlockPos pos) {
+        final GateControllerBlockEntity g = gate(level, pos);
+        return g != null && g.inTransit();
+    }
+
+    /** Players who came through the gate's rift and have not gone back (offline ones included). */
+    public static int playersAway(ServerLevel level, BlockPos pos) {
+        final PortalData.Rift r = PortalRifts.of(level, pos);
+        return r == null ? 0 : PortalRifts.away(level.getServer(), r);
+    }
+
+    /** arrived is false for a departure; system is the system arrived at or left (null when there was none). */
+    public interface SystemListener {
+        void changed(GlobalPos gate, @Nullable String system, boolean arrived);
+    }
+
+    public static void onSystemChanged(SystemListener l) {
+        SYSTEM.add(l);
     }
 
     public static boolean setEnabled(ServerLevel level, BlockPos pos, boolean enabled) {
@@ -271,6 +316,10 @@ public final class PortalApi {
             if (opened) l.opened(r.gate, r.level, r.pos);
             else l.closed(r.gate, r.level, r.pos, reason);
         }
+    }
+
+    public static void fireSystem(GlobalPos gate, @Nullable String system, boolean arrived) {
+        for (SystemListener l : SYSTEM) l.changed(gate, system, arrived);
     }
 
     static void fireRiftLow(PortalData.Rift r, boolean low) {

@@ -65,9 +65,12 @@ public final class PortalCommands {
                 .then(Commands.literal("clear").executes(c -> applyCard(c, g, null)))
                 .then(Commands.argument("card", IdentifierArgument.id()).suggests(CARDS)
                         .executes(c -> applyCard(c, g, IdentifierArgument.getId(c, "card"))))));
-        portal.then(gate("warp", (g, b) -> b
-                .then(Commands.argument("card", IdentifierArgument.id()).suggests(CARDS)
-                        .executes(c -> warp(c, g, IdentifierArgument.getId(c, "card"))))));
+        portal.then(gate("system", (g, b) -> b
+                .then(Commands.literal("info").executes(c -> systemInfo(c, g)))
+                .then(Commands.literal("depart").executes(c -> systemDepart(c, g, false))
+                        .then(Commands.literal("force").executes(c -> systemDepart(c, g, true))))
+                .then(Commands.literal("arrive").then(Commands.argument("id", StringArgumentType.word())
+                        .executes(c -> systemArrive(c, g, StringArgumentType.getString(c, "id")))))));
         portal.then(gate("rift", (g, b) -> b
                 .then(Commands.literal("hold").executes(c -> riftHold(c, g)))
                 .then(Commands.literal("drop").executes(c -> riftDrop(c, g)))
@@ -188,6 +191,9 @@ public final class PortalCommands {
         final String id = StringArgumentType.getString(c, "id");
         final PortalData.World w = PortalData.get(c.getSource().getServer()).world(id);
         if (w == null) return fail(c, "commands.simplemachines.portal.no_world", id);
+        if (delete && PortalWorlds.occupiedOffline(c.getSource().getServer(), id)) {
+            return fail(c, "commands.simplemachines.portal.delete_occupied", id);
+        }
         PortalWorlds.later(s -> PortalWorlds.unload(s, id, delete, p -> PortalTravel.goBack(p, w.gate)));
         return ok(c, delete ? "commands.simplemachines.portal.deleting" : "commands.simplemachines.portal.unloading", id);
     }
@@ -212,14 +218,31 @@ public final class PortalCommands {
                 String.valueOf(card), pos.toShortString());
     }
 
-    /** Like applycard, but a jump card makes a fresh one-off world each jump. */
-    private static int warp(CommandContext<CommandSourceStack> c, GateRef ref, Identifier card) throws CommandSyntaxException {
-        final BlockPos pos = ref.get(c);
-        if (pos == null || PortalApi.gate(c.getSource().getLevel(), pos) == null) return fail(c, "message.simplemachines.portal.no_gate");
-        if (!PortalApi.setTarget(c.getSource().getLevel(), pos, card, List.of(), true)) {
-            return fail(c, "commands.simplemachines.portal.no_card", card.toString());
-        }
-        return ok(c, "commands.simplemachines.portal.warp_set", card.toString(), pos.toShortString());
+    private static int systemInfo(CommandContext<CommandSourceStack> c, GateRef ref) throws CommandSyntaxException {
+        final GateControllerBlockEntity g = gateAt(c, ref);
+        if (g == null) return fail(c, "message.simplemachines.portal.no_gate");
+        if (g.inTransit()) return ok(c, "commands.simplemachines.portal.system_transit", g.getBlockPos().toShortString());
+        if (g.system() == null) return ok(c, "commands.simplemachines.portal.system_none", g.getBlockPos().toShortString());
+        final StringBuilder planets = new StringBuilder();
+        g.systemWorlds().forEach((card, world) -> planets.append(planets.isEmpty() ? "" : ", ").append(card).append(" = ").append(world));
+        return ok(c, "commands.simplemachines.portal.system_info", g.system(), g.getBlockPos().toShortString(),
+                planets.isEmpty() ? "-" : planets.toString());
+    }
+
+    private static int systemDepart(CommandContext<CommandSourceStack> c, GateRef ref, boolean force) throws CommandSyntaxException {
+        final GateControllerBlockEntity g = gateAt(c, ref);
+        if (g == null) return fail(c, "message.simplemachines.portal.no_gate");
+        final String old = g.system();
+        final String problem = g.depart(force);
+        if (problem != null) return fail(c, problem, Integer.toString(PortalApi.playersAway(c.getSource().getLevel(), g.getBlockPos())));
+        return ok(c, "commands.simplemachines.portal.system_departed", String.valueOf(old), g.getBlockPos().toShortString());
+    }
+
+    private static int systemArrive(CommandContext<CommandSourceStack> c, GateRef ref, String id) throws CommandSyntaxException {
+        final GateControllerBlockEntity g = gateAt(c, ref);
+        if (g == null) return fail(c, "message.simplemachines.portal.no_gate");
+        g.arrive(id);
+        return ok(c, "commands.simplemachines.portal.system_arrived", id, g.getBlockPos().toShortString());
     }
 
     private static int riftHold(CommandContext<CommandSourceStack> c, GateRef ref) throws CommandSyntaxException {

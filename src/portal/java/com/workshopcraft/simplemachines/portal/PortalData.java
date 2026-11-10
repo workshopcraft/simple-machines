@@ -18,6 +18,7 @@ import org.jspecify.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -43,14 +44,18 @@ public class PortalData extends SavedData {
                 Codec.BOOL.optionalFieldOf("collected", false).forGetter(w -> w.collected),
                 Codec.BOOL.optionalFieldOf("hidden_card", false).forGetter(w -> w.hiddenCard),
                 Codec.BOOL.optionalFieldOf("superseded", false).forGetter(w -> w.superseded),
-                Codec.BOOL.optionalFieldOf("one_off", false).forGetter(w -> w.oneOff)
-        ).apply(i, (id, preset, seed, card, forced, gate, landing, collected, hidden, superseded, oneOff) -> {
+                Codec.BOOL.optionalFieldOf("one_off", false).forGetter(w -> w.oneOff),
+                Codec.STRING.optionalFieldOf("system").forGetter(w -> Optional.ofNullable(w.system)),
+                Codec.BOOL.optionalFieldOf("retired", false).forGetter(w -> w.retired)
+        ).apply(i, (id, preset, seed, card, forced, gate, landing, collected, hidden, superseded, oneOff, system, retired) -> {
             final World w = new World(id, preset, seed, card.orElse(null), forced, gate.orElse(null));
             w.landing = landing.orElse(null);
             w.collected = collected;
             w.hiddenCard = hidden;
             w.superseded = superseded;
             w.oneOff = oneOff;
+            w.system = system.orElse(null);
+            w.retired = retired;
             return w;
         }));
 
@@ -66,8 +71,15 @@ public class PortalData extends SavedData {
         public boolean hiddenCard;
         /** A story attempt left without the objective, replaced by a newer attempt. */
         public boolean superseded;
-        /** Made for a single trip (closed mode jump or API warp): bound to nothing, deleted after use unless config keeps it. */
+        /**
+         * A throwaway planet: made by a hidden jump card on a gate that is in a star system. It stays the same for every
+         * jump to that card while the gate is in that system, and is retired when the gate leaves it.
+         */
         public boolean oneOff;
+        /** The star system the world belongs to (oneOff worlds). */
+        public @Nullable String system;
+        /** Its system was left: deleted once empty, unless portal_keep_one_off_worlds. */
+        public boolean retired;
 
         public World(String id, Identifier preset, long seed, @Nullable Identifier card, List<String> forced, @Nullable GlobalPos gate) {
             this.id = id;
@@ -121,6 +133,8 @@ public class PortalData extends SavedData {
         public int emptyTicks;
         /** Seconds of fuel left at the last check. Not saved. */
         public int secondsLeft = -1;
+        /** Players shown this rift's countdown last second, so those who leave its range are told to hide it. */
+        public final Set<UUID> hud = new HashSet<>();
 
         public Rift(GlobalPos gate, ResourceKey<Level> level, BlockPos pos, @Nullable String world, int tier) {
             this.gate = gate;

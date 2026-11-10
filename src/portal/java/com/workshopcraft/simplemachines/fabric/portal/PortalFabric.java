@@ -38,6 +38,13 @@ public final class PortalFabric {
         Portal.init();
         PortalPlatform.loaded = level -> ServerLevelEvents.LOAD.invoker().onLevelLoad(level.getServer(), level);
         PortalPlatform.unloaded = level -> ServerLevelEvents.UNLOAD.invoker().onLevelUnload(level.getServer(), level);
+        net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry.clientboundPlay().register(
+                com.workshopcraft.simplemachines.portal.RiftHudPayload.TYPE, com.workshopcraft.simplemachines.portal.RiftHudPayload.CODEC);
+        PortalPlatform.sendHud = (player, payload) -> {
+            if (net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking.canSend(player, payload.type())) {
+                net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking.send(player, payload);
+            }
+        };
         Portal.registerComponents(direct(BuiltInRegistries.DATA_COMPONENT_TYPE));
         Portal.registerBlocks(direct(BuiltInRegistries.BLOCK));
         Portal.registerItems(direct(BuiltInRegistries.ITEM));

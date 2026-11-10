@@ -92,9 +92,20 @@
   "message.simplemachines.portal.rift_no_world": "This gate has not opened to a world yet",
   "message.simplemachines.portal.closed_mode_no_open": "This gate is controlled from elsewhere",
   "message.simplemachines.research.programming_off": "Cards cannot be programmed on this server",
-  "commands.simplemachines.portal.warp_set": "Warp to %s set on the gate at %s. Each jump makes a new world",
   "commands.simplemachines.portal.rift_held": "Rift held open",
   "commands.simplemachines.portal.rift_dropped": "Rift dropped",
   "commands.simplemachines.portal.no_rift": "That gate has no open rift",
-  "commands.simplemachines.portal.rift_info": "Rift in %s at %s. Fuel left: %ss. Still away: %s. Flickering: %s. Held: %s. Tier: %s"
+  "commands.simplemachines.portal.rift_info": "Rift in %s at %s. Fuel left: %ss. Still away: %s. Flickering: %s. Held: %s. Tier: %s",
+  "gui.simplemachines.portal.status.in_transit": "In transit: no system",
+  "hud.simplemachines.rift": "Rift: %s",
+  "hud.simplemachines.rift_low": "Rift failing: %s",
+  "message.simplemachines.portal.rift_departed": "The ship has left the system. The rift is gone and you are stranded here.",
+  "message.simplemachines.portal.players_away": "Players are still on the far side of the rift. Bring them back first, or depart with force to leave them behind",
+  "message.simplemachines.portal.system_left_offline": "The ship left this system while you were away. You have been brought back to the gate.",
+  "commands.simplemachines.portal.system_info": "System %s at the gate at %s. Planets: %s",
+  "commands.simplemachines.portal.system_none": "The gate at %s is not in a star system. Hidden jump cards keep their worlds for good",
+  "commands.simplemachines.portal.system_transit": "The gate at %s is in transit. It will not open until it arrives",
+  "commands.simplemachines.portal.system_departed": "Left system %s. The gate at %s is in transit",
+  "commands.simplemachines.portal.system_arrived": "Arrived at system %s. The gate at %s may open",
+  "commands.simplemachines.portal.delete_occupied": "World %s still has a logged-out player in it. It is kept until they leave"
 }

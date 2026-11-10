@@ -37,6 +37,7 @@ import org.apache.commons.io.FileUtils;
 import org.jspecify.annotations.Nullable;
 import org.slf4j.Logger;
 
+import java.io.IOException;
 import java.lang.reflect.Field;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -162,6 +163,11 @@ public final class PortalWorlds {
      */
     public static void unload(MinecraftServer server, String id, boolean delete, Consumer<ServerPlayer> evacuate) {
         final ResourceKey<Level> key = key(id);
+        if (delete && occupiedOffline(server, id)) {
+            // never delete a world a logged-out player is standing in; the cleanup tries again once they have left
+            LOG.info("Simple Machines kept portal world {}: a logged-out player is still in it", id);
+            return;
+        }
         final ServerLevel level = server.getLevel(key);
         com.workshopcraft.simplemachines.portal.PortalRifts.levelGone(server, key);
         if (level != null) {
@@ -185,6 +191,56 @@ public final class PortalWorlds {
                 data.pendingDelete().add(id);
                 data.setDirty();
             }
+        }
+    }
+
+    /**
+     * Whether a player who is not online was last in this world: the logout record, and the saved player files too
+     * (they also catch players who logged out before the record existed, or a crash that lost it).
+     */
+    public static boolean occupiedOffline(MinecraftServer server, String id) {
+        final PortalData data = PortalData.get(server);
+        if (data.hasOccupants(id)) return true;
+        final String dim = key(id).identifier().toString();
+        final Path dir = storage(server).getLevelPath(net.minecraft.world.level.storage.LevelResource.PLAYER_DATA_DIR);
+        if (!Files.isDirectory(dir)) return false;
+        boolean found = false;
+        try (java.util.stream.Stream<Path> files = Files.list(dir)) {
+            for (Path f : (Iterable<Path>) files::iterator) {
+                final String name = f.getFileName().toString();
+                if (!name.endsWith(".dat")) continue;
+                final java.util.UUID uuid;
+                try {
+                    uuid = java.util.UUID.fromString(name.substring(0, name.length() - 4));
+                } catch (IllegalArgumentException e) {
+                    continue;
+                }
+                if (server.getPlayerList().getPlayer(uuid) != null) continue;
+                if (dim.equals(savedDimension(f))) {
+                    data.addOccupant(id, uuid);
+                    found = true;
+                }
+            }
+        } catch (IOException e) {
+            LOG.warn("Simple Machines could not read player files, keeping portal world {}: {}", id, e.toString());
+            return true;
+        }
+        return found;
+    }
+
+    private static final java.util.Map<Path, Pair<Long, String>> SAVED_DIMS = new java.util.concurrent.ConcurrentHashMap<>();
+
+    private static @Nullable String savedDimension(Path file) {
+        try {
+            final long stamp = Files.getLastModifiedTime(file).toMillis();
+            final Pair<Long, String> cached = SAVED_DIMS.get(file);
+            if (cached != null && cached.getFirst() == stamp) return cached.getSecond();
+            final String dim = net.minecraft.nbt.NbtIo.readCompressed(file, net.minecraft.nbt.NbtAccounter.unlimitedHeap())
+                    .getStringOr("Dimension", "minecraft:overworld");
+            SAVED_DIMS.put(file, Pair.of(stamp, dim));
+            return dim;
+        } catch (Exception e) {
+            return null;
         }
     }
 

@@ -189,7 +189,7 @@ public final class PortalTravel {
 
     /**
      * Every few seconds. Worlds bound to a card are kept for good. Deleted once empty long enough, with no open gate or
-     * rift pointing at them: one-off worlds whose trip is over (portal_keep_one_off_worlds, false by default), story
+     * rift pointing at them: planets of a star system the gate has left (portal_keep_one_off_worlds, false by default), story
      * attempts replaced by a newer attempt (portal_cleanup_failed_story_worlds, on by default), and worlds with no card,
      * which only commands make (portal_cleanup_unbound_worlds, off by default).
      */
@@ -212,7 +212,9 @@ public final class PortalTravel {
         final long now = server.getTickCount();
         final long wait = PortalConfig.integer(server, PortalConfig.EMPTY_WORLD_SECONDS) * 20L;
         for (PortalData.World w : PortalData.get(server).worlds()) {
-            final boolean mayGo = w.oneOff ? oneOff : w.card == null ? unbound : story && w.superseded && !w.collected;
+            // a planet stays while its system is current; once the gate has left the system it may go
+            final boolean mayGo = w.oneOff ? oneOff && (w.retired || w.system == null)
+                    : w.card == null ? unbound : story && w.superseded && !w.collected;
             if (!mayGo) continue;
             if (open.contains(w.id)) {
                 EMPTY_SINCE.remove(w.id);
@@ -230,6 +232,8 @@ public final class PortalTravel {
                 EMPTY_SINCE.put(w.id, now);
             } else if (now - since >= wait) {
                 EMPTY_SINCE.remove(w.id);
+                // a logged-out player still in it keeps it, retired or not, until they have left
+                if (PortalWorlds.occupiedOffline(server, w.id)) continue;
                 PortalWorlds.later(s -> PortalWorlds.unload(s, w.id, true, p -> goBack(p, w.gate)));
             }
         }
@@ -241,8 +245,24 @@ public final class PortalTravel {
         if (id != null) PortalData.get(p.level().getServer()).addOccupant(id, p.getUUID());
     }
 
+    /**
+     * A player who logs back in on a planet whose system the ship has left (or whose world is otherwise due for cleanup)
+     * is taken back to the gate it came from, or to spawn if that gate is gone, and told why. The world can then go.
+     */
     public static void loggedIn(ServerPlayer p) {
-        PortalData.get(p.level().getServer()).removeOccupant(p.getUUID());
+        final MinecraftServer server = p.level().getServer();
+        final PortalData data = PortalData.get(server);
+        data.removeOccupant(p.getUUID());
+        final String id = PortalWorlds.idOf(p.level().dimension());
+        final PortalData.World w = id == null ? null : data.world(id);
+        if (w == null || !w.oneOff || !w.retired) return;
+        final java.util.UUID uuid = p.getUUID();
+        PortalWorlds.later(s -> {
+            final ServerPlayer now = s.getPlayerList().getPlayer(uuid);
+            if (now == null || !now.level().dimension().equals(PortalWorlds.key(w.id))) return;
+            goBack(now, w.gate);
+            now.sendSystemMessage(Component.translatable("message.simplemachines.portal.system_left_offline"));
+        });
     }
 
     public static void serverStopped() {

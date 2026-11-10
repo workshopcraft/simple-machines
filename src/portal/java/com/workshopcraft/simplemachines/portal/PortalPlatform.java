@@ -18,6 +18,8 @@ public final class PortalPlatform {
     /** Fires the loader's level unload event. */
     public static Consumer<ServerLevel> unloaded = l -> {};
     /** NeoForge LevelStem carries a seed override, which keeps its structure check in step with the world seed. */
+    /** Sends the rift countdown to one player (Fabric ServerPlayNetworking, NeoForge PacketDistributor). */
+    public static java.util.function.BiConsumer<net.minecraft.server.level.ServerPlayer, RiftHudPayload> sendHud = (p, m) -> {};
     public static StemFactory stem = (type, generator, seed) -> new LevelStem(type, generator);
 
     public interface StemFactory {

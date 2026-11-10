@@ -201,13 +201,20 @@ PAGES = [
      'Step power up with transformers first.\n\n'
      'Put an Entangled Core and a card in it, and Entangled Pellets for fuel. Each jump uses pellets and a lot of energy; '
      'rich, high tier worlds cost more. Press Open and walk through. A return rift opens where you land: walk into it to come home.\n\n'
-     'On some servers the gate is run by the story. It has no card slot and only needs pellets and power; the destination is set for you.',
+     'On some servers the gate is run by the story. It has no card slot and only needs pellets and power; the destination is set for you. '
+     'There the gate travels with a ship between star systems. Each world it opens to is a planet of the system the ship is in, '
+     'and it stays the same planet every time you go back, until the ship moves on. Then those planets are gone for good. '
+     'While the ship is between systems the gate shows In transit and will not open.',
      [('craft', 'portal_gate_controller'), ('craft', 'entangled_core'), ('craft', 'entangled_pellet')]),
     ('portal_rift', 'Return Rifts', 'The way home, while the fuel lasts',
      'There is no gate on the far side. The gate you left from holds a rift open beside the spot where you land. Walk into it to go back.\n\n'
      'Holding the rift open costs the gate energy every second and an Entangled Pellet every minute, from its own buffer and pellet slots. '
      'Keep the gate powered and stocked while you are away. Richer worlds cost more to hold.\n\n'
-     'When the fuel is nearly gone the rift flickers and sparks. When it runs out, the rift collapses and you are stranded.\n\n'
+     'A counter at the top of the screen shows how long the fuel will hold the rift open. You see it on the far side and near the gate. '
+     'It counts the energy and the pellets the gate has left, whichever runs out first.\n\n'
+     'When the fuel is nearly gone the counter turns red and flashes, and the rift flickers and sparks. When it runs out, the rift collapses and you are stranded.\n\n'
+     'If the ship leaves the system while you are still out there, the rift is gone as well. If you were logged out at the time, '
+     'you are brought back to the gate when you next join.\n\n'
      'The rift closes by itself once everyone who came through has gone back. Close Rift on the gate drops it at once.',
      []),
     ('portal_cards', 'Cards and Worlds', 'Every card is one world',
