@@ -150,7 +150,7 @@ public final class ShipBlocks {
         ANCIENT_PANEL_DAMAGED = add(r, "ancient_panel_damaged", new Block(metal("ancient_panel_damaged")));
         ANCIENT_PANEL_SCORCHED = add(r, "ancient_panel_scorched", new Block(metal("ancient_panel_scorched")));
         ANCIENT_GRATE = add(r, "ancient_grate", new ShipGlassBlock(open(metal("ancient_grate"))));
-        ANCIENT_WINDOW = add(r, "ancient_window", new ShipGlassBlock(open(metal("ancient_window")).strength(2F, 6F)));
+        ANCIENT_WINDOW = add(r, "ancient_window", new ConnectedGlassBlock(open(metal("ancient_window")).strength(2F, 6F)));
         ANCIENT_PORTHOLE = add(r, "ancient_porthole", new Block(open(metal("ancient_porthole")).strength(2F, 6F)));
         ANCIENT_LIGHT = add(r, "ancient_light", new Block(metal("ancient_light").lightLevel(s -> 15)));
         ANCIENT_HULL = add(r, "ancient_hull", new HullBlock(hull("ancient_hull")));
@@ -162,7 +162,7 @@ public final class ShipBlocks {
         INDUSTRIAL_PANEL_DAMAGED = add(r, "industrial_panel_damaged", new Block(metal("industrial_panel_damaged")));
         INDUSTRIAL_PANEL_SCORCHED = add(r, "industrial_panel_scorched", new Block(metal("industrial_panel_scorched")));
         INDUSTRIAL_GRATE = add(r, "industrial_grate", new ShipGlassBlock(open(metal("industrial_grate"))));
-        INDUSTRIAL_WINDOW = add(r, "industrial_window", new ShipGlassBlock(open(metal("industrial_window")).strength(2F, 6F)));
+        INDUSTRIAL_WINDOW = add(r, "industrial_window", new ConnectedGlassBlock(open(metal("industrial_window")).strength(2F, 6F)));
         INDUSTRIAL_PORTHOLE = add(r, "industrial_porthole", new Block(open(metal("industrial_porthole")).strength(2F, 6F)));
         INDUSTRIAL_LIGHT = add(r, "industrial_light", new Block(metal("industrial_light").lightLevel(s -> 15)));
         INDUSTRIAL_HULL = add(r, "industrial_hull", new HullBlock(hull("industrial_hull")));
@@ -174,7 +174,7 @@ public final class ShipBlocks {
         CLEAN_PANEL_DAMAGED = add(r, "clean_panel_damaged", new Block(metal("clean_panel_damaged")));
         CLEAN_PANEL_SCORCHED = add(r, "clean_panel_scorched", new Block(metal("clean_panel_scorched")));
         CLEAN_GRATE = add(r, "clean_grate", new ShipGlassBlock(open(metal("clean_grate"))));
-        CLEAN_WINDOW = add(r, "clean_window", new ShipGlassBlock(open(metal("clean_window")).strength(2F, 6F)));
+        CLEAN_WINDOW = add(r, "clean_window", new ConnectedGlassBlock(open(metal("clean_window")).strength(2F, 6F)));
         CLEAN_PORTHOLE = add(r, "clean_porthole", new Block(open(metal("clean_porthole")).strength(2F, 6F)));
         CLEAN_LIGHT = add(r, "clean_light", new Block(metal("clean_light").lightLevel(s -> 15)));
         CLEAN_HULL = add(r, "clean_hull", new HullBlock(hull("clean_hull")));

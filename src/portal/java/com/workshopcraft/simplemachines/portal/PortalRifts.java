@@ -192,6 +192,9 @@ public final class PortalRifts {
             r.emptyTicks = 0;
         }
         final int perSecond = energyPerSecond(server, r.tier);
+        // a powered gate refills while the rift drains it, so the time left has to count what comes in
+        final long before = g.energy().energy;
+        if (r.lastEnergy >= 0) r.inputPerSecond = r.inputPerSecond * 0.6 + Math.max(0, before - r.lastEnergy) * 0.4;
         if (!g.drain(perSecond)) {
             collapse(server, r, Reason.OUT_OF_FUEL);
             return;
@@ -206,7 +209,10 @@ public final class PortalRifts {
             r.pelletTicks += interval * 20;
         }
         data.setDirty();
-        final long byEnergy = perSecond <= 0 ? Integer.MAX_VALUE : g.energy().energy / perSecond;
+        r.lastEnergy = g.energy().energy;
+        final double net = perSecond - r.inputPerSecond;
+        // fed at least as fast as it drains: only the pellets limit it
+        final long byEnergy = perSecond <= 0 || net < perSecond * 0.02 ? Integer.MAX_VALUE : (long) (g.energy().energy / net);
         final long byPellets = (long) g.pellets() * interval + r.pelletTicks / 20;
         r.secondsLeft = (int) Math.min(Integer.MAX_VALUE, Math.min(byEnergy, byPellets));
         final boolean low = r.secondsLeft <= Math.max(0, PortalConfig.integer(server, PortalConfig.RIFT_WARNING));

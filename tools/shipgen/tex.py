@@ -137,6 +137,14 @@ def window(p, seed):
     dot(im, 9, 4, (g[0], g[1], g[2], 150)); dot(im, 10, 3, (g[0], g[1], g[2], 150))
     return im
 
+def window_pane(p):
+    """The inside of a joined window wall: the glass with no frame, so neighbours read as one sheet."""
+    im = new(p['glass'])
+    g = shade(p['glass'], 1.25)
+    for i in range(3, 7):
+        dot(im, i, 9 - i, (g[0], g[1], g[2], 150))
+    return im
+
 def porthole(p, seed):
     im = plate(p, seed)
     cx = cy = 7.5
@@ -212,6 +220,12 @@ def hull_glass(seed):
     im = new(rgb('#6a8fa8', 120))
     rect(im, 0, 0, 15, 0, rgb('#2a2d33')); rect(im, 0, 15, 15, 15, rgb('#2a2d33'))
     rect(im, 0, 0, 0, 15, rgb('#2a2d33')); rect(im, 15, 0, 15, 15, rgb('#2a2d33'))
+    for i in range(4, 9):
+        dot(im, i, 12 - i, rgb('#d8ecf8', 160))
+    return im
+
+def hull_glass_pane():
+    im = new(rgb('#6a8fa8', 120))
     for i in range(4, 9):
         dot(im, i, 12 - i, rgb('#d8ecf8', 160))
     return im

@@ -135,6 +135,9 @@ public class PortalData extends SavedData {
         public int emptyTicks;
         /** Seconds of fuel left at the last check. Not saved. */
         public int secondsLeft = -1;
+        /** Energy left after last second's drain, and the power coming in, averaged (FE per second); not saved. */
+        public long lastEnergy = -1;
+        public double inputPerSecond;
         /** Players shown this rift's countdown last second, so those who leave its range are told to hide it. */
         public final Set<UUID> hud = new HashSet<>();
 

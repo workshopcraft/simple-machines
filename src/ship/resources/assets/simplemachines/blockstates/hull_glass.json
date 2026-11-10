@@ -1,7 +1,1156 @@
 {
-  "variants": {
-    "": {
-      "model": "simplemachines:block/hull_glass"
+  "multipart": [
+    {
+      "when": {
+        "up": "false",
+        "down": "false",
+        "east": "false",
+        "west": "false",
+        "north": "false"
+      },
+      "apply": {
+        "model": "simplemachines:block/glass/hull_glass/north_0"
+      }
+    },
+    {
+      "when": {
+        "up": "true",
+        "down": "false",
+        "east": "false",
+        "west": "false",
+        "north": "false"
+      },
+      "apply": {
+        "model": "simplemachines:block/glass/hull_glass/north_1"
+      }
+    },
+    {
+      "when": {
+        "up": "false",
+        "down": "true",
+        "east": "false",
+        "west": "false",
+        "north": "false"
+      },
+      "apply": {
+        "model": "simplemachines:block/glass/hull_glass/north_2"
+      }
+    },
+    {
+      "when": {
+        "up": "true",
+        "down": "true",
+        "east": "false",
+        "west": "false",
+        "north": "false"
+      },
+      "apply": {
+        "model": "simplemachines:block/glass/hull_glass/north_3"
+      }
+    },
+    {
+      "when": {
+        "up": "false",
+        "down": "false",
+        "east": "true",
+        "west": "false",
+        "north": "false"
+      },
+      "apply": {
+        "model": "simplemachines:block/glass/hull_glass/north_4"
+      }
+    },
+    {
+      "when": {
+        "up": "true",
+        "down": "false",
+        "east": "true",
+        "west": "false",
+        "north": "false"
+      },
+      "apply": {
+        "model": "simplemachines:block/glass/hull_glass/north_5"
+      }
+    },
+    {
+      "when": {
+        "up": "false",
+        "down": "true",
+        "east": "true",
+        "west": "false",
+        "north": "false"
+      },
+      "apply": {
+        "model": "simplemachines:block/glass/hull_glass/north_6"
+      }
+    },
+    {
+      "when": {
+        "up": "true",
+        "down": "true",
+        "east": "true",
+        "west": "false",
+        "north": "false"
+      },
+      "apply": {
+        "model": "simplemachines:block/glass/hull_glass/north_7"
+      }
+    },
+    {
+      "when": {
+        "up": "false",
+        "down": "false",
+        "east": "false",
+        "west": "true",
+        "north": "false"
+      },
+      "apply": {
+        "model": "simplemachines:block/glass/hull_glass/north_8"
+      }
+    },
+    {
+      "when": {
+        "up": "true",
+        "down": "false",
+        "east": "false",
+        "west": "true",
+        "north": "false"
+      },
+      "apply": {
+        "model": "simplemachines:block/glass/hull_glass/north_9"
+      }
+    },
+    {
+      "when": {
+        "up": "false",
+        "down": "true",
+        "east": "false",
+        "west": "true",
+        "north": "false"
+      },
+      "apply": {
+        "model": "simplemachines:block/glass/hull_glass/north_a"
+      }
+    },
+    {
+      "when": {
+        "up": "true",
+        "down": "true",
+        "east": "false",
+        "west": "true",
+        "north": "false"
+      },
+      "apply": {
+        "model": "simplemachines:block/glass/hull_glass/north_b"
+      }
+    },
+    {
+      "when": {
+        "up": "false",
+        "down": "false",
+        "east": "true",
+        "west": "true",
+        "north": "false"
+      },
+      "apply": {
+        "model": "simplemachines:block/glass/hull_glass/north_c"
+      }
+    },
+    {
+      "when": {
+        "up": "true",
+        "down": "false",
+        "east": "true",
+        "west": "true",
+        "north": "false"
+      },
+      "apply": {
+        "model": "simplemachines:block/glass/hull_glass/north_d"
+      }
+    },
+    {
+      "when": {
+        "up": "false",
+        "down": "true",
+        "east": "true",
+        "west": "true",
+        "north": "false"
+      },
+      "apply": {
+        "model": "simplemachines:block/glass/hull_glass/north_e"
+      }
+    },
+    {
+      "when": {
+        "up": "true",
+        "down": "true",
+        "east": "true",
+        "west": "true",
+        "north": "false"
+      },
+      "apply": {
+        "model": "simplemachines:block/glass/hull_glass/north_f"
+      }
+    },
+    {
+      "when": {
+        "up": "false",
+        "down": "false",
+        "west": "false",
+        "east": "false",
+        "south": "false"
+      },
+      "apply": {
+        "model": "simplemachines:block/glass/hull_glass/south_0"
+      }
+    },
+    {
+      "when": {
+        "up": "true",
+        "down": "false",
+        "west": "false",
+        "east": "false",
+        "south": "false"
+      },
+      "apply": {
+        "model": "simplemachines:block/glass/hull_glass/south_1"
+      }
+    },
+    {
+      "when": {
+        "up": "false",
+        "down": "true",
+        "west": "false",
+        "east": "false",
+        "south": "false"
+      },
+      "apply": {
+        "model": "simplemachines:block/glass/hull_glass/south_2"
+      }
+    },
+    {
+      "when": {
+        "up": "true",
+        "down": "true",
+        "west": "false",
+        "east": "false",
+        "south": "false"
+      },
+      "apply": {
+        "model": "simplemachines:block/glass/hull_glass/south_3"
+      }
+    },
+    {
+      "when": {
+        "up": "false",
+        "down": "false",
+        "west": "true",
+        "east": "false",
+        "south": "false"
+      },
+      "apply": {
+        "model": "simplemachines:block/glass/hull_glass/south_4"
+      }
+    },
+    {
+      "when": {
+        "up": "true",
+        "down": "false",
+        "west": "true",
+        "east": "false",
+        "south": "false"
+      },
+      "apply": {
+        "model": "simplemachines:block/glass/hull_glass/south_5"
+      }
+    },
+    {
+      "when": {
+        "up": "false",
+        "down": "true",
+        "west": "true",
+        "east": "false",
+        "south": "false"
+      },
+      "apply": {
+        "model": "simplemachines:block/glass/hull_glass/south_6"
+      }
+    },
+    {
+      "when": {
+        "up": "true",
+        "down": "true",
+        "west": "true",
+        "east": "false",
+        "south": "false"
+      },
+      "apply": {
+        "model": "simplemachines:block/glass/hull_glass/south_7"
+      }
+    },
+    {
+      "when": {
+        "up": "false",
+        "down": "false",
+        "west": "false",
+        "east": "true",
+        "south": "false"
+      },
+      "apply": {
+        "model": "simplemachines:block/glass/hull_glass/south_8"
+      }
+    },
+    {
+      "when": {
+        "up": "true",
+        "down": "false",
+        "west": "false",
+        "east": "true",
+        "south": "false"
+      },
+      "apply": {
+        "model": "simplemachines:block/glass/hull_glass/south_9"
+      }
+    },
+    {
+      "when": {
+        "up": "false",
+        "down": "true",
+        "west": "false",
+        "east": "true",
+        "south": "false"
+      },
+      "apply": {
+        "model": "simplemachines:block/glass/hull_glass/south_a"
+      }
+    },
+    {
+      "when": {
+        "up": "true",
+        "down": "true",
+        "west": "false",
+        "east": "true",
+        "south": "false"
+      },
+      "apply": {
+        "model": "simplemachines:block/glass/hull_glass/south_b"
+      }
+    },
+    {
+      "when": {
+        "up": "false",
+        "down": "false",
+        "west": "true",
+        "east": "true",
+        "south": "false"
+      },
+      "apply": {
+        "model": "simplemachines:block/glass/hull_glass/south_c"
+      }
+    },
+    {
+      "when": {
+        "up": "true",
+        "down": "false",
+        "west": "true",
+        "east": "true",
+        "south": "false"
+      },
+      "apply": {
+        "model": "simplemachines:block/glass/hull_glass/south_d"
+      }
+    },
+    {
+      "when": {
+        "up": "false",
+        "down": "true",
+        "west": "true",
+        "east": "true",
+        "south": "false"
+      },
+      "apply": {
+        "model": "simplemachines:block/glass/hull_glass/south_e"
+      }
+    },
+    {
+      "when": {
+        "up": "true",
+        "down": "true",
+        "west": "true",
+        "east": "true",
+        "south": "false"
+      },
+      "apply": {
+        "model": "simplemachines:block/glass/hull_glass/south_f"
+      }
+    },
+    {
+      "when": {
+        "up": "false",
+        "down": "false",
+        "south": "false",
+        "north": "false",
+        "east": "false"
+      },
+      "apply": {
+        "model": "simplemachines:block/glass/hull_glass/east_0"
+      }
+    },
+    {
+      "when": {
+        "up": "true",
+        "down": "false",
+        "south": "false",
+        "north": "false",
+        "east": "false"
+      },
+      "apply": {
+        "model": "simplemachines:block/glass/hull_glass/east_1"
+      }
+    },
+    {
+      "when": {
+        "up": "false",
+        "down": "true",
+        "south": "false",
+        "north": "false",
+        "east": "false"
+      },
+      "apply": {
+        "model": "simplemachines:block/glass/hull_glass/east_2"
+      }
+    },
+    {
+      "when": {
+        "up": "true",
+        "down": "true",
+        "south": "false",
+        "north": "false",
+        "east": "false"
+      },
+      "apply": {
+        "model": "simplemachines:block/glass/hull_glass/east_3"
+      }
+    },
+    {
+      "when": {
+        "up": "false",
+        "down": "false",
+        "south": "true",
+        "north": "false",
+        "east": "false"
+      },
+      "apply": {
+        "model": "simplemachines:block/glass/hull_glass/east_4"
+      }
+    },
+    {
+      "when": {
+        "up": "true",
+        "down": "false",
+        "south": "true",
+        "north": "false",
+        "east": "false"
+      },
+      "apply": {
+        "model": "simplemachines:block/glass/hull_glass/east_5"
+      }
+    },
+    {
+      "when": {
+        "up": "false",
+        "down": "true",
+        "south": "true",
+        "north": "false",
+        "east": "false"
+      },
+      "apply": {
+        "model": "simplemachines:block/glass/hull_glass/east_6"
+      }
+    },
+    {
+      "when": {
+        "up": "true",
+        "down": "true",
+        "south": "true",
+        "north": "false",
+        "east": "false"
+      },
+      "apply": {
+        "model": "simplemachines:block/glass/hull_glass/east_7"
+      }
+    },
+    {
+      "when": {
+        "up": "false",
+        "down": "false",
+        "south": "false",
+        "north": "true",
+        "east": "false"
+      },
+      "apply": {
+        "model": "simplemachines:block/glass/hull_glass/east_8"
+      }
+    },
+    {
+      "when": {
+        "up": "true",
+        "down": "false",
+        "south": "false",
+        "north": "true",
+        "east": "false"
+      },
+      "apply": {
+        "model": "simplemachines:block/glass/hull_glass/east_9"
+      }
+    },
+    {
+      "when": {
+        "up": "false",
+        "down": "true",
+        "south": "false",
+        "north": "true",
+        "east": "false"
+      },
+      "apply": {
+        "model": "simplemachines:block/glass/hull_glass/east_a"
+      }
+    },
+    {
+      "when": {
+        "up": "true",
+        "down": "true",
+        "south": "false",
+        "north": "true",
+        "east": "false"
+      },
+      "apply": {
+        "model": "simplemachines:block/glass/hull_glass/east_b"
+      }
+    },
+    {
+      "when": {
+        "up": "false",
+        "down": "false",
+        "south": "true",
+        "north": "true",
+        "east": "false"
+      },
+      "apply": {
+        "model": "simplemachines:block/glass/hull_glass/east_c"
+      }
+    },
+    {
+      "when": {
+        "up": "true",
+        "down": "false",
+        "south": "true",
+        "north": "true",
+        "east": "false"
+      },
+      "apply": {
+        "model": "simplemachines:block/glass/hull_glass/east_d"
+      }
+    },
+    {
+      "when": {
+        "up": "false",
+        "down": "true",
+        "south": "true",
+        "north": "true",
+        "east": "false"
+      },
+      "apply": {
+        "model": "simplemachines:block/glass/hull_glass/east_e"
+      }
+    },
+    {
+      "when": {
+        "up": "true",
+        "down": "true",
+        "south": "true",
+        "north": "true",
+        "east": "false"
+      },
+      "apply": {
+        "model": "simplemachines:block/glass/hull_glass/east_f"
+      }
+    },
+    {
+      "when": {
+        "up": "false",
+        "down": "false",
+        "north": "false",
+        "south": "false",
+        "west": "false"
+      },
+      "apply": {
+        "model": "simplemachines:block/glass/hull_glass/west_0"
+      }
+    },
+    {
+      "when": {
+        "up": "true",
+        "down": "false",
+        "north": "false",
+        "south": "false",
+        "west": "false"
+      },
+      "apply": {
+        "model": "simplemachines:block/glass/hull_glass/west_1"
+      }
+    },
+    {
+      "when": {
+        "up": "false",
+        "down": "true",
+        "north": "false",
+        "south": "false",
+        "west": "false"
+      },
+      "apply": {
+        "model": "simplemachines:block/glass/hull_glass/west_2"
+      }
+    },
+    {
+      "when": {
+        "up": "true",
+        "down": "true",
+        "north": "false",
+        "south": "false",
+        "west": "false"
+      },
+      "apply": {
+        "model": "simplemachines:block/glass/hull_glass/west_3"
+      }
+    },
+    {
+      "when": {
+        "up": "false",
+        "down": "false",
+        "north": "true",
+        "south": "false",
+        "west": "false"
+      },
+      "apply": {
+        "model": "simplemachines:block/glass/hull_glass/west_4"
+      }
+    },
+    {
+      "when": {
+        "up": "true",
+        "down": "false",
+        "north": "true",
+        "south": "false",
+        "west": "false"
+      },
+      "apply": {
+        "model": "simplemachines:block/glass/hull_glass/west_5"
+      }
+    },
+    {
+      "when": {
+        "up": "false",
+        "down": "true",
+        "north": "true",
+        "south": "false",
+        "west": "false"
+      },
+      "apply": {
+        "model": "simplemachines:block/glass/hull_glass/west_6"
+      }
+    },
+    {
+      "when": {
+        "up": "true",
+        "down": "true",
+        "north": "true",
+        "south": "false",
+        "west": "false"
+      },
+      "apply": {
+        "model": "simplemachines:block/glass/hull_glass/west_7"
+      }
+    },
+    {
+      "when": {
+        "up": "false",
+        "down": "false",
+        "north": "false",
+        "south": "true",
+        "west": "false"
+      },
+      "apply": {
+        "model": "simplemachines:block/glass/hull_glass/west_8"
+      }
+    },
+    {
+      "when": {
+        "up": "true",
+        "down": "false",
+        "north": "false",
+        "south": "true",
+        "west": "false"
+      },
+      "apply": {
+        "model": "simplemachines:block/glass/hull_glass/west_9"
+      }
+    },
+    {
+      "when": {
+        "up": "false",
+        "down": "true",
+        "north": "false",
+        "south": "true",
+        "west": "false"
+      },
+      "apply": {
+        "model": "simplemachines:block/glass/hull_glass/west_a"
+      }
+    },
+    {
+      "when": {
+        "up": "true",
+        "down": "true",
+        "north": "false",
+        "south": "true",
+        "west": "false"
+      },
+      "apply": {
+        "model": "simplemachines:block/glass/hull_glass/west_b"
+      }
+    },
+    {
+      "when": {
+        "up": "false",
+        "down": "false",
+        "north": "true",
+        "south": "true",
+        "west": "false"
+      },
+      "apply": {
+        "model": "simplemachines:block/glass/hull_glass/west_c"
+      }
+    },
+    {
+      "when": {
+        "up": "true",
+        "down": "false",
+        "north": "true",
+        "south": "true",
+        "west": "false"
+      },
+      "apply": {
+        "model": "simplemachines:block/glass/hull_glass/west_d"
+      }
+    },
+    {
+      "when": {
+        "up": "false",
+        "down": "true",
+        "north": "true",
+        "south": "true",
+        "west": "false"
+      },
+      "apply": {
+        "model": "simplemachines:block/glass/hull_glass/west_e"
+      }
+    },
+    {
+      "when": {
+        "up": "true",
+        "down": "true",
+        "north": "true",
+        "south": "true",
+        "west": "false"
+      },
+      "apply": {
+        "model": "simplemachines:block/glass/hull_glass/west_f"
+      }
+    },
+    {
+      "when": {
+        "north": "false",
+        "south": "false",
+        "west": "false",
+        "east": "false",
+        "up": "false"
+      },
+      "apply": {
+        "model": "simplemachines:block/glass/hull_glass/up_0"
+      }
+    },
+    {
+      "when": {
+        "north": "true",
+        "south": "false",
+        "west": "false",
+        "east": "false",
+        "up": "false"
+      },
+      "apply": {
+        "model": "simplemachines:block/glass/hull_glass/up_1"
+      }
+    },
+    {
+      "when": {
+        "north": "false",
+        "south": "true",
+        "west": "false",
+        "east": "false",
+        "up": "false"
+      },
+      "apply": {
+        "model": "simplemachines:block/glass/hull_glass/up_2"
+      }
+    },
+    {
+      "when": {
+        "north": "true",
+        "south": "true",
+        "west": "false",
+        "east": "false",
+        "up": "false"
+      },
+      "apply": {
+        "model": "simplemachines:block/glass/hull_glass/up_3"
+      }
+    },
+    {
+      "when": {
+        "north": "false",
+        "south": "false",
+        "west": "true",
+        "east": "false",
+        "up": "false"
+      },
+      "apply": {
+        "model": "simplemachines:block/glass/hull_glass/up_4"
+      }
+    },
+    {
+      "when": {
+        "north": "true",
+        "south": "false",
+        "west": "true",
+        "east": "false",
+        "up": "false"
+      },
+      "apply": {
+        "model": "simplemachines:block/glass/hull_glass/up_5"
+      }
+    },
+    {
+      "when": {
+        "north": "false",
+        "south": "true",
+        "west": "true",
+        "east": "false",
+        "up": "false"
+      },
+      "apply": {
+        "model": "simplemachines:block/glass/hull_glass/up_6"
+      }
+    },
+    {
+      "when": {
+        "north": "true",
+        "south": "true",
+        "west": "true",
+        "east": "false",
+        "up": "false"
+      },
+      "apply": {
+        "model": "simplemachines:block/glass/hull_glass/up_7"
+      }
+    },
+    {
+      "when": {
+        "north": "false",
+        "south": "false",
+        "west": "false",
+        "east": "true",
+        "up": "false"
+      },
+      "apply": {
+        "model": "simplemachines:block/glass/hull_glass/up_8"
+      }
+    },
+    {
+      "when": {
+        "north": "true",
+        "south": "false",
+        "west": "false",
+        "east": "true",
+        "up": "false"
+      },
+      "apply": {
+        "model": "simplemachines:block/glass/hull_glass/up_9"
+      }
+    },
+    {
+      "when": {
+        "north": "false",
+        "south": "true",
+        "west": "false",
+        "east": "true",
+        "up": "false"
+      },
+      "apply": {
+        "model": "simplemachines:block/glass/hull_glass/up_a"
+      }
+    },
+    {
+      "when": {
+        "north": "true",
+        "south": "true",
+        "west": "false",
+        "east": "true",
+        "up": "false"
+      },
+      "apply": {
+        "model": "simplemachines:block/glass/hull_glass/up_b"
+      }
+    },
+    {
+      "when": {
+        "north": "false",
+        "south": "false",
+        "west": "true",
+        "east": "true",
+        "up": "false"
+      },
+      "apply": {
+        "model": "simplemachines:block/glass/hull_glass/up_c"
+      }
+    },
+    {
+      "when": {
+        "north": "true",
+        "south": "false",
+        "west": "true",
+        "east": "true",
+        "up": "false"
+      },
+      "apply": {
+        "model": "simplemachines:block/glass/hull_glass/up_d"
+      }
+    },
+    {
+      "when": {
+        "north": "false",
+        "south": "true",
+        "west": "true",
+        "east": "true",
+        "up": "false"
+      },
+      "apply": {
+        "model": "simplemachines:block/glass/hull_glass/up_e"
+      }
+    },
+    {
+      "when": {
+        "north": "true",
+        "south": "true",
+        "west": "true",
+        "east": "true",
+        "up": "false"
+      },
+      "apply": {
+        "model": "simplemachines:block/glass/hull_glass/up_f"
+      }
+    },
+    {
+      "when": {
+        "south": "false",
+        "north": "false",
+        "west": "false",
+        "east": "false",
+        "down": "false"
+      },
+      "apply": {
+        "model": "simplemachines:block/glass/hull_glass/down_0"
+      }
+    },
+    {
+      "when": {
+        "south": "true",
+        "north": "false",
+        "west": "false",
+        "east": "false",
+        "down": "false"
+      },
+      "apply": {
+        "model": "simplemachines:block/glass/hull_glass/down_1"
+      }
+    },
+    {
+      "when": {
+        "south": "false",
+        "north": "true",
+        "west": "false",
+        "east": "false",
+        "down": "false"
+      },
+      "apply": {
+        "model": "simplemachines:block/glass/hull_glass/down_2"
+      }
+    },
+    {
+      "when": {
+        "south": "true",
+        "north": "true",
+        "west": "false",
+        "east": "false",
+        "down": "false"
+      },
+      "apply": {
+        "model": "simplemachines:block/glass/hull_glass/down_3"
+      }
+    },
+    {
+      "when": {
+        "south": "false",
+        "north": "false",
+        "west": "true",
+        "east": "false",
+        "down": "false"
+      },
+      "apply": {
+        "model": "simplemachines:block/glass/hull_glass/down_4"
+      }
+    },
+    {
+      "when": {
+        "south": "true",
+        "north": "false",
+        "west": "true",
+        "east": "false",
+        "down": "false"
+      },
+      "apply": {
+        "model": "simplemachines:block/glass/hull_glass/down_5"
+      }
+    },
+    {
+      "when": {
+        "south": "false",
+        "north": "true",
+        "west": "true",
+        "east": "false",
+        "down": "false"
+      },
+      "apply": {
+        "model": "simplemachines:block/glass/hull_glass/down_6"
+      }
+    },
+    {
+      "when": {
+        "south": "true",
+        "north": "true",
+        "west": "true",
+        "east": "false",
+        "down": "false"
+      },
+      "apply": {
+        "model": "simplemachines:block/glass/hull_glass/down_7"
+      }
+    },
+    {
+      "when": {
+        "south": "false",
+        "north": "false",
+        "west": "false",
+        "east": "true",
+        "down": "false"
+      },
+      "apply": {
+        "model": "simplemachines:block/glass/hull_glass/down_8"
+      }
+    },
+    {
+      "when": {
+        "south": "true",
+        "north": "false",
+        "west": "false",
+        "east": "true",
+        "down": "false"
+      },
+      "apply": {
+        "model": "simplemachines:block/glass/hull_glass/down_9"
+      }
+    },
+    {
+      "when": {
+        "south": "false",
+        "north": "true",
+        "west": "false",
+        "east": "true",
+        "down": "false"
+      },
+      "apply": {
+        "model": "simplemachines:block/glass/hull_glass/down_a"
+      }
+    },
+    {
+      "when": {
+        "south": "true",
+        "north": "true",
+        "west": "false",
+        "east": "true",
+        "down": "false"
+      },
+      "apply": {
+        "model": "simplemachines:block/glass/hull_glass/down_b"
+      }
+    },
+    {
+      "when": {
+        "south": "false",
+        "north": "false",
+        "west": "true",
+        "east": "true",
+        "down": "false"
+      },
+      "apply": {
+        "model": "simplemachines:block/glass/hull_glass/down_c"
+      }
+    },
+    {
+      "when": {
+        "south": "true",
+        "north": "false",
+        "west": "true",
+        "east": "true",
+        "down": "false"
+      },
+      "apply": {
+        "model": "simplemachines:block/glass/hull_glass/down_d"
+      }
+    },
+    {
+      "when": {
+        "south": "false",
+        "north": "true",
+        "west": "true",
+        "east": "true",
+        "down": "false"
+      },
+      "apply": {
+        "model": "simplemachines:block/glass/hull_glass/down_e"
+      }
+    },
+    {
+      "when": {
+        "south": "true",
+        "north": "true",
+        "west": "true",
+        "east": "true",
+        "down": "false"
+      },
+      "apply": {
+        "model": "simplemachines:block/glass/hull_glass/down_f"
+      }
     }
-  }
+  ]
 }

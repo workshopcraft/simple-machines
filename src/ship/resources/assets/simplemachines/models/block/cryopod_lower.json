@@ -21,22 +21,27 @@
       ],
       "faces": {
         "north": {
-          "texture": "#shell"
+          "texture": "#shell",
+          "cullface": "north"
         },
         "south": {
-          "texture": "#shell"
+          "texture": "#shell",
+          "cullface": "south"
         },
         "east": {
-          "texture": "#shell"
+          "texture": "#shell",
+          "cullface": "east"
         },
         "west": {
-          "texture": "#shell"
+          "texture": "#shell",
+          "cullface": "west"
         },
         "up": {
           "texture": "#base"
         },
         "down": {
-          "texture": "#shell"
+          "texture": "#shell",
+          "cullface": "down"
         }
       }
     },
@@ -56,16 +61,20 @@
           "texture": "#shell"
         },
         "south": {
-          "texture": "#shell"
+          "texture": "#shell",
+          "cullface": "south"
         },
         "east": {
-          "texture": "#shell"
+          "texture": "#shell",
+          "cullface": "east"
         },
         "west": {
-          "texture": "#shell"
+          "texture": "#shell",
+          "cullface": "west"
         },
         "up": {
-          "texture": "#shell"
+          "texture": "#shell",
+          "cullface": "up"
         },
         "down": {
           "texture": "#shell"
@@ -85,7 +94,8 @@
       ],
       "faces": {
         "north": {
-          "texture": "#shell"
+          "texture": "#shell",
+          "cullface": "north"
         },
         "south": {
           "texture": "#shell"
@@ -94,10 +104,12 @@
           "texture": "#shell"
         },
         "west": {
-          "texture": "#shell"
+          "texture": "#shell",
+          "cullface": "west"
         },
         "up": {
-          "texture": "#shell"
+          "texture": "#shell",
+          "cullface": "up"
         },
         "down": {
           "texture": "#shell"
@@ -117,19 +129,22 @@
       ],
       "faces": {
         "north": {
-          "texture": "#shell"
+          "texture": "#shell",
+          "cullface": "north"
         },
         "south": {
           "texture": "#shell"
         },
         "east": {
-          "texture": "#shell"
+          "texture": "#shell",
+          "cullface": "east"
         },
         "west": {
           "texture": "#shell"
         },
         "up": {
-          "texture": "#shell"
+          "texture": "#shell",
+          "cullface": "up"
         },
         "down": {
           "texture": "#shell"

@@ -70,6 +70,16 @@ def el(frm, to, tex, faces=FACES, shade=True, light=None, rot=None, uv=None):
         e['rotation'] = rot
     return e
 
+def culled(els):
+    """Adds cullface to every face that lies on the block's outside, so a solid neighbour hides it instead of z-fighting
+    with it (these blocks don't occlude, so the neighbour draws its own face there too)."""
+    for e in els:
+        for f, face in e['faces'].items():
+            on = {'down': e['from'][1] == 0, 'up': e['to'][1] == 16, 'north': e['from'][2] == 0, 'south': e['to'][2] == 16,
+                  'west': e['from'][0] == 0, 'east': e['to'][0] == 16}[f]
+            if on: face['cullface'] = f
+    return els
+
 MODELS = {}
 def model(name, parent=None, textures=None, elements=None, ao=True):
     m = {}
@@ -97,6 +107,60 @@ def tex_ref(n):
 
 # blockstates
 STATES = {}
+
+# connected glass: per face, which way is the top, bottom, left and right edge of the texture
+GLASS_EDGES = {
+    'north': ('up', 'down', 'east', 'west'), 'south': ('up', 'down', 'west', 'east'),
+    'east': ('up', 'down', 'south', 'north'), 'west': ('up', 'down', 'north', 'south'),
+    'up': ('north', 'south', 'west', 'east'), 'down': ('south', 'north', 'west', 'east'),
+}
+
+def _glass_quad(face, u0, v0, u1, v1):
+    """from/to of a flat element on the block face covering texture pixels u0..u1, v0..v1 (default UV layout)."""
+    return {
+        'north': ([16 - u1, 16 - v1, 0], [16 - u0, 16 - v0, 0]),
+        'south': ([u0, 16 - v1, 16], [u1, 16 - v0, 16]),
+        'east': ([16, 16 - v1, 16 - u1], [16, 16 - v0, 16 - u0]),
+        'west': ([0, 16 - v1, u0], [0, 16 - v0, u1]),
+        'up': ([u0, 16, v0], [u1, 16, v1]),
+        'down': ([u0, 0, 16 - v1], [u1, 0, 16 - v0]),
+    }[face]
+
+def connected_glass(name, b):
+    """Multipart glass that joins with itself. Textures: block/<name> (framed, also the item) and block/<name>_pane
+    (no frame). Each face is cut into a 3 by 3 grid with a b pixel frame; a frame strip is drawn only on the edges whose
+    side is not joined, from the framed texture, and everything else comes from the pane."""
+    cube_all(name, name)  # the item and the look of a lone block
+    tex = {'frame': tex_ref(name), 'pane': tex_ref(name + '_pane'), 'particle': tex_ref(name)}
+    cuts = [(0, b), (b, 16 - b), (16 - b, 16)]
+    parts = []
+    for face, (top, bot, left, right) in GLASS_EDGES.items():
+        for mask in range(16):
+            j = {'t': bool(mask & 1), 'b': bool(mask & 2), 'l': bool(mask & 4), 'r': bool(mask & 8)}  # joined
+            els = []
+            for ci, (v0, v1) in enumerate(cuts):
+                for cj, (u0, u1) in enumerate(cuts):
+                    fu = (cj == 0 and not j['l']) or (cj == 2 and not j['r'])   # a frame column here
+                    fv = (ci == 0 and not j['t']) or (ci == 2 and not j['b'])   # a frame row here
+                    uv = [u0, v0, u1, v1]
+                    if fu and fv:
+                        t = '#frame'
+                    elif fu:
+                        # a frame running along u's side: take it from the middle of that frame strip
+                        t = '#frame'
+                        if ci != 1: uv = [u0, b, u1, 2 * b] if ci == 0 else [u0, 16 - 2 * b, u1, 16 - b]
+                    elif fv:
+                        t = '#frame'
+                        if cj != 1: uv = [b, v0, 2 * b, v1] if cj == 0 else [16 - 2 * b, v0, 16 - b, v1]
+                    else:
+                        t = '#pane'
+                    frm, to = _glass_quad(face, u0, v0, u1, v1)
+                    els.append({'from': frm, 'to': to, 'faces': {face: {'texture': t, 'uv': uv, 'cullface': face}}})
+            m = model(f'glass/{name}/{face}_{mask:x}', 'minecraft:block/block', tex, els)
+            # a joined face is never seen (skipped like glass), so it needs no part at all
+            parts.append({'when': {top: str(j['t']).lower(), bot: str(j['b']).lower(), left: str(j['l']).lower(),
+                                  right: str(j['r']).lower(), face: 'false'}, 'apply': {'model': m}})
+    STATES[name] = {'multipart': parts}
 HOR = {'north': 0, 'east': 90, 'south': 180, 'west': 270}
 ATT = {'up': (0, 0), 'down': (180, 0), 'north': (90, 0), 'south': (90, 180), 'east': (90, 90), 'west': (90, 270)}
 
@@ -174,10 +238,11 @@ for f in FINISH:
     block(f'{f}_panel_vent', f'{E} Vent Panel', 'new Block({p})', None, recipe=cut(pl))
     block(f'{f}_panel_damaged', f'{E} Damaged Panel', 'new Block({p})', None, recipe=cut(pl))
     block(f'{f}_panel_scorched', f'{E} Scorched Panel', 'new Block({p})', None, recipe=cut(pl))
-    for n in ('grate', 'window'):
-        st_single(f'{f}_{n}', cube_all(f'{f}_{n}', f'{f}_{n}'))
+    st_single(f'{f}_grate', cube_all(f'{f}_grate', f'{f}_grate'))
     block(f'{f}_grate', f'{E} Grate', 'new ShipGlassBlock({p})', None, props='open', recipe=cut(pl))
-    block(f'{f}_window', f'{E} Window', 'new ShipGlassBlock({p})', None, props='glass',
+    png(f'block/{f}_window_pane', T.window_pane(p))
+    connected_glass(f'{f}_window', 2)
+    block(f'{f}_window', f'{E} Window', 'new ConnectedGlassBlock({p})', None, props='glass',
           recipe=shaped_recipe(['PGP', 'GGG', 'PGP'], {'P': f'{NS}:{pl}', 'G': '#c:glass_blocks'}, 6))
     st_single(f'{f}_porthole', cube_all(f'{f}_porthole', f'{f}_porthole'))
     block(f'{f}_porthole', f'{E} Porthole', 'new Block({p})', None, props='glass',
@@ -205,7 +270,8 @@ IND = f'{NS}:industrial_plating'
 png('block/hull_boundary', T.boundary(5))
 png('block/hull_glass', T.hull_glass(6))
 st_single('hull_boundary', cube_all('hull_boundary', 'hull_boundary'))
-st_single('hull_glass', cube_all('hull_glass', 'hull_glass'))
+png('block/hull_glass_pane', T.hull_glass_pane())
+connected_glass('hull_glass', 1)
 block('hull_boundary', 'Hull Boundary', 'new HullBlock({p})', None, props='hull', loot='none', tags=('hull',))
 block('hull_glass', 'Hull Glass', 'new HullGlassBlock({p})', None, props='hull_glass', loot='none', tags=('hull',))
 
@@ -297,8 +363,8 @@ upp = [
     el([2, 0, 1], [14, 14, 1.5], {'all': '#glass'}, faces=('north', 'south')),
 ]
 ptex = dict(ctex); ptex['glass'] = tex_ref('cryopod_glass')
-model('cryopod_lower', 'minecraft:block/block', ptex, low)
-model('cryopod_upper', 'minecraft:block/block', ptex, upp)
+model('cryopod_lower', 'minecraft:block/block', ptex, culled(low))
+model('cryopod_upper', 'minecraft:block/block', ptex, culled(upp))
 STATES['cryopod'] = {'variants': {}}
 for fdir, r in HOR.items():
     for half in ('lower', 'upper'):
@@ -815,7 +881,7 @@ def item_models():
             MODELS_ITEM[n] = {'parent': 'minecraft:item/generated', 'textures': {'layer0': f'{NS}:block/{n}'}}
         else:
             st = STATES[n]
-            m = st['multipart'][0]['apply']['model'] if 'multipart' in st else next(iter(st['variants'].values()))['model']
+            m = (f'{NS}:block/{n}' if n in MODELS else st['multipart'][0]['apply']['model']) if 'multipart' in st else next(iter(st['variants'].values()))['model']
             out[n] = {'model': {'type': 'minecraft:model', 'model': m}}
     for n in ('ship_tool', 'repair_kit'):
         MODELS_ITEM[n] = {'parent': 'minecraft:item/handheld' if n == 'ship_tool' else 'minecraft:item/generated',
@@ -897,7 +963,7 @@ PAGES = [
     ('ship_hull', 'Hull and Boundary', 'The walls nobody gets through',
      'Hull blocks and the Hull Boundary cannot be broken in survival, by explosions, the Wither or the Ender Dragon. '
      'Creative players can place and break them, so they are for map makers and ship structures. There is no survival recipe.\n\n'
-     'Hull Glass is the see-through version. Use it for the big bridge windows.\n\n'
+     'Hull Glass is the see-through version. Use it for the big bridge windows. Windows and hull glass join up with their own kind: a wall of them is one sheet with a frame only round the outside.\n\n'
      'Plating, panels, grates, windows, lights and portholes come in three finishes: Ancient, Industrial and Clean. '
      'Make the plating, then cut it into the other shapes on a stonecutter.',
      ['industrial_plating', 'industrial_panel', 'industrial_window', 'industrial_light']),

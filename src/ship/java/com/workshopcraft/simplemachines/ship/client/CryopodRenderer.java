@@ -89,8 +89,9 @@ public class CryopodRenderer implements BlockEntityRenderer<CryopodBlockEntity, 
         pose.pushPose();
         pose.translate(0.5F, 0.12F, 0.5F);
         RenderCompat.rotate(pose, Axis.YP.rotationDegrees(180F - s.facing.toYRot()));
-        // lean back a little against the pod
-        RenderCompat.rotate(pose, Axis.XP.rotationDegrees(-6F));
+        // lean back a little against the pod (positive: the head goes back, towards the console wall; it used to lean
+        // forward and push the sleeper's face through the front glass)
+        RenderCompat.rotate(pose, Axis.XP.rotationDegrees(6F));
         pose.scale(0.92F, 0.92F, 0.92F);
         pose.scale(-1F, -1F, 1F);
         pose.translate(0F, -1.501F, 0F);

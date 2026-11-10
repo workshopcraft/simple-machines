@@ -33,6 +33,8 @@ public class SlidingDoorRenderer implements BlockEntityRenderer<SlidingDoorBlock
         Direction facing = NORTH;
         Identifier name;
         float progress;
+        /** Hatch edges that sit against a solid neighbour, local north, south, east, west: not drawn, so they can't z-fight it. */
+        final boolean[] covered = new boolean[4];
     }
 
     public SlidingDoorRenderer(BlockEntityRendererProvider.Context ctx) {
@@ -60,6 +62,10 @@ public class SlidingDoorRenderer implements BlockEntityRenderer<SlidingDoorBlock
         s.facing = state.getValue(SlideBlock.FACING);
         s.name = BuiltInRegistries.BLOCK.getKey(slide).withPrefix("block/");
         s.progress = be.progress(partialTick);
+        if (s.kind == SlideBlock.Kind.HATCH && be.getLevel() != null) {
+            final Direction[] world = {s.facing, s.facing.getOpposite(), s.facing.getClockWise(), s.facing.getCounterClockWise()};
+            for (int i = 0; i < 4; i++) s.covered[i] = be.getLevel().getBlockState(be.getBlockPos().relative(world[i])).isSolidRender();
+        }
     }
 
     @Override
@@ -72,7 +78,8 @@ public class SlidingDoorRenderer implements BlockEntityRenderer<SlidingDoorBlock
         out.submitCustomGeometry(pose, RenderCompat.cutoutBlocks(), (p, vc) -> {
             final Quads q = new Quads(p, vc, s.lightCoords, OverlayTexture.NO_OVERLAY);
             switch (s.kind) {
-                case HATCH -> box(q, 0, 13, -move, 16, 16, 16 - move, ShipSprites.get(s.name), edge, true);
+                // the hatch slides into its own frame, not over the next block: what has gone shrinks away at the edge
+                case HATCH -> hatch(q, move, ShipSprites.get(s.name), edge, s.covered);
                 case SHUTTER -> box(q, 0, move, 0, 16, 16 + move, 16, ShipSprites.get(s.name), ShipSprites.get(s.name), false);
                 default -> {
                     box(q, move, 0, 6, 16 + move, 16, 10, ShipSprites.get(s.name.withSuffix("_lower")), edge, false);
@@ -81,6 +88,18 @@ public class SlidingDoorRenderer implements BlockEntityRenderer<SlidingDoorBlock
             }
         });
         pose.popPose();
+    }
+
+    private static void hatch(Quads q, float move, TextureAtlasSprite face, TextureAtlasSprite edge, boolean[] covered) {
+        final float z1 = 16 - move;
+        q.face(UP, 0, 13, 0, 16, 16, z1, face, 0, move, 16, 16);
+        q.face(DOWN, 0, 13, 0, 16, 16, z1, face, 0, 0, 16, 16 - move, SHADE);
+        final Direction[] sides = {NORTH, SOUTH, EAST, WEST};
+        for (int i = 0; i < 4; i++) {
+            // the south edge moves in from the block's side as it opens, so only a closed one can sit against a neighbour
+            if (covered[i] && (sides[i] != SOUTH || move < 0.01F)) continue;
+            q.face(sides[i], 0, 13, 0, 16, 16, z1, edge, 0, 0, 16, 3, SHADE);
+        }
     }
 
     // faces: the big ones get the panel texture, the thin ones the edge
