@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "pattern": [
+    "GGG",
+    "BAB",
+    "PPP"
+  ],
+  "key": {
+    "G": "#c:glass_blocks",
+    "B": "simplemachines:control_board",
+    "A": "minecraft:amethyst_shard",
+    "P": "simplemachines:industrial_plating"
+  },
+  "result": {
+    "id": "simplemachines:holo_table",
+    "count": 1
+  }
+}

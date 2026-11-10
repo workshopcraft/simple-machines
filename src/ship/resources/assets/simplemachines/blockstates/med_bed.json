@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "simplemachines:block/med_bed"
+    },
+    "facing=east": {
+      "model": "simplemachines:block/med_bed",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "simplemachines:block/med_bed",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "simplemachines:block/med_bed",
+      "y": 270
+    }
+  }
+}

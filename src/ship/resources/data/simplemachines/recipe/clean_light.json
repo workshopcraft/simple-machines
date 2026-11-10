@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "pattern": [
+    "PGP",
+    "GRG",
+    "PGP"
+  ],
+  "key": {
+    "P": "simplemachines:clean_plating",
+    "G": "#c:dusts/glowstone",
+    "R": "#c:dusts/redstone"
+  },
+  "result": {
+    "id": "simplemachines:clean_light",
+    "count": 4
+  }
+}

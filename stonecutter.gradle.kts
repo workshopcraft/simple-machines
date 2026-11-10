@@ -13,6 +13,8 @@ stonecutter parameters {
 
     constants {
         match(loader, "fabric", "neoforge", "forge")
+        // 2.3 ship blocks: src/ship is only built for these versions (buildSrc Ship.kt)
+        put("ship", Ship.enabled(version))
     }
 
     replacements.string(current.parsed < "1.21.11") {

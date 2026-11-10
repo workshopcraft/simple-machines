@@ -1,0 +1,14 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "pattern": [
+    "CCC"
+  ],
+  "key": {
+    "C": "#c:plates/copper"
+  },
+  "result": {
+    "id": "simplemachines:decor_pipe",
+    "count": 6
+  }
+}

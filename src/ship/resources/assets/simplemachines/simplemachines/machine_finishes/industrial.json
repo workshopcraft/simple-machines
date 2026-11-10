@@ -1,0 +1,7 @@
+{
+  "textures": {
+    "front": "simplemachines:block/finish/industrial_machine_front",
+    "side": "simplemachines:block/finish/industrial_machine_side",
+    "top": "simplemachines:block/finish/industrial_machine_top"
+  }
+}

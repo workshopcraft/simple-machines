@@ -1,0 +1,8 @@
+{
+  "type": "minecraft:stonecutting",
+  "ingredient": "simplemachines:clean_plating",
+  "result": {
+    "id": "simplemachines:clean_panel_scorched",
+    "count": 1
+  }
+}

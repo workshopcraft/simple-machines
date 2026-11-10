@@ -1,0 +1,9 @@
+{
+  "sections": [
+    {
+      "id": "ship",
+      "title": "Ship Blocks",
+      "icon": "simplemachines:cryopod_bed"
+    }
+  ]
+}

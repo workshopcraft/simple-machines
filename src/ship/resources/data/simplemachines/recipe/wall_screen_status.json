@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "pattern": [
+    "GGG",
+    "PBP"
+  ],
+  "key": {
+    "G": "#c:glass_panes",
+    "P": "#c:plates/iron",
+    "B": "simplemachines:control_board"
+  },
+  "result": {
+    "id": "simplemachines:wall_screen_status",
+    "count": 2
+  }
+}

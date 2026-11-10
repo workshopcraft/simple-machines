@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "building",
+  "ingredients": [
+    "simplemachines:industrial_panel_damaged",
+    "minecraft:ice"
+  ],
+  "result": {
+    "id": "simplemachines:breached_frosty_panel",
+    "count": 1
+  }
+}

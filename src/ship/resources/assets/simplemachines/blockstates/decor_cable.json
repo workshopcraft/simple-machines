@@ -1,0 +1,16 @@
+{
+  "variants": {
+    "axis=y": {
+      "model": "simplemachines:block/decor_cable"
+    },
+    "axis=z": {
+      "model": "simplemachines:block/decor_cable",
+      "x": 90
+    },
+    "axis=x": {
+      "model": "simplemachines:block/decor_cable",
+      "x": 90,
+      "y": 90
+    }
+  }
+}

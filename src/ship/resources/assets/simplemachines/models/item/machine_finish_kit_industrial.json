@@ -1,0 +1,6 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "simplemachines:item/machine_finish_kit_industrial"
+  }
+}

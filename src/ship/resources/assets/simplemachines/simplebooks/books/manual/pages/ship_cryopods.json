@@ -1,0 +1,42 @@
+{
+  "section": "ship",
+  "sort": 3,
+  "title": "Cryopods",
+  "subtitle": "Sleep, and wake up on the ship",
+  "text": "A Cryopod Bed is a bed. Sleep in it and it becomes your spawn point, even in places where a normal bed would explode.\n\nA Start Cryopod (in the creative tab) marks where new players wake up the first time they join. Map makers can also use /simplemachines startpod on a placed cryopod bed.\n\nThe tall Cryopod is decoration with a sleeper inside. Use /simplemachines pod with a player name, a UUID or skin:crew_1 to choose who is in it. Pods placed by a structure pick a sleeper from the occupant list in the data pack and config.",
+  "right_title": "Recipes",
+  "steps": [
+    {
+      "kind": "craft_shaped",
+      "pattern": [
+        "GGG",
+        "PWP",
+        "PPP"
+      ],
+      "key": {
+        "G": "#c:glass_blocks",
+        "W": "#minecraft:wool",
+        "P": "simplemachines:clean_plating"
+      },
+      "output": "simplemachines:cryopod_bed",
+      "note": "Crafting Table\n3x Glass Blocks, 1x Wool, 5x Clean Plating",
+      "title": "Cryopod Bed"
+    },
+    {
+      "kind": "craft_shaped",
+      "pattern": [
+        "PGP",
+        "PGP",
+        "PCP"
+      ],
+      "key": {
+        "P": "simplemachines:clean_plating",
+        "G": "#c:glass_blocks",
+        "C": "simplemachines:control_board"
+      },
+      "output": "simplemachines:cryopod",
+      "note": "Crafting Table\n6x Clean Plating, 2x Glass Blocks, 1x Control Board",
+      "title": "Cryopod"
+    }
+  ]
+}

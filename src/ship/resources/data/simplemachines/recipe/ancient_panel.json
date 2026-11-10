@@ -1,0 +1,8 @@
+{
+  "type": "minecraft:stonecutting",
+  "ingredient": "simplemachines:ancient_plating",
+  "result": {
+    "id": "simplemachines:ancient_panel",
+    "count": 1
+  }
+}

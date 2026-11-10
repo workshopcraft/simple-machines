@@ -1,0 +1,16 @@
+{
+  "variants": {
+    "axis=y": {
+      "model": "simplemachines:block/strut"
+    },
+    "axis=z": {
+      "model": "simplemachines:block/strut",
+      "x": 90
+    },
+    "axis=x": {
+      "model": "simplemachines:block/strut",
+      "x": 90,
+      "y": 90
+    }
+  }
+}

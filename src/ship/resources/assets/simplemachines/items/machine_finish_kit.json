@@ -1,0 +1,34 @@
+{
+  "model": {
+    "type": "minecraft:select",
+    "property": "minecraft:component",
+    "component": "simplemachines:machine_finish",
+    "cases": [
+      {
+        "when": "simplemachines:ancient",
+        "model": {
+          "type": "minecraft:model",
+          "model": "simplemachines:item/machine_finish_kit_ancient"
+        }
+      },
+      {
+        "when": "simplemachines:industrial",
+        "model": {
+          "type": "minecraft:model",
+          "model": "simplemachines:item/machine_finish_kit_industrial"
+        }
+      },
+      {
+        "when": "simplemachines:clean",
+        "model": {
+          "type": "minecraft:model",
+          "model": "simplemachines:item/machine_finish_kit_clean"
+        }
+      }
+    ],
+    "fallback": {
+      "type": "minecraft:model",
+      "model": "simplemachines:item/machine_finish_kit"
+    }
+  }
+}

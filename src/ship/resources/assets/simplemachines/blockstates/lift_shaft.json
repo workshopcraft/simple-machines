@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "simplemachines:block/lift_shaft"
+    },
+    "facing=east": {
+      "model": "simplemachines:block/lift_shaft",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "simplemachines:block/lift_shaft",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "simplemachines:block/lift_shaft",
+      "y": 270
+    }
+  }
+}

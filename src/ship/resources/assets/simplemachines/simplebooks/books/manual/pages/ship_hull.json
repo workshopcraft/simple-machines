@@ -1,0 +1,80 @@
+{
+  "section": "ship",
+  "sort": 1,
+  "title": "Hull and Boundary",
+  "subtitle": "The walls nobody gets through",
+  "text": "Hull blocks and the Hull Boundary cannot be broken in survival, by explosions, the Wither or the Ender Dragon. Creative players can place and break them, so they are for map makers and ship structures. There is no survival recipe.\n\nHull Glass is the see-through version. Use it for the big bridge windows.\n\nPlating, panels, grates, windows, lights and portholes come in three finishes: Ancient, Industrial and Clean. Make the plating, then cut it into the other shapes on a stonecutter.",
+  "right_title": "Recipes",
+  "steps": [
+    {
+      "kind": "text",
+      "title": "Hull blocks",
+      "text": "Creative only. Find them in the Ship Blocks tab."
+    },
+    {
+      "kind": "craft_shaped",
+      "pattern": [
+        "PPP",
+        "PXP",
+        "PPP"
+      ],
+      "key": {
+        "P": "#c:plates/iron",
+        "X": "#c:plates/steel"
+      },
+      "output": {
+        "item": "simplemachines:industrial_plating",
+        "count": 8
+      },
+      "note": "Crafting Table\n8x Iron, 1x Steel",
+      "title": "Industrial Plating"
+    },
+    {
+      "kind": "process",
+      "inputs": [
+        "simplemachines:industrial_plating"
+      ],
+      "appliance": "minecraft:stonecutter",
+      "output": "simplemachines:industrial_panel",
+      "note": "Stonecutter",
+      "title": "Industrial Panel"
+    },
+    {
+      "kind": "craft_shaped",
+      "pattern": [
+        "PGP",
+        "GGG",
+        "PGP"
+      ],
+      "key": {
+        "P": "simplemachines:industrial_plating",
+        "G": "#c:glass_blocks"
+      },
+      "output": {
+        "item": "simplemachines:industrial_window",
+        "count": 6
+      },
+      "note": "Crafting Table\n4x Industrial Plating, 5x Glass Blocks",
+      "title": "Industrial Window"
+    },
+    {
+      "kind": "craft_shaped",
+      "pattern": [
+        "PGP",
+        "GRG",
+        "PGP"
+      ],
+      "key": {
+        "P": "simplemachines:industrial_plating",
+        "G": "#c:dusts/glowstone",
+        "R": "#c:dusts/redstone"
+      },
+      "output": {
+        "item": "simplemachines:industrial_light",
+        "count": 4
+      },
+      "note": "Crafting Table\n4x Industrial Plating, 4x Glowstone, 1x Redstone",
+      "title": "Industrial Light"
+    }
+  ]
+}

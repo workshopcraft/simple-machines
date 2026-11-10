@@ -1,0 +1,70 @@
+{
+  "section": "ship",
+  "sort": 8,
+  "title": "Damage and Repairs",
+  "subtitle": "Broken ships, fixed ships",
+  "text": "Sparking Wires and Steam Vents hurt to touch, and Breached Frosty Panels chill anyone standing next to them. Servers can turn the damage off with ship_hazard_damage.\n\nUse a Repair Kit on a broken block to swap it for the fixed one: damaged and scorched panels, flickering lights, sparking wires, steam vents, broken screens and panels. Debris is cleared away. Map makers can repair or break a whole area with /simplemachines repair and /simplemachines damage. Data packs add pairs in simplemachines/repairs.",
+  "right_title": "Recipes",
+  "steps": [
+    {
+      "kind": "craft_shaped",
+      "pattern": [
+        "SCS",
+        "RBR",
+        "   "
+      ],
+      "key": {
+        "S": "#c:plates/iron",
+        "C": "#c:ingots/copper",
+        "R": "#c:dusts/redstone",
+        "B": "simplemachines:control_board"
+      },
+      "output": {
+        "item": "simplemachines:repair_kit",
+        "count": 2
+      },
+      "note": "Crafting Table\n2x Iron, 1x Copper, 2x Redstone, 1x Control Board",
+      "title": "Repair Kit"
+    },
+    {
+      "kind": "process",
+      "inputs": [
+        "simplemachines:industrial_plating"
+      ],
+      "appliance": "minecraft:stonecutter",
+      "output": "simplemachines:industrial_panel_damaged",
+      "note": "Stonecutter",
+      "title": "Industrial Damaged Panel"
+    },
+    {
+      "kind": "craft_shaped",
+      "pattern": [
+        "AB ",
+        "   ",
+        "   "
+      ],
+      "key": {
+        "A": "simplemachines:decor_cable",
+        "B": "#c:dusts/redstone"
+      },
+      "output": "simplemachines:sparking_wires",
+      "note": "Crafting Table\n1x Decorative Cable, 1x Redstone",
+      "title": "Sparking Wires"
+    },
+    {
+      "kind": "craft_shaped",
+      "pattern": [
+        "AB ",
+        "   ",
+        "   "
+      ],
+      "key": {
+        "A": "simplemachines:strip_light",
+        "B": "minecraft:gunpowder"
+      },
+      "output": "simplemachines:flickering_light",
+      "note": "Crafting Table\n1x Strip Light, 1x Gunpowder",
+      "title": "Flickering Light"
+    }
+  ]
+}

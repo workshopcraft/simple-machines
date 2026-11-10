@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "pattern": [
+    "WWW",
+    "PPP"
+  ],
+  "key": {
+    "W": "#minecraft:wool",
+    "P": "simplemachines:clean_plating"
+  },
+  "result": {
+    "id": "simplemachines:med_bed",
+    "count": 1
+  }
+}

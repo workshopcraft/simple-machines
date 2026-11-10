@@ -1,0 +1,95 @@
+{
+  "section": "ship",
+  "sort": 4,
+  "title": "Doors, Hatches and Shutters",
+  "subtitle": "Slide open, slide shut",
+  "text": "Sliding Doors open with a click or a redstone signal and slide sideways. Two doors side by side open together.\n\nAn Airlock Door closes any other open airlock door nearby when it opens, so only one side is ever open.\n\nA Locked Door only opens while its area has the right state. Set it with /simplemachines lock. Keys that start with void: read the area state from Simple Void.\n\nSliding Hatches open with the hatches next to them. Blast Shutters only move with redstone, and a whole wall moves together.",
+  "right_title": "Recipes",
+  "steps": [
+    {
+      "kind": "craft_shaped",
+      "pattern": [
+        "PP ",
+        "PR ",
+        "PP "
+      ],
+      "key": {
+        "P": "simplemachines:industrial_plating",
+        "R": "#c:dusts/redstone"
+      },
+      "output": {
+        "item": "simplemachines:industrial_sliding_door",
+        "count": 2
+      },
+      "note": "Crafting Table\n5x Industrial Plating, 1x Redstone",
+      "title": "Industrial Sliding Door"
+    },
+    {
+      "kind": "craft_shaped",
+      "pattern": [
+        "AB ",
+        "   ",
+        "   "
+      ],
+      "key": {
+        "A": "simplemachines:industrial_sliding_door",
+        "B": "minecraft:comparator"
+      },
+      "output": "simplemachines:airlock_door",
+      "note": "Crafting Table\n1x Industrial Sliding Door, 1x Comparator",
+      "title": "Airlock Door"
+    },
+    {
+      "kind": "craft_shaped",
+      "pattern": [
+        "ABC",
+        "   ",
+        "   "
+      ],
+      "key": {
+        "A": "simplemachines:industrial_sliding_door",
+        "B": "minecraft:tripwire_hook",
+        "C": "#c:plates/steel"
+      },
+      "output": "simplemachines:locked_door",
+      "note": "Crafting Table\n1x Industrial Sliding Door, 1x Tripwire Hook, 1x Steel",
+      "title": "Locked Door"
+    },
+    {
+      "kind": "craft_shaped",
+      "pattern": [
+        "PPP",
+        "PRP",
+        "   "
+      ],
+      "key": {
+        "P": "simplemachines:industrial_plating",
+        "R": "#c:dusts/redstone"
+      },
+      "output": {
+        "item": "simplemachines:sliding_hatch",
+        "count": 3
+      },
+      "note": "Crafting Table\n5x Industrial Plating, 1x Redstone",
+      "title": "Sliding Hatch"
+    },
+    {
+      "kind": "craft_shaped",
+      "pattern": [
+        "SSS",
+        "SRS",
+        "SSS"
+      ],
+      "key": {
+        "S": "#c:plates/steel",
+        "R": "#c:dusts/redstone"
+      },
+      "output": {
+        "item": "simplemachines:blast_shutter",
+        "count": 4
+      },
+      "note": "Crafting Table\n8x Steel, 1x Redstone",
+      "title": "Blast Shutter"
+    }
+  ]
+}

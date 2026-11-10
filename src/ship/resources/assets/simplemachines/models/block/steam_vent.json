@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/cube_bottom_top",
+  "textures": {
+    "top": "simplemachines:block/steam_vent_top",
+    "side": "simplemachines:block/industrial_panel",
+    "bottom": "simplemachines:block/industrial_panel"
+  }
+}

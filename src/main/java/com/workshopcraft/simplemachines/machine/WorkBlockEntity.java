@@ -326,6 +326,9 @@ public abstract class WorkBlockEntity extends BaseContainerBlockEntity implement
         final CompoundTag tag = new CompoundTag();
         tag.putString("worktop", worktop);
         tag.putInt("outputs", outputs);
+        //? if ship {
+        com.workshopcraft.simplemachines.ship.MachineFinishes.updateTag(this, tag, registries);
+        //?}
         return tag;
     }
 

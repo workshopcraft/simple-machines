@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "building",
+  "ingredients": [
+    "simplemachines:strip_light",
+    "minecraft:gunpowder"
+  ],
+  "result": {
+    "id": "simplemachines:flickering_light",
+    "count": 1
+  }
+}

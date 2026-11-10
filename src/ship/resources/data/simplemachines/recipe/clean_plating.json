@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "pattern": [
+    "PPP",
+    "PXP",
+    "PPP"
+  ],
+  "key": {
+    "P": "#c:plates/iron",
+    "X": "minecraft:white_dye"
+  },
+  "result": {
+    "id": "simplemachines:clean_plating",
+    "count": 8
+  }
+}

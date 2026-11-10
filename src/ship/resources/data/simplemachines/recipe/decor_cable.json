@@ -1,0 +1,11 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "building",
+  "ingredients": [
+    "simplemachines:redstone_copper_cable"
+  ],
+  "result": {
+    "id": "simplemachines:decor_cable",
+    "count": 4
+  }
+}

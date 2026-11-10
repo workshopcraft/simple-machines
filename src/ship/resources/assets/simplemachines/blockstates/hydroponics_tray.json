@@ -1,0 +1,153 @@
+{
+  "multipart": [
+    {
+      "apply": {
+        "model": "simplemachines:block/hydroponics_tray"
+      }
+    },
+    {
+      "when": {
+        "crop": "wheat",
+        "age": "0"
+      },
+      "apply": {
+        "model": "simplemachines:block/hydroponics_tray_wheat_0"
+      }
+    },
+    {
+      "when": {
+        "crop": "wheat",
+        "age": "1"
+      },
+      "apply": {
+        "model": "simplemachines:block/hydroponics_tray_wheat_1"
+      }
+    },
+    {
+      "when": {
+        "crop": "wheat",
+        "age": "2"
+      },
+      "apply": {
+        "model": "simplemachines:block/hydroponics_tray_wheat_2"
+      }
+    },
+    {
+      "when": {
+        "crop": "wheat",
+        "age": "3"
+      },
+      "apply": {
+        "model": "simplemachines:block/hydroponics_tray_wheat_3"
+      }
+    },
+    {
+      "when": {
+        "crop": "carrot",
+        "age": "0"
+      },
+      "apply": {
+        "model": "simplemachines:block/hydroponics_tray_carrot_0"
+      }
+    },
+    {
+      "when": {
+        "crop": "carrot",
+        "age": "1"
+      },
+      "apply": {
+        "model": "simplemachines:block/hydroponics_tray_carrot_1"
+      }
+    },
+    {
+      "when": {
+        "crop": "carrot",
+        "age": "2"
+      },
+      "apply": {
+        "model": "simplemachines:block/hydroponics_tray_carrot_2"
+      }
+    },
+    {
+      "when": {
+        "crop": "carrot",
+        "age": "3"
+      },
+      "apply": {
+        "model": "simplemachines:block/hydroponics_tray_carrot_3"
+      }
+    },
+    {
+      "when": {
+        "crop": "potato",
+        "age": "0"
+      },
+      "apply": {
+        "model": "simplemachines:block/hydroponics_tray_potato_0"
+      }
+    },
+    {
+      "when": {
+        "crop": "potato",
+        "age": "1"
+      },
+      "apply": {
+        "model": "simplemachines:block/hydroponics_tray_potato_1"
+      }
+    },
+    {
+      "when": {
+        "crop": "potato",
+        "age": "2"
+      },
+      "apply": {
+        "model": "simplemachines:block/hydroponics_tray_potato_2"
+      }
+    },
+    {
+      "when": {
+        "crop": "potato",
+        "age": "3"
+      },
+      "apply": {
+        "model": "simplemachines:block/hydroponics_tray_potato_3"
+      }
+    },
+    {
+      "when": {
+        "crop": "beetroot",
+        "age": "0"
+      },
+      "apply": {
+        "model": "simplemachines:block/hydroponics_tray_beetroot_0"
+      }
+    },
+    {
+      "when": {
+        "crop": "beetroot",
+        "age": "1"
+      },
+      "apply": {
+        "model": "simplemachines:block/hydroponics_tray_beetroot_1"
+      }
+    },
+    {
+      "when": {
+        "crop": "beetroot",
+        "age": "2"
+      },
+      "apply": {
+        "model": "simplemachines:block/hydroponics_tray_beetroot_2"
+      }
+    },
+    {
+      "when": {
+        "crop": "beetroot",
+        "age": "3"
+      },
+      "apply": {
+        "model": "simplemachines:block/hydroponics_tray_beetroot_3"
+      }
+    }
+  ]
+}

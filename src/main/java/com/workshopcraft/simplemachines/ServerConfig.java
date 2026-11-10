@@ -38,6 +38,11 @@ public final class ServerConfig {
     private ServerConfig() {
     }
 
+    /** Adds a key with its default, for features that only exist on some versions. */
+    public static void define(String key, String value) {
+        DEFAULTS.putIfAbsent(key, value);
+    }
+
     private static synchronized Properties load(MinecraftServer server) {
         final long now = System.nanoTime();
         if (readAt != Long.MIN_VALUE && now - readAt < 1_000_000_000L) return props;
@@ -77,6 +82,10 @@ public final class ServerConfig {
     public static void init(MinecraftServer server) {
         readAt = Long.MIN_VALUE;
         load(server);
+    }
+
+    public static String string(MinecraftServer server, String key) {
+        return load(server).getProperty(key, DEFAULTS.getOrDefault(key, "")).trim();
     }
 
     public static boolean bool(MinecraftServer server, String key) {

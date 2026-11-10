@@ -1,0 +1,63 @@
+{
+  "section": "ship",
+  "sort": 2,
+  "title": "Bulkheads",
+  "subtitle": "Walls you can take down",
+  "text": "Bulkheads are tough walls inside the ship. A pickaxe takes a long time. The Ship Tool takes the whole connected wall down at once and gives you the blocks back; sneak to take just one. A Repair Kit does the same but is used up.\n\nServers can set ship_bulkheads_need_tool to true in the Simple Machines server config so only the tool or a kit works.",
+  "right_title": "Recipes",
+  "steps": [
+    {
+      "kind": "craft_shaped",
+      "pattern": [
+        "PRP",
+        "PRP",
+        "PRP"
+      ],
+      "key": {
+        "P": "simplemachines:industrial_plating",
+        "R": "#c:rods/steel"
+      },
+      "output": {
+        "item": "simplemachines:industrial_bulkhead",
+        "count": 6
+      },
+      "note": "Crafting Table\n6x Industrial Plating, 3x Steel",
+      "title": "Industrial Bulkhead"
+    },
+    {
+      "kind": "craft_shaped",
+      "pattern": [
+        " P ",
+        " RP",
+        "R  "
+      ],
+      "key": {
+        "P": "#c:plates/steel",
+        "R": "#c:rods/steel"
+      },
+      "output": "simplemachines:ship_tool",
+      "note": "Crafting Table\n2x Steel, 2x Steel",
+      "title": "Ship Tool"
+    },
+    {
+      "kind": "craft_shaped",
+      "pattern": [
+        "SCS",
+        "RBR",
+        "   "
+      ],
+      "key": {
+        "S": "#c:plates/iron",
+        "C": "#c:ingots/copper",
+        "R": "#c:dusts/redstone",
+        "B": "simplemachines:control_board"
+      },
+      "output": {
+        "item": "simplemachines:repair_kit",
+        "count": 2
+      },
+      "note": "Crafting Table\n2x Iron, 1x Copper, 2x Redstone, 1x Control Board",
+      "title": "Repair Kit"
+    }
+  ]
+}

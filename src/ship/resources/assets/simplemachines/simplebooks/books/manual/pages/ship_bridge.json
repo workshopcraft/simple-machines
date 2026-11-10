@@ -1,0 +1,90 @@
+{
+  "section": "ship",
+  "sort": 5,
+  "title": "Bridge and Screens",
+  "subtitle": "Panels that look busy",
+  "text": "Control panels come in Navigation, Engineering and Reactor versions; cut one from another on a stonecutter. Wall screens show a star map or the ship status. The Holo Table shows a slowly turning hologram.\n\nThe Jump Countdown Display counts down from 30 seconds when it gets a redstone signal, beeps near the end, and gives out a redstone pulse at zero. /simplemachines countdown sets any time.\n\nStory Log Terminals hold a written log. Use a book and quill or a written book on one to copy its text in, and use it with an empty hand to read the log in chat. /simplemachines log can write and lock a log.",
+  "right_title": "Recipes",
+  "steps": [
+    {
+      "kind": "craft_shaped",
+      "pattern": [
+        "GGG",
+        "RBR",
+        "PPP"
+      ],
+      "key": {
+        "G": "#c:glass_panes",
+        "R": "#c:dusts/redstone",
+        "B": "simplemachines:control_board",
+        "P": "simplemachines:industrial_plating"
+      },
+      "output": "simplemachines:control_panel_nav",
+      "note": "Crafting Table\n3x Glass Panes, 2x Redstone, 1x Control Board, 3x Industrial Plating",
+      "title": "Navigation Control Panel"
+    },
+    {
+      "kind": "craft_shaped",
+      "pattern": [
+        "GGG",
+        "PBP",
+        "   "
+      ],
+      "key": {
+        "G": "#c:glass_panes",
+        "P": "#c:plates/iron",
+        "B": "simplemachines:control_board"
+      },
+      "output": {
+        "item": "simplemachines:wall_screen_status",
+        "count": 2
+      },
+      "note": "Crafting Table\n3x Glass Panes, 2x Iron, 1x Control Board",
+      "title": "Status Wall Screen"
+    },
+    {
+      "kind": "craft_shaped",
+      "pattern": [
+        "GGG",
+        "BAB",
+        "PPP"
+      ],
+      "key": {
+        "G": "#c:glass_blocks",
+        "B": "simplemachines:control_board",
+        "A": "minecraft:amethyst_shard",
+        "P": "simplemachines:industrial_plating"
+      },
+      "output": "simplemachines:holo_table",
+      "note": "Crafting Table\n3x Glass Blocks, 2x Control Board, 1x Amethyst Shard, 3x Industrial Plating",
+      "title": "Bridge Holo Table"
+    },
+    {
+      "kind": "process",
+      "inputs": [
+        "simplemachines:wall_screen_status"
+      ],
+      "appliance": "minecraft:stonecutter",
+      "output": "simplemachines:jump_countdown_display",
+      "note": "Stonecutter",
+      "title": "Jump Countdown Display"
+    },
+    {
+      "kind": "craft_shaped",
+      "pattern": [
+        "PGP",
+        "PBP",
+        "PKP"
+      ],
+      "key": {
+        "P": "simplemachines:industrial_plating",
+        "G": "#c:glass_panes",
+        "B": "simplemachines:control_board",
+        "K": "minecraft:book"
+      },
+      "output": "simplemachines:story_log_terminal",
+      "note": "Crafting Table\n6x Industrial Plating, 1x Glass Panes, 1x Control Board, 1x Book",
+      "title": "Story Log Terminal"
+    }
+  ]
+}

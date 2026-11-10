@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "pattern": [
+    "PPP",
+    " R ",
+    " R "
+  ],
+  "key": {
+    "P": "simplemachines:clean_plating",
+    "R": "#c:rods/iron"
+  },
+  "result": {
+    "id": "simplemachines:mess_table",
+    "count": 1
+  }
+}

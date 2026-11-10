@@ -1,0 +1,60 @@
+{
+  "parent": "minecraft:block/block",
+  "textures": {
+    "side": "simplemachines:block/screen_frame",
+    "screen": "simplemachines:block/wall_screen_star_map_screen",
+    "particle": "simplemachines:block/screen_frame"
+  },
+  "elements": [
+    {
+      "from": [
+        1,
+        1,
+        14.5
+      ],
+      "to": [
+        15,
+        15,
+        16
+      ],
+      "faces": {
+        "north": {
+          "texture": "#side"
+        },
+        "south": {
+          "texture": "#side"
+        },
+        "east": {
+          "texture": "#side"
+        },
+        "west": {
+          "texture": "#side"
+        },
+        "up": {
+          "texture": "#side"
+        },
+        "down": {
+          "texture": "#side"
+        }
+      }
+    },
+    {
+      "from": [
+        1,
+        1,
+        14
+      ],
+      "to": [
+        15,
+        15,
+        14.5
+      ],
+      "faces": {
+        "north": {
+          "texture": "#screen"
+        }
+      },
+      "light_emission": 12
+    }
+  ]
+}

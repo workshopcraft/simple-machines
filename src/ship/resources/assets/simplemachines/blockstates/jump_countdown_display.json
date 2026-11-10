@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "simplemachines:block/jump_countdown_display"
+    },
+    "facing=east": {
+      "model": "simplemachines:block/jump_countdown_display",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "simplemachines:block/jump_countdown_display",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "simplemachines:block/jump_countdown_display",
+      "y": 270
+    }
+  }
+}

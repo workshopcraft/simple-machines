@@ -1,0 +1,73 @@
+{
+  "section": "ship",
+  "sort": 6,
+  "title": "Rooms",
+  "subtitle": "Med bay, mess and storage",
+  "text": "Lockers, Supply Crates and Med Cabinets hold 27 stacks, like a chest. Structures can give them loot tables.\n\nThe Med Bed, Med Scanner, Mess Table and Mess Bench are decoration.\n\nHydroponics Trays grow wheat, carrots, potatoes and beetroot without light or water. Plant with the seed, harvest by using it when it is grown.",
+  "right_title": "Recipes",
+  "steps": [
+    {
+      "kind": "craft_shaped",
+      "pattern": [
+        "PPP",
+        "P P",
+        "PPP"
+      ],
+      "key": {
+        "P": "simplemachines:industrial_plating"
+      },
+      "output": "simplemachines:locker",
+      "note": "Crafting Table\n8x Industrial Plating",
+      "title": "Locker"
+    },
+    {
+      "kind": "craft_shaped",
+      "pattern": [
+        "PPP",
+        "PCP",
+        "PPP"
+      ],
+      "key": {
+        "P": "#c:plates/iron",
+        "C": "#c:chests"
+      },
+      "output": "simplemachines:supply_crate",
+      "note": "Crafting Table\n8x Iron, 1x Chests",
+      "title": "Supply Crate"
+    },
+    {
+      "kind": "craft_shaped",
+      "pattern": [
+        "PPP",
+        "PDP",
+        "PPP"
+      ],
+      "key": {
+        "P": "simplemachines:clean_plating",
+        "D": "#c:dyes/red"
+      },
+      "output": "simplemachines:med_cabinet",
+      "note": "Crafting Table\n8x Clean Plating, 1x Red",
+      "title": "Med Cabinet"
+    },
+    {
+      "kind": "craft_shaped",
+      "pattern": [
+        "GWG",
+        "PPP",
+        "   "
+      ],
+      "key": {
+        "G": "#c:glass_panes",
+        "W": "minecraft:water_bucket",
+        "P": "simplemachines:clean_plating"
+      },
+      "output": {
+        "item": "simplemachines:hydroponics_tray",
+        "count": 2
+      },
+      "note": "Crafting Table\n2x Glass Panes, 1x Water Bucket, 3x Clean Plating",
+      "title": "Hydroponics Tray"
+    }
+  ]
+}

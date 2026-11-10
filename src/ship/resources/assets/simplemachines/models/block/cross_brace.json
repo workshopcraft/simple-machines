@@ -1,0 +1,91 @@
+{
+  "parent": "minecraft:block/block",
+  "textures": {
+    "side": "simplemachines:block/strut",
+    "particle": "simplemachines:block/strut"
+  },
+  "elements": [
+    {
+      "from": [
+        -3,
+        7,
+        14
+      ],
+      "to": [
+        19,
+        9,
+        16
+      ],
+      "faces": {
+        "north": {
+          "texture": "#side"
+        },
+        "south": {
+          "texture": "#side"
+        },
+        "east": {
+          "texture": "#side"
+        },
+        "west": {
+          "texture": "#side"
+        },
+        "up": {
+          "texture": "#side"
+        },
+        "down": {
+          "texture": "#side"
+        }
+      },
+      "rotation": {
+        "origin": [
+          8,
+          8,
+          15
+        ],
+        "axis": "z",
+        "angle": 45
+      }
+    },
+    {
+      "from": [
+        -3,
+        7,
+        14
+      ],
+      "to": [
+        19,
+        9,
+        16
+      ],
+      "faces": {
+        "north": {
+          "texture": "#side"
+        },
+        "south": {
+          "texture": "#side"
+        },
+        "east": {
+          "texture": "#side"
+        },
+        "west": {
+          "texture": "#side"
+        },
+        "up": {
+          "texture": "#side"
+        },
+        "down": {
+          "texture": "#side"
+        }
+      },
+      "rotation": {
+        "origin": [
+          8,
+          8,
+          15
+        ],
+        "axis": "z",
+        "angle": -45
+      }
+    }
+  ]
+}

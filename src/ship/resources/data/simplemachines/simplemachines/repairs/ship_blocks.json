@@ -1,0 +1,60 @@
+{
+  "pairs": [
+    {
+      "broken": "simplemachines:ancient_panel_damaged",
+      "fixed": "simplemachines:ancient_panel"
+    },
+    {
+      "broken": "simplemachines:ancient_panel_scorched",
+      "fixed": "simplemachines:ancient_panel"
+    },
+    {
+      "broken": "simplemachines:industrial_panel_damaged",
+      "fixed": "simplemachines:industrial_panel"
+    },
+    {
+      "broken": "simplemachines:industrial_panel_scorched",
+      "fixed": "simplemachines:industrial_panel"
+    },
+    {
+      "broken": "simplemachines:clean_panel_damaged",
+      "fixed": "simplemachines:clean_panel"
+    },
+    {
+      "broken": "simplemachines:clean_panel_scorched",
+      "fixed": "simplemachines:clean_panel"
+    },
+    {
+      "broken": "simplemachines:broken_control_panel",
+      "fixed": "simplemachines:control_panel_nav"
+    },
+    {
+      "broken": "simplemachines:broken_wall_screen",
+      "fixed": "simplemachines:wall_screen_status"
+    },
+    {
+      "broken": "simplemachines:flickering_light",
+      "fixed": "simplemachines:strip_light"
+    },
+    {
+      "broken": "simplemachines:sparking_wires",
+      "fixed": "simplemachines:decor_cable"
+    },
+    {
+      "broken": "simplemachines:steam_vent",
+      "fixed": "simplemachines:industrial_panel_vent"
+    },
+    {
+      "broken": "simplemachines:breached_frosty_panel",
+      "fixed": "simplemachines:industrial_plating"
+    },
+    {
+      "broken": "simplemachines:debris",
+      "fixed": "minecraft:air"
+    },
+    {
+      "broken": "simplemachines:scrap_pile",
+      "fixed": "minecraft:air"
+    }
+  ]
+}

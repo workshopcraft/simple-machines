@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "simplemachines:block/broken_control_panel"
+    },
+    "facing=east": {
+      "model": "simplemachines:block/broken_control_panel",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "simplemachines:block/broken_control_panel",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "simplemachines:block/broken_control_panel",
+      "y": 270
+    }
+  }
+}

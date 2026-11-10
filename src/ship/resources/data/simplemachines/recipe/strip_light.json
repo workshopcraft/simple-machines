@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "pattern": [
+    "PPP",
+    "GGG"
+  ],
+  "key": {
+    "P": "#c:plates/iron",
+    "G": "#c:dusts/glowstone"
+  },
+  "result": {
+    "id": "simplemachines:strip_light",
+    "count": 6
+  }
+}

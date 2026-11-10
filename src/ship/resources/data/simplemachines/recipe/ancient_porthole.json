@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "pattern": [
+    "PPP",
+    "PGP",
+    "PPP"
+  ],
+  "key": {
+    "P": "simplemachines:ancient_plating",
+    "G": "#c:glass_blocks"
+  },
+  "result": {
+    "id": "simplemachines:ancient_porthole",
+    "count": 4
+  }
+}

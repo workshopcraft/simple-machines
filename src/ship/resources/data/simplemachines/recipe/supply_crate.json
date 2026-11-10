@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "pattern": [
+    "PPP",
+    "PCP",
+    "PPP"
+  ],
+  "key": {
+    "P": "#c:plates/iron",
+    "C": "#c:chests"
+  },
+  "result": {
+    "id": "simplemachines:supply_crate",
+    "count": 1
+  }
+}

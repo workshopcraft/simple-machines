@@ -74,6 +74,9 @@ public class SimpleMachinesNeoForgeClient {
             e.registerBlockEntityRenderer(SimpleMachines.rollingMillEntity, WorktopRenderer::new);
             e.registerBlockEntityRenderer(SimpleMachines.electricFurnaceEntity, WorktopRenderer::new);
         });
+        //? if ship {
+        com.workshopcraft.simplemachines.neoforge.ship.ShipNeoForgeClient.init(modBus);
+        //?}
     }
 
     @SuppressWarnings("unchecked")

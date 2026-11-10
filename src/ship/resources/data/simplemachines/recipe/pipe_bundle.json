@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "pattern": [
+    "P",
+    "P",
+    "P"
+  ],
+  "key": {
+    "P": "simplemachines:decor_pipe"
+  },
+  "result": {
+    "id": "simplemachines:pipe_bundle",
+    "count": 1
+  }
+}

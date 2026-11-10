@@ -55,6 +55,9 @@ public class SimpleMachinesFabricClient implements ClientModInitializer {
         BlockEntityRenderers.register(SimpleMachines.generatorEntity, WorktopRenderer::new);
         BlockEntityRenderers.register(SimpleMachines.rollingMillEntity, WorktopRenderer::new);
         BlockEntityRenderers.register(SimpleMachines.electricFurnaceEntity, WorktopRenderer::new);
+        //? if ship {
+        com.workshopcraft.simplemachines.fabric.ship.ShipFabricClient.init();
+        //?}
     }
 
     @SuppressWarnings("unchecked")

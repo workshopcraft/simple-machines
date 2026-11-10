@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "building",
+  "ingredients": [
+    "simplemachines:wall_screen_status",
+    "minecraft:gunpowder"
+  ],
+  "result": {
+    "id": "simplemachines:broken_wall_screen",
+    "count": 1
+  }
+}

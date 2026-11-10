@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "building",
+  "ingredients": [
+    "simplemachines:industrial_panel_vent",
+    "minecraft:water_bucket"
+  ],
+  "result": {
+    "id": "simplemachines:steam_vent",
+    "count": 1
+  }
+}

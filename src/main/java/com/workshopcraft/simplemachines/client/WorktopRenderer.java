@@ -51,6 +51,9 @@ public class WorktopRenderer<T extends BlockEntity & Worktops.Holder> implements
         final Upgrade[] cards = new Upgrade[Upgrade.MAX_SLOTS];
         int slots = Upgrade.SLOTS;
         int looseCard = -1;
+        //? if ship {
+        net.minecraft.resources.Identifier finish;
+        //?}
     }
 
     public WorktopRenderer(BlockEntityRendererProvider.Context ctx) {
@@ -91,11 +94,17 @@ public class WorktopRenderer<T extends BlockEntity & Worktops.Holder> implements
             s.worktop = "";
         }
         if (!(state.getBlock() instanceof PoweredMachineBlock)) s.ports = 0;
+        //? if ship {
+        s.finish = com.workshopcraft.simplemachines.ship.MachineFinishes.of(be);
+        //?}
         s.topLight = be.getLevel() == null ? s.lightCoords : RenderCompat.light(be.getLevel(), be.getBlockPos().above());
     }
 
     @Override
     public void submit(State s, PoseStack pose, SubmitNodeCollector out, CameraRenderState camera) {
+        //? if ship {
+        if (s.finish != null) com.workshopcraft.simplemachines.ship.client.MachineFinishRenderer.submit(s.finish, s.facing, s.lightCoords, pose, out);
+        //?}
         if (s.ports != 0) {
             final TextureAtlasSprite port = get(Identifier.fromNamespaceAndPath(SimpleMachines.MODID, "block/port"));
             out.submitCustomGeometry(pose, RenderCompat.cutoutBlocks(), (p, vc) -> {

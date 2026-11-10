@@ -1,0 +1,10 @@
+{
+  "replace": false,
+  "values": [
+    "simplemachines:ancient_hull",
+    "simplemachines:industrial_hull",
+    "simplemachines:clean_hull",
+    "simplemachines:hull_boundary",
+    "simplemachines:hull_glass"
+  ]
+}

@@ -138,6 +138,9 @@ public class SimpleMachinesFabric implements ModInitializer {
                 return (int) n;
             }
         };
+        //? if ship {
+        com.workshopcraft.simplemachines.fabric.ship.ShipFabric.init();
+        //?}
     }
 
     private static <T extends WorkBlockEntity> void work(BlockEntityType<T> type) {

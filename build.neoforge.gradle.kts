@@ -6,6 +6,7 @@ plugins {
 val modVersion = providers.gradleProperty("version").orNull ?: sc.properties.get<String>("mod.version")
 val mc = sc.current.version
 val modern = sc.current.parsed >= "26.1"
+val ship = Ship.enabled(mc)
 version = modVersion
 group = property("mod.group") as String
 base.archivesName = "${property("mod.id")}-neoforge-$mc"
@@ -23,6 +24,7 @@ repositories {
 }
 
 sourceSets.main {
+    if (ship) applyShip(rootProject.file("."))
     java.exclude("com/workshopcraft/simplemachines/fabric/**", "com/workshopcraft/simplemachines/forge/**")
     if (!modern) resources.setSrcDirs(listOf(rootProject.file("src/legacy/1.21.1"), rootProject.file("src/main/resources")))
     // Whole-file replacements for old targets; the main copy of each file is left out
@@ -65,6 +67,7 @@ java {
 
 tasks {
     processResources {
+        if (ship) mergeShipJson(rootProject.file("."))
         val props = mapOf(
             "id" to sc.properties.get<String>("mod.id"),
             "name" to sc.properties.get<String>("mod.name"),

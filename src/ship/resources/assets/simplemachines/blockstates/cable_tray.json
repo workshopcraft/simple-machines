@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "simplemachines:block/cable_tray"
+    },
+    "facing=east": {
+      "model": "simplemachines:block/cable_tray",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "simplemachines:block/cable_tray",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "simplemachines:block/cable_tray",
+      "y": 270
+    }
+  }
+}

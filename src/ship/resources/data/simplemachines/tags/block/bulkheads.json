@@ -1,0 +1,8 @@
+{
+  "replace": false,
+  "values": [
+    "simplemachines:ancient_bulkhead",
+    "simplemachines:industrial_bulkhead",
+    "simplemachines:clean_bulkhead"
+  ]
+}

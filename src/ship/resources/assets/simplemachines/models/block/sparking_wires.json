@@ -1,0 +1,31 @@
+{
+  "parent": "minecraft:block/block",
+  "textures": {
+    "wires": "simplemachines:block/sparking_wires",
+    "particle": "simplemachines:block/sparking_wires"
+  },
+  "elements": [
+    {
+      "from": [
+        0,
+        0.5,
+        0
+      ],
+      "to": [
+        16,
+        0.5,
+        16
+      ],
+      "faces": {
+        "up": {
+          "texture": "#wires"
+        },
+        "down": {
+          "texture": "#wires"
+        }
+      },
+      "shade": false
+    }
+  ],
+  "ambientocclusion": false
+}

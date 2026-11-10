@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "pattern": [
+    "PPP",
+    "PDP",
+    "PPP"
+  ],
+  "key": {
+    "P": "simplemachines:clean_plating",
+    "D": "#c:dyes/red"
+  },
+  "result": {
+    "id": "simplemachines:med_cabinet",
+    "count": 1
+  }
+}

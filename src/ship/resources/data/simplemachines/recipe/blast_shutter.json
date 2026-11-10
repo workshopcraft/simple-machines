@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "pattern": [
+    "SSS",
+    "SRS",
+    "SSS"
+  ],
+  "key": {
+    "S": "#c:plates/steel",
+    "R": "#c:dusts/redstone"
+  },
+  "result": {
+    "id": "simplemachines:blast_shutter",
+    "count": 4
+  }
+}

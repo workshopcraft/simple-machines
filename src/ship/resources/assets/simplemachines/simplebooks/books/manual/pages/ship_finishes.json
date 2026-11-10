@@ -1,0 +1,25 @@
+{
+  "section": "ship",
+  "sort": 9,
+  "title": "Machine Finishes",
+  "subtitle": "A new look for old machines",
+  "text": "A Machine Finish Kit changes how a built machine looks without changing what it does. Use it on the machine. Ancient, Industrial and Clean finishes come with the mod. A plain kit takes the finish off again.\n\nResource packs add finishes with a json file in simplemachines/machine_finishes, naming a front, side, back and top texture. Give a kit for it with the simplemachines:machine_finish component.",
+  "right_title": "Recipes",
+  "steps": [
+    {
+      "kind": "craft_shaped",
+      "pattern": [
+        "AB ",
+        "   ",
+        "   "
+      ],
+      "key": {
+        "A": "minecraft:paper",
+        "B": "#c:plates/iron"
+      },
+      "output": "simplemachines:machine_finish_kit",
+      "note": "Crafting Table\n1x Paper, 1x Iron",
+      "title": "Machine Finish Kit"
+    }
+  ]
+}

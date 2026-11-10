@@ -1,0 +1,8 @@
+{
+  "type": "minecraft:stonecutting",
+  "ingredient": "simplemachines:clean_plating",
+  "result": {
+    "id": "simplemachines:clean_grate",
+    "count": 1
+  }
+}

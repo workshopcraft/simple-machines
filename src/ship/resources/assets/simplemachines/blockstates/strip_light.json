@@ -1,0 +1,30 @@
+{
+  "variants": {
+    "facing=up": {
+      "model": "simplemachines:block/strip_light"
+    },
+    "facing=down": {
+      "model": "simplemachines:block/strip_light",
+      "x": 180
+    },
+    "facing=north": {
+      "model": "simplemachines:block/strip_light",
+      "x": 90
+    },
+    "facing=south": {
+      "model": "simplemachines:block/strip_light",
+      "x": 90,
+      "y": 180
+    },
+    "facing=east": {
+      "model": "simplemachines:block/strip_light",
+      "x": 90,
+      "y": 90
+    },
+    "facing=west": {
+      "model": "simplemachines:block/strip_light",
+      "x": 90,
+      "y": 270
+    }
+  }
+}

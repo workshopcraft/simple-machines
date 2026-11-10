@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "simplemachines:block/cross_brace"
+    },
+    "facing=east": {
+      "model": "simplemachines:block/cross_brace",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "simplemachines:block/cross_brace",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "simplemachines:block/cross_brace",
+      "y": 270
+    }
+  }
+}

@@ -1,0 +1,42 @@
+{
+  "parent": "minecraft:block/block",
+  "textures": {
+    "side": "simplemachines:block/hydroponics_tray_side",
+    "soil": "simplemachines:block/hydroponics_tray_soil",
+    "particle": "simplemachines:block/hydroponics_tray_side"
+  },
+  "elements": [
+    {
+      "from": [
+        0,
+        0,
+        0
+      ],
+      "to": [
+        16,
+        6,
+        16
+      ],
+      "faces": {
+        "north": {
+          "texture": "#side"
+        },
+        "south": {
+          "texture": "#side"
+        },
+        "east": {
+          "texture": "#side"
+        },
+        "west": {
+          "texture": "#side"
+        },
+        "up": {
+          "texture": "#soil"
+        },
+        "down": {
+          "texture": "#side"
+        }
+      }
+    }
+  ]
+}

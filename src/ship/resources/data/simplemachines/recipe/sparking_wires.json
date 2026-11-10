@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "building",
+  "ingredients": [
+    "simplemachines:decor_cable",
+    "#c:dusts/redstone"
+  ],
+  "result": {
+    "id": "simplemachines:sparking_wires",
+    "count": 1
+  }
+}

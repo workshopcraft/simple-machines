@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "pattern": [
+    "SCS",
+    "RBR"
+  ],
+  "key": {
+    "S": "#c:plates/iron",
+    "C": "#c:ingots/copper",
+    "R": "#c:dusts/redstone",
+    "B": "simplemachines:control_board"
+  },
+  "result": {
+    "id": "simplemachines:repair_kit",
+    "count": 2
+  }
+}

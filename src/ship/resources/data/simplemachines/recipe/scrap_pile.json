@@ -1,0 +1,8 @@
+{
+  "type": "minecraft:stonecutting",
+  "ingredient": "simplemachines:industrial_panel_damaged",
+  "result": {
+    "id": "simplemachines:scrap_pile",
+    "count": 1
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "building",
+  "ingredients": [
+    "simplemachines:strip_light",
+    "#c:dyes/red"
+  ],
+  "result": {
+    "id": "simplemachines:alert_light",
+    "count": 1
+  }
+}

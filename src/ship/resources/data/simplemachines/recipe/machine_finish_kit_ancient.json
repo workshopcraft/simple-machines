@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    "simplemachines:machine_finish_kit",
+    "simplemachines:ancient_plating",
+    "simplemachines:ancient_plating"
+  ],
+  "result": {
+    "id": "simplemachines:machine_finish_kit",
+    "count": 1,
+    "components": {
+      "simplemachines:machine_finish": "simplemachines:ancient"
+    }
+  }
+}

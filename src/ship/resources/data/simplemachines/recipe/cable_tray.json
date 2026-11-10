@@ -1,0 +1,15 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "pattern": [
+    "P P",
+    "PPP"
+  ],
+  "key": {
+    "P": "#c:plates/iron"
+  },
+  "result": {
+    "id": "simplemachines:cable_tray",
+    "count": 6
+  }
+}

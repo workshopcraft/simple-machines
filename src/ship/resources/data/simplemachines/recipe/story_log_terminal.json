@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "pattern": [
+    "PGP",
+    "PBP",
+    "PKP"
+  ],
+  "key": {
+    "P": "simplemachines:industrial_plating",
+    "G": "#c:glass_panes",
+    "B": "simplemachines:control_board",
+    "K": "minecraft:book"
+  },
+  "result": {
+    "id": "simplemachines:story_log_terminal",
+    "count": 1
+  }
+}

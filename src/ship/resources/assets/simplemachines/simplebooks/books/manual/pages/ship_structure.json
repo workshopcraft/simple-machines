@@ -1,0 +1,96 @@
+{
+  "section": "ship",
+  "sort": 7,
+  "title": "Struts, Catwalks and Lights",
+  "subtitle": "The bits in between",
+  "text": "Struts, pipes and cables run along any axis. Catwalks are see-through floors, railings keep you on them. Ship Ladders and Lift Shafts can be climbed.\n\nStrip Lights, Floor Guide Lights and Alert Lights stick to any face. Flickering Lights are broken strip lights.",
+  "right_title": "Recipes",
+  "steps": [
+    {
+      "kind": "craft_shaped",
+      "pattern": [
+        "R  ",
+        "R  ",
+        "R  "
+      ],
+      "key": {
+        "R": "#c:rods/steel"
+      },
+      "output": {
+        "item": "simplemachines:strut",
+        "count": 6
+      },
+      "note": "Crafting Table\n3x Steel",
+      "title": "Strut"
+    },
+    {
+      "kind": "craft_shaped",
+      "pattern": [
+        "BBB",
+        "   ",
+        "   "
+      ],
+      "key": {
+        "B": "minecraft:iron_bars"
+      },
+      "output": {
+        "item": "simplemachines:catwalk",
+        "count": 6
+      },
+      "note": "Crafting Table\n3x Iron Bars",
+      "title": "Catwalk"
+    },
+    {
+      "kind": "craft_shaped",
+      "pattern": [
+        "R R",
+        "RRR",
+        "R R"
+      ],
+      "key": {
+        "R": "#c:rods/steel"
+      },
+      "output": {
+        "item": "simplemachines:ship_ladder",
+        "count": 8
+      },
+      "note": "Crafting Table\n7x Steel",
+      "title": "Ship Ladder"
+    },
+    {
+      "kind": "craft_shaped",
+      "pattern": [
+        "RRR",
+        "R R",
+        "RRR"
+      ],
+      "key": {
+        "R": "#c:rods/steel"
+      },
+      "output": {
+        "item": "simplemachines:lift_shaft",
+        "count": 4
+      },
+      "note": "Crafting Table\n8x Steel",
+      "title": "Lift Shaft"
+    },
+    {
+      "kind": "craft_shaped",
+      "pattern": [
+        "PPP",
+        "GGG",
+        "   "
+      ],
+      "key": {
+        "P": "#c:plates/iron",
+        "G": "#c:dusts/glowstone"
+      },
+      "output": {
+        "item": "simplemachines:strip_light",
+        "count": 6
+      },
+      "note": "Crafting Table\n3x Iron, 3x Glowstone",
+      "title": "Strip Light"
+    }
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "pattern": [
+    "PGP",
+    "GGG",
+    "PGP"
+  ],
+  "key": {
+    "P": "simplemachines:industrial_plating",
+    "G": "#c:glass_blocks"
+  },
+  "result": {
+    "id": "simplemachines:industrial_window",
+    "count": 6
+  }
+}

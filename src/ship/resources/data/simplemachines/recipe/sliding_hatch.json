@@ -1,0 +1,16 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "pattern": [
+    "PPP",
+    "PRP"
+  ],
+  "key": {
+    "P": "simplemachines:industrial_plating",
+    "R": "#c:dusts/redstone"
+  },
+  "result": {
+    "id": "simplemachines:sliding_hatch",
+    "count": 3
+  }
+}

@@ -1,0 +1,7 @@
+{
+  "replace": false,
+  "values": [
+    "simplemachines:ship_tool",
+    "simplemachines:repair_kit"
+  ]
+}

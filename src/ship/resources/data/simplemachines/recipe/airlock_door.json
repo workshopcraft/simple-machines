@@ -1,0 +1,12 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "building",
+  "ingredients": [
+    "simplemachines:industrial_sliding_door",
+    "minecraft:comparator"
+  ],
+  "result": {
+    "id": "simplemachines:airlock_door",
+    "count": 1
+  }
+}
