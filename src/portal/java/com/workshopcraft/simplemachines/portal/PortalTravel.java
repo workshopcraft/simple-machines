@@ -212,6 +212,10 @@ public final class PortalTravel {
         final long now = server.getTickCount();
         final long wait = PortalConfig.integer(server, PortalConfig.EMPTY_WORLD_SECONDS) * 20L;
         for (PortalData.World w : PortalData.get(server).worlds()) {
+            if (w.oneOff && !w.retired && w.system != null && orphaned(server, w)) {
+                w.retired = true;
+                PortalData.get(server).setDirty();
+            }
             // a planet stays while its system is current; once the gate has left the system it may go
             final boolean mayGo = w.oneOff ? oneOff && (w.retired || w.system == null)
                     : w.card == null ? unbound : story && w.superseded && !w.collected;
@@ -237,6 +241,14 @@ public final class PortalTravel {
                 PortalWorlds.later(s -> PortalWorlds.unload(s, w.id, true, p -> goBack(p, w.gate)));
             }
         }
+    }
+
+    /** A planet whose gate is gone or no longer in its system (a controller replaced without its removal hook). */
+    private static boolean orphaned(MinecraftServer server, PortalData.World w) {
+        if (w.gate == null) return true;
+        final ServerLevel l = server.getLevel(w.gate.dimension());
+        if (l == null || !l.isLoaded(w.gate.pos())) return false;
+        return !(l.getBlockEntity(w.gate.pos()) instanceof GateControllerBlockEntity g) || !w.system.equals(g.system());
     }
 
     /** Remembers players who log out inside a portal world, so the world is kept for them. */

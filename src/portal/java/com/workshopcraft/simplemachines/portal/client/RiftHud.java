@@ -52,11 +52,31 @@ public final class RiftHud {
                 GateScreen.clock(left)).getString();
         final int w = font.width(text) + 10;
         final int x = (g.guiWidth() - w) / 2;
+        // below any boss bars: vanilla stacks them 19 pixels apart from the top
+        final int bosses = bossBars(mc);
+        final int top = bosses > 0 ? Math.max(RiftHud.top, Math.min(bosses * 19 + 3, g.guiHeight() / 3 + 3)) : RiftHud.top;
         final boolean flash = low && (now / 400) % 2 == 0;
         final int edge = low ? (flash ? 0xFFFF3030 : 0xFF7A1010) : 0xFF6A3FA8;
         g.fill(x - 1, top - 1, x + w + 1, top + 13, edge);
         g.fill(x, top, x + w, top + 12, low && flash ? 0xD0400000 : 0xC0101018);
         g.text(font, text, x + 5, top + 2, low ? (flash ? 0xFFFFFFFF : 0xFFFF4040) : 0xFFE0D0FF, true);
+    }
+
+    private static java.lang.reflect.@org.jspecify.annotations.Nullable Field bossEvents;
+    private static boolean bossFailed;
+
+    private static int bossBars(Minecraft mc) {
+        if (bossFailed) return 0;
+        try {
+            if (bossEvents == null) {
+                bossEvents = net.minecraft.client.gui.components.BossHealthOverlay.class.getDeclaredField("events");
+                bossEvents.setAccessible(true);
+            }
+            return ((java.util.Map<?, ?>) bossEvents.get(mc.gui.getBossOverlay())).size();
+        } catch (ReflectiveOperationException | RuntimeException e) {
+            bossFailed = true;
+            return 0;
+        }
     }
 
     private static void readConfig(long now) {
