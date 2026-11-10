@@ -65,6 +65,13 @@ public final class PortalCommands {
                 .then(Commands.literal("clear").executes(c -> applyCard(c, g, null)))
                 .then(Commands.argument("card", IdentifierArgument.id()).suggests(CARDS)
                         .executes(c -> applyCard(c, g, IdentifierArgument.getId(c, "card"))))));
+        portal.then(gate("warp", (g, b) -> b
+                .then(Commands.argument("card", IdentifierArgument.id()).suggests(CARDS)
+                        .executes(c -> warp(c, g, IdentifierArgument.getId(c, "card"))))));
+        portal.then(gate("rift", (g, b) -> b
+                .then(Commands.literal("hold").executes(c -> riftHold(c, g)))
+                .then(Commands.literal("drop").executes(c -> riftDrop(c, g)))
+                .then(Commands.literal("info").executes(c -> riftInfo(c, g)))));
         portal.then(gate("open", (g, b) -> b.executes(c -> open(c, g))));
         portal.then(gate("close", (g, b) -> b.executes(c -> close(c, g))));
         portal.then(gate("enable", (g, b) -> b.then(Commands.argument("on", BoolArgumentType.bool()).executes(c -> enable(c, g)))));
@@ -205,6 +212,41 @@ public final class PortalCommands {
                 String.valueOf(card), pos.toShortString());
     }
 
+    /** Like applycard, but a jump card makes a fresh one-off world each jump. */
+    private static int warp(CommandContext<CommandSourceStack> c, GateRef ref, Identifier card) throws CommandSyntaxException {
+        final BlockPos pos = ref.get(c);
+        if (pos == null || PortalApi.gate(c.getSource().getLevel(), pos) == null) return fail(c, "message.simplemachines.portal.no_gate");
+        if (!PortalApi.setTarget(c.getSource().getLevel(), pos, card, List.of(), true)) {
+            return fail(c, "commands.simplemachines.portal.no_card", card.toString());
+        }
+        return ok(c, "commands.simplemachines.portal.warp_set", card.toString(), pos.toShortString());
+    }
+
+    private static int riftHold(CommandContext<CommandSourceStack> c, GateRef ref) throws CommandSyntaxException {
+        final BlockPos pos = ref.get(c);
+        if (pos == null) return fail(c, "message.simplemachines.portal.no_gate");
+        final String problem = PortalApi.holdRift(c.getSource().getLevel(), pos);
+        if (problem != null) return fail(c, problem);
+        return ok(c, "commands.simplemachines.portal.rift_held");
+    }
+
+    private static int riftDrop(CommandContext<CommandSourceStack> c, GateRef ref) throws CommandSyntaxException {
+        final BlockPos pos = ref.get(c);
+        if (pos == null || PortalApi.gate(c.getSource().getLevel(), pos) == null) return fail(c, "message.simplemachines.portal.no_gate");
+        if (!PortalApi.dropRift(c.getSource().getLevel(), pos)) return fail(c, "commands.simplemachines.portal.no_rift");
+        return ok(c, "commands.simplemachines.portal.rift_dropped");
+    }
+
+    private static int riftInfo(CommandContext<CommandSourceStack> c, GateRef ref) throws CommandSyntaxException {
+        final BlockPos pos = ref.get(c);
+        if (pos == null || PortalApi.gate(c.getSource().getLevel(), pos) == null) return fail(c, "message.simplemachines.portal.no_gate");
+        final PortalData.Rift r = PortalRifts.of(c.getSource().getLevel(), pos);
+        if (r == null) return fail(c, "commands.simplemachines.portal.no_rift");
+        return ok(c, "commands.simplemachines.portal.rift_info", r.level.identifier().toString(), r.pos.toShortString(),
+                Integer.toString(r.secondsLeft), Integer.toString(r.away.size()), Boolean.toString(r.low), Boolean.toString(r.held),
+                Integer.toString(r.tier));
+    }
+
     private static int open(CommandContext<CommandSourceStack> c, GateRef ref) throws CommandSyntaxException {
         final GateControllerBlockEntity g = gateAt(c, ref);
         if (g == null) return fail(c, "message.simplemachines.portal.no_gate");
@@ -242,7 +284,7 @@ public final class PortalCommands {
         return ok(c, "commands.simplemachines.portal.info", g.getBlockPos().toShortString(),
                 f == null ? "none" : f.tier().id() + " " + f.width() + "x" + f.height(), String.valueOf(g.activeCard()),
                 g.hiddenCardActive() ? "hidden" : "item", next == null ? "-" : next.id().toString(), String.valueOf(g.worldId()),
-                Boolean.toString(g.enabled()), Boolean.toString(g.closed()));
+                Boolean.toString(g.enabled()), Boolean.toString(g.closedMode()));
     }
 
     // --- research and cards ---

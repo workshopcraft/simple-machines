@@ -44,6 +44,7 @@ public final class PortalFabric {
         Portal.registerTabs(direct(BuiltInRegistries.CREATIVE_MODE_TAB));
         Portal.registerBlockEntities(direct(BuiltInRegistries.BLOCK_ENTITY_TYPE));
         Portal.registerMenus(direct(BuiltInRegistries.MENU));
+        Portal.registerTicketTypes(direct(BuiltInRegistries.TICKET_TYPE));
         Portal.registerChunkGenerators(direct(BuiltInRegistries.CHUNK_GENERATOR));
         Portal.registerPlacementModifiers(direct(BuiltInRegistries.PLACEMENT_MODIFIER_TYPE));
         EnergyStorage.SIDED.registerForBlockEntity((be, side) -> new BufferEnergyStorage(be.energy(), true, false) {

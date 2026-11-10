@@ -1,0 +1,28 @@
+{
+  "variants": {
+    "axis=x,half=lower,low=false": {
+      "model": "simplemachines:block/return_rift_lower_ns"
+    },
+    "axis=z,half=lower,low=false": {
+      "model": "simplemachines:block/return_rift_lower_ew"
+    },
+    "axis=x,half=lower,low=true": {
+      "model": "simplemachines:block/return_rift_lower_ns_low"
+    },
+    "axis=z,half=lower,low=true": {
+      "model": "simplemachines:block/return_rift_lower_ew_low"
+    },
+    "axis=x,half=upper,low=false": {
+      "model": "simplemachines:block/return_rift_upper_ns"
+    },
+    "axis=z,half=upper,low=false": {
+      "model": "simplemachines:block/return_rift_upper_ew"
+    },
+    "axis=x,half=upper,low=true": {
+      "model": "simplemachines:block/return_rift_upper_ns_low"
+    },
+    "axis=z,half=upper,low=true": {
+      "model": "simplemachines:block/return_rift_upper_ew_low"
+    }
+  }
+}

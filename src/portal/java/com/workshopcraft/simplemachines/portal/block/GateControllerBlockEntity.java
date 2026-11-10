@@ -15,6 +15,7 @@ import com.workshopcraft.simplemachines.portal.PortalCard;
 import com.workshopcraft.simplemachines.portal.PortalConfig;
 import com.workshopcraft.simplemachines.portal.PortalData;
 import com.workshopcraft.simplemachines.portal.PortalResources;
+import com.workshopcraft.simplemachines.portal.PortalRifts;
 import com.workshopcraft.simplemachines.portal.PortalTravel;
 import com.workshopcraft.simplemachines.portal.world.PortalWorlds;
 import com.workshopcraft.simplemachines.portal.world.WorldPreset;
@@ -49,23 +50,28 @@ import java.util.List;
  * or this gate's hidden binding map for hidden cards). A bound card always links back to that world and never makes another.
  * Story cards are a do-over: until the objective is collected every jump makes a new attempt world (same preset, new seed)
  * and the last attempt is marked superseded. After collection a kept story card goes back to the finished world.
+ * Closed mode (brief A7; per gate, or every gate with portal_player_programming off): no card slot, only pellets and
+ * energy go in, and the destination comes from a hidden card set by the API, a command or a quest.
+ * A player who comes out on the far side opens a return rift there (PortalRifts), paid for from this gate while it is open.
  */
 public class GateControllerBlockEntity extends WorkBlockEntity {
     public static final int CAPACITY = 32_000_000;
     public static final int MAX_IN = Voltage.RATE[Voltage.HV];
     public static final int UPKEEP = 0;
     public static final int SLOT_CORE = 0, SLOT_CARD = 1, FIRST_PELLET = 2, SLOTS = 5;
-    public static final int DATA_COUNT = 12;
+    public static final int DATA_COUNT = 13;
 
     public static final int OK = 0, OPEN = 1, NO_FRAME = 2, NO_CORE = 3, NO_CARD = 4, WEAK_FRAME = 5, NO_PELLETS = 6, NO_ENERGY = 7,
-            DISABLED = 8, LOCKED = 9, STARTING = 10, NO_WORLD = 11, UNDERFED = 12;
+            DISABLED = 8, LOCKED = 9, STARTING = 10, NO_WORLD = 11, UNDERFED = 12, NO_TARGET = 13;
     public static final String[] STATUS = {"ready", "open", "no_frame", "no_core", "no_card", "weak_frame", "no_pellets", "no_energy",
-            "disabled", "locked", "starting", "no_world", "underfed"};
+            "disabled", "locked", "starting", "no_world", "underfed", "no_target"};
     /** Ticks the gate stays browned out after the last low voltage feed, and between brownout hits. */
     private static final int UNDERFED_TICKS = 100, BROWNOUT_COOLDOWN = 40;
 
     private @Nullable Identifier hiddenCard;
     private List<String> hiddenForced = List.of();
+    /** The hidden card makes a fresh one-off world each jump instead of binding (API warp). */
+    private boolean hiddenOneOff;
     /** Hidden card id to the world it is bound to, so applying the same hidden card again goes back to the same world. */
     private final java.util.Map<String, String> hiddenBindings = new java.util.LinkedHashMap<>();
     /** Story card id to its latest attempt world from this gate. */
@@ -98,7 +104,8 @@ public class GateControllerBlockEntity extends WorkBlockEntity {
                 case 8 -> needEnergy / 1000;
                 case 9 -> frame == null ? 0 : frame.tier().level;
                 case 10 -> frame == null ? 0 : frame.width() << 8 | frame.height();
-                case 11 -> (enabled ? 1 : 0) | (closed ? 2 : 0);
+                case 11 -> flags();
+                case 12 -> riftSeconds();
                 default -> 0;
             };
         }
@@ -112,6 +119,22 @@ public class GateControllerBlockEntity extends WorkBlockEntity {
         }
     };
 
+    /** Bits for the screen: 1 enabled, 2 closed mode, 4 players may open, 8 rift open, 16 rift flickering. */
+    private int flags() {
+        int f = (enabled ? 1 : 0) | (closedMode() ? 2 : 0) | (playersMayOpen() ? 4 : 0);
+        if (level instanceof ServerLevel s) {
+            final PortalData.Rift r = PortalRifts.of(s, worldPosition);
+            if (r != null) f |= 8 | (r.low ? 16 : 0);
+        }
+        return f;
+    }
+
+    private int riftSeconds() {
+        if (!(level instanceof ServerLevel s)) return 0;
+        final PortalData.Rift r = PortalRifts.of(s, worldPosition);
+        return r == null || r.secondsLeft < 0 ? 0xFFFF : Math.min(0xFFFE, r.secondsLeft);
+    }
+
     public GateControllerBlockEntity(BlockPos pos, BlockState state) {
         super(Portal.GATE_ENTITY, pos, state, SLOTS, CAPACITY, MAX_IN, 0);
     }
@@ -123,6 +146,7 @@ public class GateControllerBlockEntity extends WorkBlockEntity {
 
     @Override
     protected boolean accepts(ServerLevel level, int slot, ItemStack stack) {
+        if (slot == SLOT_CARD && closedMode()) return false;
         return valid(slot, stack);
     }
 
@@ -239,20 +263,34 @@ public class GateControllerBlockEntity extends WorkBlockEntity {
             }
             if (openTicks <= 0 || !enabled) close(level);
         }
-        final boolean lit = openTicks > 0;
+        PortalRifts.tickGate(level, this);
+        final boolean lit = openTicks > 0 || PortalRifts.of(level, pos) != null;
         if (state.getValue(MachineBlock.LIT) != lit) level.setBlock(pos, state.setValue(MachineBlock.LIT, lit), 3);
         if (level.getGameTime() % 20 == 0) setChanged();
     }
 
     // --- card and target ---
 
+    /** The hidden card wins; in closed mode it is the only one, and a card item left in the slot is ignored. */
     public @Nullable Identifier activeCard() {
-        if (hiddenCard != null) return hiddenCard;
+        if (hiddenCard != null || closedMode()) return hiddenCard;
         return items.get(SLOT_CARD).get(Portal.CARD);
+    }
+
+    /**
+     * Whether the next jump makes a one-off world: a hidden jump card applied as a warp (API), or any hidden jump card in
+     * closed mode while portal_closed_mode_new_world_each_jump is on. One-off worlds bind to nothing.
+     */
+    public boolean oneOffActive() {
+        if (hiddenCard == null || !(level instanceof ServerLevel s)) return false;
+        final PortalCard def = PortalResources.cards(s.getServer()).get(hiddenCard);
+        if (def == null || def.kind() != PortalCard.Kind.JUMP) return false;
+        return hiddenOneOff || closedMode() && PortalConfig.bool(s.getServer(), PortalConfig.CLOSED_NEW_WORLDS);
     }
 
     /** The world the active card is bound to, or null for a card that has not made one yet. */
     public @Nullable String activeBound() {
+        if (oneOffActive()) return null;
         final Identifier card = activeCard();
         if (card != null && level instanceof ServerLevel s) {
             final PortalCard def = PortalResources.cards(s.getServer()).get(card);
@@ -268,6 +306,7 @@ public class GateControllerBlockEntity extends WorkBlockEntity {
     }
 
     private void bind(PortalCard card, String world) {
+        if (oneOffActive()) return;
         if (card.kind() == PortalCard.Kind.STORY && level instanceof ServerLevel s) {
             final String last = storyAttempts.put(card.id().toString(), world);
             final PortalData data = PortalData.get(s.getServer());
@@ -299,7 +338,12 @@ public class GateControllerBlockEntity extends WorkBlockEntity {
     }
 
     public void setHiddenCard(@Nullable Identifier card, List<String> forced) {
+        setHiddenCard(card, forced, false);
+    }
+
+    public void setHiddenCard(@Nullable Identifier card, List<String> forced, boolean oneOff) {
         hiddenCard = card;
+        hiddenOneOff = card != null && oneOff;
         hiddenForced = card == null ? List.of() : List.copyOf(forced);
         nextPreset = null;
         rolledFor = null;
@@ -313,12 +357,75 @@ public class GateControllerBlockEntity extends WorkBlockEntity {
 
     public void setEnabled(boolean on) {
         enabled = on;
-        if (!on && level instanceof ServerLevel s) close(s);
+        if (!on && level instanceof ServerLevel s) {
+            close(s);
+            dropRift(s, PortalRifts.Reason.DROPPED);
+        }
         setChanged();
     }
 
+    /** This gate's own closed mode flag (API or command). See closedMode for the one that counts. */
     public boolean closed() {
         return closed;
+    }
+
+    /** Closed mode: set on this gate, or on every gate when portal_player_programming is off. */
+    public boolean closedMode() {
+        return closed || level != null && level.getServer() != null && !PortalConfig.bool(level.getServer(), PortalConfig.PLAYER_PROGRAMMING);
+    }
+
+    /** Whether a player may press Open. Always outside closed mode; in closed mode only with portal_closed_mode_player_open. */
+    public boolean playersMayOpen() {
+        return !closedMode() || level != null && PortalConfig.bool(level.getServer(), PortalConfig.CLOSED_PLAYER_OPEN);
+    }
+
+    public boolean riftOpen() {
+        return level instanceof ServerLevel s && PortalRifts.of(s, worldPosition) != null;
+    }
+
+    public boolean dropRift(ServerLevel level, PortalRifts.Reason reason) {
+        final PortalData.Rift r = PortalRifts.of(level, worldPosition);
+        if (r == null) return false;
+        PortalRifts.collapse(level.getServer(), r, reason);
+        return true;
+    }
+
+    /** Holds a rift open beside the landing spot of the world this gate last opened, without anyone travelling. */
+    public @Nullable String holdRift() {
+        if (!(level instanceof ServerLevel s)) return "message.simplemachines.portal.no_gate";
+        final MinecraftServer ms = s.getServer();
+        final ServerLevel far = target == null ? null : ms.getLevel(target);
+        if (far == null) return "message.simplemachines.portal.rift_no_world";
+        final PortalData.World w = worldId == null ? null : PortalData.get(ms).world(worldId);
+        final BlockPos landing = PortalTravel.landing(far, w, worldPosition, s);
+        PortalRifts.open(ms, GlobalPos.of(s.dimension(), worldPosition), far, landing, worldId, true);
+        return null;
+    }
+
+    /** Takes FE from the buffer for the rift. False when there is not enough. */
+    public boolean drain(int fe) {
+        if (energy.energy < fe) return false;
+        energy.energy -= fe;
+        setChanged();
+        return true;
+    }
+
+    public int pellets() {
+        int n = 0;
+        for (int i = FIRST_PELLET; i < SLOTS; i++) if (items.get(i).is(Portal.entangledPellet)) n += items.get(i).getCount();
+        return n;
+    }
+
+    public boolean takePellet() {
+        for (int i = FIRST_PELLET; i < SLOTS; i++) {
+            final ItemStack s = items.get(i);
+            if (s.is(Portal.entangledPellet)) {
+                s.shrink(1);
+                setChanged();
+                return true;
+            }
+        }
+        return false;
     }
 
     public void setClosed(boolean on) {
@@ -390,7 +497,7 @@ public class GateControllerBlockEntity extends WorkBlockEntity {
         if (!items.get(SLOT_CORE).is(Portal.entangledCore)) return NO_CORE;
         final Identifier cardId = activeCard();
         final PortalCard card = cardId == null ? null : PortalResources.cards(server).get(cardId);
-        if (card == null) return NO_CARD;
+        if (card == null) return closedMode() ? NO_TARGET : NO_CARD;
         final PortalApi.JumpCost cost;
         FrameTier need = card.minFrame() == null ? FrameTier.IRON : card.minFrame();
         if (card.kind() == PortalCard.Kind.NETHER || card.kind() == PortalCard.Kind.END) {
@@ -407,9 +514,11 @@ public class GateControllerBlockEntity extends WorkBlockEntity {
         needPellets = cost.pellets();
         needEnergy = cost.energy();
         if (!frame.tier().reaches(need)) return WEAK_FRAME;
-        int pellets = 0;
-        for (int i = FIRST_PELLET; i < SLOTS; i++) if (items.get(i).is(Portal.entangledPellet)) pellets += items.get(i).getCount();
-        if (pellets < cost.pellets()) return NO_PELLETS;
+        return pay(cost, take);
+    }
+
+    private int pay(PortalApi.JumpCost cost, boolean take) {
+        if (pellets() < cost.pellets()) return NO_PELLETS;
         if (energy.energy < cost.energy()) return NO_ENERGY;
         if (take) {
             int left = cost.pellets();
@@ -431,6 +540,8 @@ public class GateControllerBlockEntity extends WorkBlockEntity {
         if (!(level instanceof ServerLevel server)) return "message.simplemachines.portal.no_gate";
         if (openTicks > 0) return "message.simplemachines.portal.already_open";
         frame = GateFrame.find(server, worldPosition, Math.max(2, PortalConfig.integer(server.getServer(), PortalConfig.MAX_OPENING)));
+        final PortalData.Rift rift = PortalRifts.of(server, worldPosition);
+        if (rift != null) return reopen(server, rift);
         final int result = check(server, player, true);
         if (result != OK) {
             status = result;
@@ -458,6 +569,7 @@ public class GateControllerBlockEntity extends WorkBlockEntity {
                 w = new PortalData.World(data.newId(), preset.id(), server.getRandom().nextLong(), card.id(),
                         new ArrayList<>(activeForced()), here);
                 w.hiddenCard = hiddenCard != null;
+                w.oneOff = oneOffActive();
                 data.put(w);
                 bind(card, w.id);
             }
@@ -483,6 +595,33 @@ public class GateControllerBlockEntity extends WorkBlockEntity {
             }
         }
         status = starting ? STARTING : OPEN;
+        setChanged();
+        return null;
+    }
+
+    /**
+     * While a rift is open the gate only opens back to the rift's world, for the same price as a jump to it, so more
+     * players can follow. A new destination needs the rift closed first.
+     */
+    private @Nullable String reopen(ServerLevel server, PortalData.Rift rift) {
+        int result = !enabled ? DISABLED : underfed > 0 ? UNDERFED : frame == null ? NO_FRAME
+                : !items.get(SLOT_CORE).is(Portal.entangledCore) ? NO_CORE : OK;
+        if (result == OK) {
+            final PortalApi.JumpCost cost = PortalApi.cost(server.getServer(), rift.tier, 1, frame.area());
+            needPellets = cost.pellets();
+            needEnergy = cost.energy();
+            result = pay(cost, true);
+        }
+        if (result != OK) {
+            status = result;
+            return "gui.simplemachines.portal.status." + STATUS[result];
+        }
+        target = rift.level;
+        worldId = rift.world;
+        openTotal = Math.max(5, PortalConfig.integer(server.getServer(), PortalConfig.OPEN_SECONDS)) * 20;
+        openTicks = openTotal;
+        placeField(server);
+        status = OPEN;
         setChanged();
         return null;
     }
@@ -543,6 +682,13 @@ public class GateControllerBlockEntity extends WorkBlockEntity {
         }
     }
 
+    /** The controller is broken or replaced (not just unloaded): its rift collapses. */
+    @Override
+    public void preRemoveSideEffects(BlockPos pos, BlockState state) {
+        if (level instanceof ServerLevel s) dropRift(s, PortalRifts.Reason.GATE_GONE);
+        super.preRemoveSideEffects(pos, state);
+    }
+
     @Override
     public void setRemoved() {
         if (level instanceof ServerLevel s) PortalTravel.deactivate(s, worldPosition);
@@ -554,6 +700,7 @@ public class GateControllerBlockEntity extends WorkBlockEntity {
         super.loadAdditional(input);
         hiddenCard = input.getString("hidden_card").map(Identifier::tryParse).orElse(null);
         hiddenForced = input.read("hidden_forced", Codec.STRING.listOf()).orElse(List.of());
+        hiddenOneOff = input.getBooleanOr("hidden_one_off", false);
         hiddenBindings.clear();
         hiddenBindings.putAll(input.read("hidden_bindings", Codec.unboundedMap(Codec.STRING, Codec.STRING)).orElse(java.util.Map.of()));
         storyAttempts.clear();
@@ -561,6 +708,8 @@ public class GateControllerBlockEntity extends WorkBlockEntity {
         enabled = input.getBooleanOr("enabled", true);
         closed = input.getBooleanOr("closed", false);
         worldId = input.getString("world").orElse(null);
+        target = input.getString("target").map(Identifier::tryParse)
+                .map(id -> ResourceKey.create(net.minecraft.core.registries.Registries.DIMENSION, id)).orElse(null);
         nextPreset = input.getString("next_preset").map(Identifier::tryParse).orElse(null);
         rolledFor = input.getString("rolled_for").map(Identifier::tryParse).orElse(null);
         // a field never survives a reload; the gate comes back closed
@@ -572,11 +721,13 @@ public class GateControllerBlockEntity extends WorkBlockEntity {
         super.saveAdditional(output);
         if (hiddenCard != null) output.putString("hidden_card", hiddenCard.toString());
         if (!hiddenForced.isEmpty()) output.store("hidden_forced", Codec.STRING.listOf(), hiddenForced);
+        if (hiddenOneOff) output.putBoolean("hidden_one_off", true);
         if (!hiddenBindings.isEmpty()) output.store("hidden_bindings", Codec.unboundedMap(Codec.STRING, Codec.STRING), hiddenBindings);
         if (!storyAttempts.isEmpty()) output.store("story_attempts", Codec.unboundedMap(Codec.STRING, Codec.STRING), storyAttempts);
         output.putBoolean("enabled", enabled);
         output.putBoolean("closed", closed);
         if (worldId != null) output.putString("world", worldId);
+        if (target != null) output.putString("target", target.identifier().toString());
         if (nextPreset != null) output.putString("next_preset", nextPreset.toString());
         if (rolledFor != null) output.putString("rolled_for", rolledFor.toString());
     }

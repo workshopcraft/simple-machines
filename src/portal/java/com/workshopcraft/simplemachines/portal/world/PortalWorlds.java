@@ -163,6 +163,7 @@ public final class PortalWorlds {
     public static void unload(MinecraftServer server, String id, boolean delete, Consumer<ServerPlayer> evacuate) {
         final ResourceKey<Level> key = key(id);
         final ServerLevel level = server.getLevel(key);
+        com.workshopcraft.simplemachines.portal.PortalRifts.levelGone(server, key);
         if (level != null) {
             for (ServerPlayer p : List.copyOf(level.players())) evacuate.accept(p);
             for (ServerPlayer p : List.copyOf(level.players())) toSpawn(server, p);

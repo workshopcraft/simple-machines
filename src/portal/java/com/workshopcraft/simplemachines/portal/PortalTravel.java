@@ -2,7 +2,6 @@ package com.workshopcraft.simplemachines.portal;
 
 import com.workshopcraft.simplemachines.portal.block.GateControllerBlockEntity;
 import com.workshopcraft.simplemachines.portal.block.ObjectiveCoreBlock;
-import com.workshopcraft.simplemachines.portal.block.ReturnBeaconBlockEntity;
 import com.workshopcraft.simplemachines.portal.world.PortalChunkGenerator;
 import com.workshopcraft.simplemachines.portal.world.PortalWorlds;
 import net.minecraft.core.BlockPos;
@@ -34,7 +33,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
-/** Moving through gates, landing spots, return beacons, objectives and cleaning up worlds nobody uses. */
+/** Moving through gates, landing spots, the way back, objectives and cleaning up worlds nobody uses. */
 public final class PortalTravel {
     /** Open gates per level: controller position to the box of its opening. */
     private static final Map<ResourceKey<Level>, Map<BlockPos, AABB>> ACTIVE = new HashMap<>();
@@ -80,18 +79,18 @@ public final class PortalTravel {
         if (!PortalApi.fireBefore(entity, gp, targetKey)) return;
         final PortalData.World w = worldId == null ? null : PortalData.get(server).world(worldId);
         final BlockPos landing = landing(target, w, gate, from);
-        placeBeacon(target, landing, gp);
         COOLDOWN.put(entity.getUUID(), now);
         final Entity moved = entity.teleport(new TeleportTransition(target, Vec3.atBottomCenterOf(landing), Vec3.ZERO, entity.getYRot(),
                 entity.getXRot(), TeleportTransition.PLAY_PORTAL_SOUND.then(TeleportTransition.PLACE_PORTAL_TICKET)));
         if (moved != null) {
             COOLDOWN.put(moved.getUUID(), now);
+            if (moved instanceof ServerPlayer p) PortalRifts.arrived(from, gate, target, landing, worldId, p);
             PortalApi.fireAfter(moved, gp, targetKey);
         }
     }
 
     /** Where a trip arrives: the world's saved landing, or a safe spot worked out and saved on the first trip. */
-    static BlockPos landing(ServerLevel target, PortalData.@Nullable World w, BlockPos gate, ServerLevel from) {
+    public static BlockPos landing(ServerLevel target, PortalData.@Nullable World w, BlockPos gate, ServerLevel from) {
         if (w != null && w.landing != null) return w.landing;
         BlockPos spot;
         if (target.dimension() == Level.END) {
@@ -133,15 +132,9 @@ public final class PortalTravel {
         }
     }
 
-    /** M2 placeholder for the M3 return rift: a beacon next to the landing spot that sends players back to their gate. */
-    private static void placeBeacon(ServerLevel level, BlockPos landing, GlobalPos gate) {
-        final BlockPos b = landing.offset(2, 0, 0);
-        if (!level.getBlockState(b).is(Portal.returnBeacon)) {
-            final BlockPos floor = b.below();
-            if (!level.getBlockState(floor).isSolid()) level.setBlockAndUpdate(floor, Blocks.STONE_BRICKS.defaultBlockState());
-            level.setBlockAndUpdate(b, Portal.returnBeacon.defaultBlockState());
-        }
-        if (level.getBlockEntity(b) instanceof ReturnBeaconBlockEntity be) be.setGate(gate);
+    static boolean coolingDown(Entity e) {
+        final Long last = COOLDOWN.get(e.getUUID());
+        return last != null && e.level().getServer().getTickCount() - last < COOLDOWN_TICKS;
     }
 
     /** Sends a player back to the gate the beacon names, in front of its controller, or to world spawn if it is gone. */
@@ -195,17 +188,19 @@ public final class PortalTravel {
     }
 
     /**
-     * Every few seconds. Worlds bound to an item card are kept for good. Deleted once empty long enough and no open gate
-     * points at them: story attempts replaced by a newer attempt (portal_cleanup_failed_story_worlds, on by default),
-     * and worlds with no card, which only commands make (portal_cleanup_unbound_worlds, off by default).
+     * Every few seconds. Worlds bound to a card are kept for good. Deleted once empty long enough, with no open gate or
+     * rift pointing at them: one-off worlds whose trip is over (portal_keep_one_off_worlds, false by default), story
+     * attempts replaced by a newer attempt (portal_cleanup_failed_story_worlds, on by default), and worlds with no card,
+     * which only commands make (portal_cleanup_unbound_worlds, off by default).
      */
     public static void tick(MinecraftServer server) {
         if (server.getTickCount() % 100 != 0) return;
         COOLDOWN.values().removeIf(t -> server.getTickCount() - t > COOLDOWN_TICKS * 4L);
         final boolean unbound = PortalConfig.bool(server, PortalConfig.CLEANUP_UNBOUND);
         final boolean story = PortalConfig.bool(server, PortalConfig.CLEANUP_FAILED_STORY);
-        if (!unbound && !story) return;
-        final Set<String> open = new HashSet<>();
+        final boolean oneOff = !PortalConfig.bool(server, PortalConfig.KEEP_ONE_OFF_WORLDS);
+        if (!unbound && !story && !oneOff) return;
+        final Set<String> open = new HashSet<>(PortalRifts.worldsWithRifts(server));
         for (Map.Entry<ResourceKey<Level>, Map<BlockPos, AABB>> e : ACTIVE.entrySet()) {
             final ServerLevel l = server.getLevel(e.getKey());
             if (l == null) continue;
@@ -216,7 +211,7 @@ public final class PortalTravel {
         final long now = server.getTickCount();
         final long wait = PortalConfig.integer(server, PortalConfig.EMPTY_WORLD_SECONDS) * 20L;
         for (PortalData.World w : PortalData.get(server).worlds()) {
-            final boolean mayGo = w.card == null ? unbound : story && w.superseded && !w.collected;
+            final boolean mayGo = w.oneOff ? oneOff : w.card == null ? unbound : story && w.superseded && !w.collected;
             if (!mayGo) continue;
             if (open.contains(w.id)) {
                 EMPTY_SINCE.remove(w.id);

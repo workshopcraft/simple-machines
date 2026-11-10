@@ -82,5 +82,19 @@
   "message.simplemachines.research.imprinted": "Card programmed with %s",
   "gui.simplemachines.portal.status.underfed": "Browned out: needs HV power",
   "gui.simplemachines.portal.hv_only": "HV power only",
-  "gui.simplemachines.portal.hv_warning": "LV or MV browns the gate out and burns out the cables"
+  "gui.simplemachines.portal.hv_warning": "LV or MV browns the gate out and burns out the cables",
+  "gui.simplemachines.portal.close_rift": "Close Rift",
+  "gui.simplemachines.portal.rift_open": "Rift open: %s left",
+  "gui.simplemachines.portal.rift_low": "Rift failing: %s left",
+  "gui.simplemachines.portal.status.no_target": "Waiting for a destination",
+  "message.simplemachines.portal.rift_collapsed": "The rift has collapsed. You are stranded here.",
+  "message.simplemachines.portal.rift_flicker": "The rift is flickering. The gate is running out of fuel.",
+  "message.simplemachines.portal.rift_no_world": "This gate has not opened to a world yet",
+  "message.simplemachines.portal.closed_mode_no_open": "This gate is controlled from elsewhere",
+  "message.simplemachines.research.programming_off": "Cards cannot be programmed on this server",
+  "commands.simplemachines.portal.warp_set": "Warp to %s set on the gate at %s. Each jump makes a new world",
+  "commands.simplemachines.portal.rift_held": "Rift held open",
+  "commands.simplemachines.portal.rift_dropped": "Rift dropped",
+  "commands.simplemachines.portal.no_rift": "That gate has no open rift",
+  "commands.simplemachines.portal.rift_info": "Rift in %s at %s. Fuel left: %ss. Still away: %s. Flickering: %s. Held: %s. Tier: %s"
 }

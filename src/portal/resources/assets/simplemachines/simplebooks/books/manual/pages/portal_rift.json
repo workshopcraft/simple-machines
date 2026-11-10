@@ -1,0 +1,9 @@
+{
+  "section": "portals",
+  "sort": 3,
+  "title": "Return Rifts",
+  "subtitle": "The way home, while the fuel lasts",
+  "text": "There is no gate on the far side. The gate you left from holds a rift open beside the spot where you land. Walk into it to go back.\n\nHolding the rift open costs the gate energy every second and an Entangled Pellet every minute, from its own buffer and pellet slots. Keep the gate powered and stocked while you are away. Richer worlds cost more to hold.\n\nWhen the fuel is nearly gone the rift flickers and sparks. When it runs out, the rift collapses and you are stranded.\n\nThe rift closes by itself once everyone who came through has gone back. Close Rift on the gate drops it at once.",
+  "right_title": "Recipes",
+  "steps": []
+}

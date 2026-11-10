@@ -6,6 +6,9 @@ import com.workshopcraft.simplemachines.SimpleMachines;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.GlobalPos;
 import net.minecraft.core.UUIDUtil;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.world.level.Level;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.datafix.DataFixTypes;
@@ -39,13 +42,15 @@ public class PortalData extends SavedData {
                 BlockPos.CODEC.optionalFieldOf("landing").forGetter(w -> Optional.ofNullable(w.landing)),
                 Codec.BOOL.optionalFieldOf("collected", false).forGetter(w -> w.collected),
                 Codec.BOOL.optionalFieldOf("hidden_card", false).forGetter(w -> w.hiddenCard),
-                Codec.BOOL.optionalFieldOf("superseded", false).forGetter(w -> w.superseded)
-        ).apply(i, (id, preset, seed, card, forced, gate, landing, collected, hidden, superseded) -> {
+                Codec.BOOL.optionalFieldOf("superseded", false).forGetter(w -> w.superseded),
+                Codec.BOOL.optionalFieldOf("one_off", false).forGetter(w -> w.oneOff)
+        ).apply(i, (id, preset, seed, card, forced, gate, landing, collected, hidden, superseded, oneOff) -> {
             final World w = new World(id, preset, seed, card.orElse(null), forced, gate.orElse(null));
             w.landing = landing.orElse(null);
             w.collected = collected;
             w.hiddenCard = hidden;
             w.superseded = superseded;
+            w.oneOff = oneOff;
             return w;
         }));
 
@@ -61,6 +66,8 @@ public class PortalData extends SavedData {
         public boolean hiddenCard;
         /** A story attempt left without the objective, replaced by a newer attempt. */
         public boolean superseded;
+        /** Made for a single trip (closed mode jump or API warp): bound to nothing, deleted after use unless config keeps it. */
+        public boolean oneOff;
 
         public World(String id, Identifier preset, long seed, @Nullable Identifier card, List<String> forced, @Nullable GlobalPos gate) {
             this.id = id;
@@ -72,13 +79,62 @@ public class PortalData extends SavedData {
         }
     }
 
+    /**
+     * A return rift: held open by the gate at gate, standing at pos in level. away is everyone who came through it and has not
+     * gone back yet (offline players stay listed). pelletTicks counts down to the next pellet; held rifts (API) never close
+     * for being empty.
+     */
+    public static final class Rift {
+        public static final Codec<Rift> CODEC = RecordCodecBuilder.create(i -> i.group(
+                GlobalPos.CODEC.fieldOf("gate").forGetter(r -> r.gate),
+                ResourceKey.codec(Registries.DIMENSION).fieldOf("level").forGetter(r -> r.level),
+                BlockPos.CODEC.fieldOf("pos").forGetter(r -> r.pos),
+                Codec.STRING.optionalFieldOf("world").forGetter(r -> Optional.ofNullable(r.world)),
+                Codec.INT.optionalFieldOf("tier", 1).forGetter(r -> r.tier),
+                Codec.BOOL.optionalFieldOf("low", false).forGetter(r -> r.low),
+                Codec.INT.optionalFieldOf("pellet_ticks", 0).forGetter(r -> r.pelletTicks),
+                Codec.BOOL.optionalFieldOf("held", false).forGetter(r -> r.held),
+                UUIDUtil.STRING_CODEC.listOf().optionalFieldOf("away", List.of()).forGetter(r -> List.copyOf(r.away))
+        ).apply(i, (gate, level, pos, world, tier, low, pt, held, away) -> {
+            final Rift r = new Rift(gate, level, pos, world.orElse(null), tier);
+            r.low = low;
+            r.pelletTicks = pt;
+            r.held = held;
+            r.away.addAll(away);
+            return r;
+        }));
+
+        public final GlobalPos gate;
+        public final ResourceKey<Level> level;
+        public final BlockPos pos;
+        public final @Nullable String world;
+        public final int tier;
+        public boolean low;
+        public int pelletTicks;
+        public boolean held;
+        public final Set<UUID> away = new LinkedHashSet<>();
+        /** Ticks since away became empty. Not saved. */
+        public int emptyTicks;
+        /** Seconds of fuel left at the last check. Not saved. */
+        public int secondsLeft = -1;
+
+        public Rift(GlobalPos gate, ResourceKey<Level> level, BlockPos pos, @Nullable String world, int tier) {
+            this.gate = gate;
+            this.level = level;
+            this.pos = pos.immutable();
+            this.world = world;
+            this.tier = Math.max(1, tier);
+        }
+    }
+
     public static final Codec<PortalData> CODEC = RecordCodecBuilder.create(i -> i.group(
             World.CODEC.listOf().optionalFieldOf("worlds", List.of()).forGetter(d -> List.copyOf(d.worlds.values())),
             Codec.STRING.listOf().optionalFieldOf("unlocks", List.of()).forGetter(d -> List.copyOf(d.unlocks)),
             Codec.unboundedMap(Codec.STRING, Codec.INT).optionalFieldOf("scans", Map.of()).forGetter(d -> d.scans),
             Codec.STRING.listOf().optionalFieldOf("pending_delete", List.of()).forGetter(d -> d.pendingDelete),
             Codec.INT.optionalFieldOf("next", 1).forGetter(d -> d.next),
-            Codec.unboundedMap(Codec.STRING, UUIDUtil.STRING_CODEC.listOf()).optionalFieldOf("occupants", Map.of()).forGetter(d -> d.occupants)
+            Codec.unboundedMap(Codec.STRING, UUIDUtil.STRING_CODEC.listOf()).optionalFieldOf("occupants", Map.of()).forGetter(d -> d.occupants),
+            Rift.CODEC.listOf().optionalFieldOf("rifts", List.of()).forGetter(d -> List.copyOf(d.rifts.values()))
     ).apply(i, PortalData::new));
     public static final SavedDataType<PortalData> TYPE = new SavedDataType<>(SimpleMachines.id("portal"), PortalData::new, CODEC,
             DataFixTypes.SAVED_DATA_COMMAND_STORAGE);
@@ -89,12 +145,14 @@ public class PortalData extends SavedData {
     final List<String> pendingDelete = new ArrayList<>();
     int next = 1;
     final Map<String, List<UUID>> occupants = new LinkedHashMap<>();
+    final Map<GlobalPos, Rift> rifts = new LinkedHashMap<>();
 
     public PortalData() {
     }
 
     private PortalData(List<World> worlds, List<String> unlocks, Map<String, Integer> scans, List<String> pending, int next,
-                       Map<String, List<UUID>> occupants) {
+                       Map<String, List<UUID>> occupants, List<Rift> rifts) {
+        for (Rift r : rifts) this.rifts.put(r.gate, r);
         for (Map.Entry<String, List<UUID>> e : occupants.entrySet()) this.occupants.put(e.getKey(), new ArrayList<>(e.getValue()));
         for (World w : worlds) this.worlds.put(w.id, w);
         this.unlocks.addAll(unlocks);
@@ -178,6 +236,32 @@ public class PortalData extends SavedData {
         for (List<UUID> l : occupants.values()) changed |= l.remove(player);
         occupants.values().removeIf(List::isEmpty);
         if (changed) setDirty();
+    }
+
+    /** The rift the gate at gate holds open, or null. */
+    public @Nullable Rift rift(GlobalPos gate) {
+        return rifts.get(gate);
+    }
+
+    /** The rift standing at pos (its lower block) in level, or null. */
+    public @Nullable Rift riftAt(ResourceKey<Level> level, BlockPos pos) {
+        for (Rift r : rifts.values()) if (r.level.equals(level) && r.pos.equals(pos)) return r;
+        return null;
+    }
+
+    public List<Rift> rifts() {
+        return List.copyOf(rifts.values());
+    }
+
+    public void putRift(Rift r) {
+        rifts.put(r.gate, r);
+        setDirty();
+    }
+
+    public @Nullable Rift removeRift(GlobalPos gate) {
+        final Rift r = rifts.remove(gate);
+        if (r != null) setDirty();
+        return r;
     }
 
     public List<String> pendingDelete() {

@@ -14,6 +14,7 @@ import com.workshopcraft.simplemachines.portal.block.ResearchStationBlock;
 import com.workshopcraft.simplemachines.portal.block.ResearchStationBlockEntity;
 import com.workshopcraft.simplemachines.portal.block.ReturnBeaconBlock;
 import com.workshopcraft.simplemachines.portal.block.ReturnBeaconBlockEntity;
+import com.workshopcraft.simplemachines.portal.block.ReturnRiftBlock;
 import com.workshopcraft.simplemachines.portal.item.MobScannerItem;
 import com.workshopcraft.simplemachines.portal.item.PortalCardItem;
 import com.workshopcraft.simplemachines.portal.world.ConfigFilter;
@@ -71,7 +72,7 @@ public final class Portal {
     public static final PlacementModifierType<ConfigFilter> CONFIG_FILTER = () -> ConfigFilter.CODEC;
 
     public static Block titaniumOre, deepslateTitaniumOre, titaniumBlock, steelBlock;
-    public static Block gateController, portalField, objectiveCore, returnBeacon, researchStation;
+    public static Block gateController, portalField, objectiveCore, returnBeacon, researchStation, returnRift;
     public static Item rawTitanium, titaniumDust, titaniumIngot, titaniumSheet, titaniumRod;
     public static Item entangledPellet, entangledCore, jumpCard, storyCard, netherCard, endCard, mobScanner;
 
@@ -138,6 +139,9 @@ public final class Portal {
                 .strength(-1.0F, 3600000.0F).noLootTable().lightLevel(s -> s.getValue(ObjectiveCoreBlock.SPENT) ? 3 : 14).sound(SoundType.AMETHYST)));
         returnBeacon = block(r, "return_beacon", new ReturnBeaconBlock(props("return_beacon").mapColor(MapColor.COLOR_LIGHT_BLUE)
                 .strength(-1.0F, 3600000.0F).noLootTable().lightLevel(s -> 15).sound(SoundType.METAL).noOcclusion()));
+        returnRift = block(r, "return_rift", new ReturnRiftBlock(props("return_rift").noCollision().strength(-1.0F, 3600000.0F)
+                .lightLevel(s -> s.getValue(ReturnRiftBlock.LOW) ? 6 : 11).noLootTable().pushReaction(PushReaction.BLOCK).sound(SoundType.GLASS)
+                .forceSolidOn().isViewBlocking((s, l, p) -> false).isSuffocating((s, l, p) -> false)));
         researchStation = block(r, "research_station", new ResearchStationBlock(props("research_station").mapColor(MapColor.METAL)
                 .requiresCorrectToolForDrops().strength(3.5F).sound(SoundType.METAL)
                 .lightLevel(s -> s.getValue(BlockStateProperties.LIT) ? 9 : 0)));
@@ -175,7 +179,8 @@ public final class Portal {
         endCard = item(r, "end_card", new PortalCardItem(itemProps("end_card").stacksTo(1)
                 .component(CARD, SimpleMachines.id("end")), PortalCard.Kind.END));
         mobScanner = item(r, "mob_scanner", new MobScannerItem(itemProps("mob_scanner").stacksTo(1)));
-        // placed by worldgen and gates only; items exist so creative players and commands can use them
+        // placed by worldgen and gates only; items exist so creative players and commands can use them.
+        // The Return Beacon was the 2.3.0-alpha.2 stand-in for the return rift; it stays registered so old test worlds load.
         r.accept(SimpleMachines.id("objective_core"), new BlockItem(objectiveCore, itemProps("objective_core").useBlockDescriptionPrefix()));
         r.accept(SimpleMachines.id("return_beacon"), new BlockItem(returnBeacon, itemProps("return_beacon").useBlockDescriptionPrefix()));
     }
@@ -187,6 +192,10 @@ public final class Portal {
         r.accept(SimpleMachines.id("research_station"), RESEARCH_ENTITY);
         BEACON_ENTITY = Registration.blockEntity(ReturnBeaconBlockEntity::new, Set.of(returnBeacon));
         r.accept(SimpleMachines.id("return_beacon"), BEACON_ENTITY);
+    }
+
+    public static void registerTicketTypes(BiConsumer<Identifier, net.minecraft.server.level.TicketType> r) {
+        r.accept(SimpleMachines.id("portal_rift"), PortalRifts.TICKET);
     }
 
     public static void registerMenus(BiConsumer<Identifier, MenuType<?>> r) {
@@ -230,7 +239,6 @@ public final class Portal {
                     // story cards and any other cards come from data and are listed by PortalCardItem's creative helper
                     for (ItemStack s : PortalCardItem.creativeCards()) out.accept(s);
                     out.accept(objectiveCore);
-                    out.accept(returnBeacon);
                 })
                 .build());
     }

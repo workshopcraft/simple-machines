@@ -150,3 +150,37 @@ def beacon_tex():
         for x in range(6, 10):
             px[x, y] = hexc('#8ae6e6' if (y % 3) else '#e0ffff') + (255,)
     return im
+
+def rift_frames(half, low, n=8):
+    """A frameless tear two blocks tall, drawn as two 16 wide halves. Bright core, ragged violet edges, see-through around it.
+    low: the fuel warning, where the tear stutters sideways, dims and drops out for a frame or two."""
+    im = Image.new('RGBA', (16, 16 * n), (0, 0, 0, 0))
+    px = im.load()
+    rnd = random.Random(7 if half == 'lower' else 11)
+    dims = [1.0, 0.35, 0.95, 0.0, 0.8, 0.25, 1.0, 0.55] if low else [1.0] * n
+    for f in range(n):
+        shift = (rnd.choice((-1, 0, 0, 1)) if low else 0)
+        b = dims[f % len(dims)]
+        for y in range(16):
+            gy = y if half == 'upper' else y + 16
+            t = (gy + 0.5) / 32.0
+            hw = 4.4 * math.sin(math.pi * t) ** 0.8
+            hw += 0.6 * math.sin(gy * 0.9 + f * 0.8) + (0.5 * rnd.random() if low else 0.25 * math.sin(gy * 2.1 - f))
+            cx = 7.5 + shift + 0.8 * math.sin(gy * 0.35 + f * 0.4)
+            for x in range(16):
+                d = abs(x - cx)
+                if hw <= 0.2 or d > hw + 1:
+                    continue
+                if d > hw:
+                    c, a = ENTANGLED[2], 60
+                else:
+                    k = 1 - d / max(hw, 0.01)
+                    shimmer = 0.15 * math.sin(gy * 1.3 + x * 0.7 + f * 1.1)
+                    i = max(1, min(5, int(1 + (k + shimmer) * 4.6)))
+                    c, a = ENTANGLED[i], int(150 + 105 * k)
+                if b < 1.0:
+                    c = tuple(int(v * (0.35 + 0.65 * b)) for v in c)
+                    a = int(a * b)
+                if a > 0:
+                    px[x, f * 16 + y] = c + (a,)
+    return im

@@ -43,14 +43,21 @@ public class GateMenu extends AbstractContainerMenu {
         addDataSlots(data);
     }
 
-    private static final class Only extends Slot {
+    private final class Only extends Slot {
         Only(Container c, int slot, int x, int y) {
             super(c, slot, x, y);
         }
 
         @Override
         public boolean mayPlace(ItemStack stack) {
+            if (getContainerSlot() == GateControllerBlockEntity.SLOT_CARD && closedMode()) return false;
             return GateControllerBlockEntity.valid(getContainerSlot(), stack);
+        }
+
+        /** Closed mode has no card slot: it is not drawn and cannot be clicked. */
+        @Override
+        public boolean isActive() {
+            return getContainerSlot() != GateControllerBlockEntity.SLOT_CARD || !closedMode();
         }
 
         @Override
@@ -63,12 +70,18 @@ public class GateMenu extends AbstractContainerMenu {
     public boolean clickMenuButton(Player player, int id) {
         if (gate == null || !(player instanceof ServerPlayer sp) || !(player.level() instanceof ServerLevel level)) return false;
         if (id == BUTTON_OPEN) {
+            if (!gate.playersMayOpen()) {
+                sp.sendSystemMessage(Component.translatable("message.simplemachines.portal.closed_mode_no_open"), true);
+                return true;
+            }
             final String problem = gate.tryOpen(sp);
             if (problem != null) sp.sendSystemMessage(Component.translatable(problem), true);
             return true;
         }
         if (id == BUTTON_CLOSE) {
-            gate.close(level);
+            // Close shuts an open field; with the field shut it drops the rift
+            if (gate.target() != null) gate.close(level);
+            else gate.dropRift(level, PortalRifts.Reason.DROPPED);
             return true;
         }
         return false;
@@ -126,6 +139,28 @@ public class GateMenu extends AbstractContainerMenu {
 
     public boolean enabled() {
         return (data.get(11) & 1) != 0;
+    }
+
+    public boolean closedMode() {
+        return (data.get(11) & 2) != 0;
+    }
+
+    public boolean playersMayOpen() {
+        return (data.get(11) & 4) != 0;
+    }
+
+    public boolean riftOpen() {
+        return (data.get(11) & 8) != 0;
+    }
+
+    public boolean riftLow() {
+        return (data.get(11) & 16) != 0;
+    }
+
+    /** Seconds of fuel the rift has left, or -1 while not yet known. */
+    public int riftSeconds() {
+        final int v = data.get(12) & 0xFFFF;
+        return v == 0xFFFF ? -1 : v;
     }
 
     @Override

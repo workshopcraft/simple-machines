@@ -47,6 +47,7 @@ public final class PortalNeoForge {
             e.register(Registries.CREATIVE_MODE_TAB, h -> Portal.registerTabs(h::register));
             e.register(Registries.BLOCK_ENTITY_TYPE, h -> Portal.registerBlockEntities(h::register));
             e.register(Registries.MENU, h -> Portal.registerMenus(h::register));
+            e.register(Registries.TICKET_TYPE, h -> Portal.registerTicketTypes(h::register));
             e.register(Registries.CHUNK_GENERATOR, h -> Portal.registerChunkGenerators(h::register));
             e.register(Registries.PLACEMENT_MODIFIER_TYPE, h -> Portal.registerPlacementModifiers(h::register));
         });

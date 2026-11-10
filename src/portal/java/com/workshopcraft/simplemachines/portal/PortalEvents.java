@@ -15,11 +15,13 @@ public final class PortalEvents {
 
     public static void serverStarted(MinecraftServer server) {
         PortalWorlds.serverStarted(server);
+        PortalRifts.restore(server);
     }
 
     public static void serverStopped(MinecraftServer server) {
         PortalWorlds.serverStopped();
         PortalTravel.serverStopped();
+        PortalRifts.serverStopped();
     }
 
     public static void join(ServerPlayer p) {

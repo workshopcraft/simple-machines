@@ -1,0 +1,7 @@
+{
+  "parent": "minecraft:block/nether_portal_ns",
+  "textures": {
+    "particle": "simplemachines:block/return_rift_lower_low",
+    "portal": "simplemachines:block/return_rift_lower_low"
+  }
+}

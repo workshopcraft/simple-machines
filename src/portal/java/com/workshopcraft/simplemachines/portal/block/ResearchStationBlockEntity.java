@@ -258,6 +258,11 @@ public class ResearchStationBlockEntity extends WorkBlockEntity {
         final Research r = current();
         final ItemStack card = items.get(SLOT_CARD);
         if (r == null || !card.is(Portal.jumpCard)) return false;
+        if (!com.workshopcraft.simplemachines.portal.PortalApi.playerProgramming(player.level().getServer())) {
+            // closed mode server: research still unlocks worlds, but players do not program cards
+            player.sendSystemMessage(Component.translatable("message.simplemachines.research.programming_off"));
+            return false;
+        }
         final PortalData data = PortalData.get(player.level().getServer());
         if (!player.isCreative() && data.scans(key(r)) < (r.mob() ? r.scans() : r.count()) && !data.unlocked("research:" + r.id())) {
             player.sendSystemMessage(Component.translatable("message.simplemachines.research.not_done"));

@@ -31,6 +31,24 @@ public final class PortalConfig {
     /** Percent of stored energy a brownout costs. */
     public static final String BROWNOUT_LOSS = "portal_brownout_loss_percent";
     public static final String EMPTY_WORLD_SECONDS = "portal_empty_world_seconds";
+    /** Off: closed mode for every gate. Players cannot insert or program cards; only the API, commands and quests pick worlds. */
+    public static final String PLAYER_PROGRAMMING = "portal_player_programming";
+    /** In closed mode players may still press Open and Close once a destination is set. Off: only the API and commands open gates. */
+    public static final String CLOSED_PLAYER_OPEN = "portal_closed_mode_player_open";
+    /** In closed mode a hidden jump card makes a new world on every jump instead of binding to its first one. */
+    public static final String CLOSED_NEW_WORLDS = "portal_closed_mode_new_world_each_jump";
+    /** FE a second the gate pays to hold a return rift open, times the world tier. */
+    public static final String RIFT_ENERGY = "portal_rift_energy_per_second";
+    /** Seconds of rift time one Entangled Pellet buys. */
+    public static final String RIFT_PELLET_SECONDS = "portal_rift_seconds_per_pellet";
+    /** The rift flickers once it has this many seconds of fuel left. */
+    public static final String RIFT_WARNING = "portal_rift_warning_seconds";
+    /** The rift closes by itself this long after everyone who came through it has gone back. 0 keeps it open until fuel runs out. */
+    public static final String RIFT_EMPTY_CLOSE = "portal_rift_empty_close_seconds";
+    /** The gate keeps its own chunk loaded while its rift is open, so the drain and the timer keep running. */
+    public static final String RIFT_CHUNK_LOADING = "portal_rift_chunk_loading";
+    /** One-off worlds (closed mode jumps, API warps) are deleted once their rift has closed and nobody is inside. True keeps them. */
+    public static final String KEEP_ONE_OFF_WORLDS = "portal_keep_one_off_worlds";
 
     private PortalConfig() {}
 
@@ -47,6 +65,15 @@ public final class PortalConfig {
         ServerConfig.define(LOW_VOLTAGE_DAMAGE, "true");
         ServerConfig.define(BROWNOUT_LOSS, "10");
         ServerConfig.define(EMPTY_WORLD_SECONDS, "120");
+        ServerConfig.define(PLAYER_PROGRAMMING, "true");
+        ServerConfig.define(CLOSED_PLAYER_OPEN, "true");
+        ServerConfig.define(CLOSED_NEW_WORLDS, "true");
+        ServerConfig.define(RIFT_ENERGY, "20000");
+        ServerConfig.define(RIFT_PELLET_SECONDS, "60");
+        ServerConfig.define(RIFT_WARNING, "30");
+        ServerConfig.define(RIFT_EMPTY_CLOSE, "15");
+        ServerConfig.define(RIFT_CHUNK_LOADING, "true");
+        ServerConfig.define(KEEP_ONE_OFF_WORLDS, "false");
     }
 
     public static boolean bool(MinecraftServer server, String key) {

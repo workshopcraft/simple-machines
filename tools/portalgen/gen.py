@@ -51,6 +51,12 @@ def textures():
     save(crystal(False), 'block/objective_core')
     save(crystal(True), 'block/objective_core_spent')
     save(beacon_tex(), 'block/return_beacon')
+    for half in ('lower', 'upper'):
+        for low in (False, True):
+            name = f'block/return_rift_{half}' + ('_low' if low else '')
+            save(rift_frames(half, low), name)
+            with open(os.path.join(A, 'textures', name + '.png.mcmeta'), 'w') as f:
+                json.dump({'animation': {'frametime': 2 if low else 3, 'interpolate': not low}}, f)
     guis()
 
 def slot(px, sx, sy):
@@ -131,6 +137,19 @@ def models():
             'particle': f'{NS}:block/portal_field', 'portal': f'{NS}:block/portal_field'}})
     write(os.path.join(A, 'blockstates/portal_field.json'), {'variants': {
         'axis=x': {'model': f'{NS}:block/portal_field_ns'}, 'axis=z': {'model': f'{NS}:block/portal_field_ew'}}})
+    # return rift: a thin see-through sheet, two blocks tall, no frame
+    variants = {}
+    for half in ('lower', 'upper'):
+        for low in (False, True):
+            tex = f'{NS}:block/return_rift_{half}' + ('_low' if low else '')
+            for axis, parent in (('ns', 'nether_portal_ns'), ('ew', 'nether_portal_ew')):
+                m = f'return_rift_{half}_{axis}' + ('_low' if low else '')
+                write(os.path.join(A, f'models/block/{m}.json'), {'parent': f'minecraft:block/{parent}', 'textures': {
+                    'particle': tex, 'portal': tex}})
+            for axis, mod in (('x', 'ns'), ('z', 'ew')):
+                variants[f'axis={axis},half={half},low={str(low).lower()}'] = {
+                    'model': f'{NS}:block/return_rift_{half}_{mod}' + ('_low' if low else '')}
+    write(os.path.join(A, 'blockstates/return_rift.json'), {'variants': variants})
 
 LANG = {}
 def lang():
@@ -138,7 +157,8 @@ def lang():
     names = {
         'titanium_ore': 'Titanium Ore', 'deepslate_titanium_ore': 'Deepslate Titanium Ore', 'titanium_block': 'Block of Titanium',
         'steel_block': 'Block of Steel', 'portal_gate_controller': 'Portal Gate Controller', 'portal_field': 'Portal Field',
-        'objective_core': 'Objective Core', 'return_beacon': 'Return Beacon', 'research_station': 'Research Station'}
+        'objective_core': 'Objective Core', 'return_beacon': 'Return Beacon', 'research_station': 'Research Station',
+        'return_rift': 'Return Rift'}
     for k, v in names.items():
         L[f'block.{NS}.{k}'] = v
     items = {
@@ -180,8 +200,16 @@ PAGES = [
      'touching it burns out and can start a fire. A generator placed right against it browns it out too. '
      'Step power up with transformers first.\n\n'
      'Put an Entangled Core and a card in it, and Entangled Pellets for fuel. Each jump uses pellets and a lot of energy; '
-     'rich, high tier worlds cost more. Press Open and walk through. A Return Beacon waits where you land: use it to come home.',
+     'rich, high tier worlds cost more. Press Open and walk through. A return rift opens where you land: walk into it to come home.\n\n'
+     'On some servers the gate is run by the story. It has no card slot and only needs pellets and power; the destination is set for you.',
      [('craft', 'portal_gate_controller'), ('craft', 'entangled_core'), ('craft', 'entangled_pellet')]),
+    ('portal_rift', 'Return Rifts', 'The way home, while the fuel lasts',
+     'There is no gate on the far side. The gate you left from holds a rift open beside the spot where you land. Walk into it to go back.\n\n'
+     'Holding the rift open costs the gate energy every second and an Entangled Pellet every minute, from its own buffer and pellet slots. '
+     'Keep the gate powered and stocked while you are away. Richer worlds cost more to hold.\n\n'
+     'When the fuel is nearly gone the rift flickers and sparks. When it runs out, the rift collapses and you are stranded.\n\n'
+     'The rift closes by itself once everyone who came through has gone back. Close Rift on the gate drops it at once.',
+     []),
     ('portal_cards', 'Cards and Worlds', 'Every card is one world',
      'A blank Jump Card makes a random world the first time it is used. After that the card is bound to that world for good and always goes back to it.\n\n'
      'Program a blank card at a Research Station to choose its world type or add ores and mobs you have researched. A bound card cannot be programmed.\n\n'
