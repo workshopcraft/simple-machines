@@ -196,6 +196,7 @@ public final class PortalTravel {
     public static void tick(MinecraftServer server) {
         if (server.getTickCount() % 100 != 0) return;
         COOLDOWN.values().removeIf(t -> server.getTickCount() - t > COOLDOWN_TICKS * 4L);
+        PortalRifts.sweep(server);
         final boolean unbound = PortalConfig.bool(server, PortalConfig.CLEANUP_UNBOUND);
         final boolean story = PortalConfig.bool(server, PortalConfig.CLEANUP_FAILED_STORY);
         final boolean oneOff = !PortalConfig.bool(server, PortalConfig.KEEP_ONE_OFF_WORLDS);

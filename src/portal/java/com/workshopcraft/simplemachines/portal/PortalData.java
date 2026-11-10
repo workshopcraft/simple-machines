@@ -94,13 +94,15 @@ public class PortalData extends SavedData {
                 Codec.BOOL.optionalFieldOf("low", false).forGetter(r -> r.low),
                 Codec.INT.optionalFieldOf("pellet_ticks", 0).forGetter(r -> r.pelletTicks),
                 Codec.BOOL.optionalFieldOf("held", false).forGetter(r -> r.held),
-                UUIDUtil.STRING_CODEC.listOf().optionalFieldOf("away", List.of()).forGetter(r -> List.copyOf(r.away))
-        ).apply(i, (gate, level, pos, world, tier, low, pt, held, away) -> {
+                UUIDUtil.STRING_CODEC.listOf().optionalFieldOf("away", List.of()).forGetter(r -> List.copyOf(r.away)),
+                Codec.LONG.optionalFieldOf("token", 0L).forGetter(r -> r.token)
+        ).apply(i, (gate, level, pos, world, tier, low, pt, held, away, token) -> {
             final Rift r = new Rift(gate, level, pos, world.orElse(null), tier);
             r.low = low;
             r.pelletTicks = pt;
             r.held = held;
             r.away.addAll(away);
+            r.token = token;
             return r;
         }));
 
@@ -112,6 +114,8 @@ public class PortalData extends SavedData {
         public boolean low;
         public int pelletTicks;
         public boolean held;
+        /** Matches the token saved on the controller that opened it, so a replacement controller does not inherit it. */
+        public long token;
         public final Set<UUID> away = new LinkedHashSet<>();
         /** Ticks since away became empty. Not saved. */
         public int emptyTicks;

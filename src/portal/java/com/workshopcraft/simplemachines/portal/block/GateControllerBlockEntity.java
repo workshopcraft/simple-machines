@@ -72,6 +72,7 @@ public class GateControllerBlockEntity extends WorkBlockEntity {
     private List<String> hiddenForced = List.of();
     /** The hidden card makes a fresh one-off world each jump instead of binding (API warp). */
     private boolean hiddenOneOff;
+    private long riftToken;
     /** Hidden card id to the world it is bound to, so applying the same hidden card again goes back to the same world. */
     private final java.util.Map<String, String> hiddenBindings = new java.util.LinkedHashMap<>();
     /** Story card id to its latest attempt world from this gate. */
@@ -377,6 +378,15 @@ public class GateControllerBlockEntity extends WorkBlockEntity {
     /** Whether a player may press Open. Always outside closed mode; in closed mode only with portal_closed_mode_player_open. */
     public boolean playersMayOpen() {
         return !closedMode() || level != null && PortalConfig.bool(level.getServer(), PortalConfig.CLOSED_PLAYER_OPEN);
+    }
+
+    public long riftToken() {
+        return riftToken;
+    }
+
+    public void setRiftToken(long token) {
+        riftToken = token;
+        setChanged();
     }
 
     public boolean riftOpen() {
@@ -701,6 +711,7 @@ public class GateControllerBlockEntity extends WorkBlockEntity {
         hiddenCard = input.getString("hidden_card").map(Identifier::tryParse).orElse(null);
         hiddenForced = input.read("hidden_forced", Codec.STRING.listOf()).orElse(List.of());
         hiddenOneOff = input.getBooleanOr("hidden_one_off", false);
+        riftToken = input.getLongOr("rift_token", 0L);
         hiddenBindings.clear();
         hiddenBindings.putAll(input.read("hidden_bindings", Codec.unboundedMap(Codec.STRING, Codec.STRING)).orElse(java.util.Map.of()));
         storyAttempts.clear();
@@ -722,6 +733,7 @@ public class GateControllerBlockEntity extends WorkBlockEntity {
         if (hiddenCard != null) output.putString("hidden_card", hiddenCard.toString());
         if (!hiddenForced.isEmpty()) output.store("hidden_forced", Codec.STRING.listOf(), hiddenForced);
         if (hiddenOneOff) output.putBoolean("hidden_one_off", true);
+        if (riftToken != 0) output.putLong("rift_token", riftToken);
         if (!hiddenBindings.isEmpty()) output.store("hidden_bindings", Codec.unboundedMap(Codec.STRING, Codec.STRING), hiddenBindings);
         if (!storyAttempts.isEmpty()) output.store("story_attempts", Codec.unboundedMap(Codec.STRING, Codec.STRING), storyAttempts);
         output.putBoolean("enabled", enabled);

@@ -101,6 +101,9 @@ public final class PortalRifts {
         final PortalData.Rift r = new PortalData.Rift(gate, target.dimension(), at, world, tierOf(server, target.dimension(), world));
         r.pelletTicks = pelletSeconds(server) * 20;
         r.held = held;
+        r.token = server.overworld().getRandom().nextLong() | 1L;
+        final ServerLevel gl = server.getLevel(gate.dimension());
+        if (gl != null && gl.getBlockEntity(gate.pos()) instanceof GateControllerBlockEntity g) g.setRiftToken(r.token);
         data.putRift(r);
         place(target, at);
         hold(server, r);
@@ -158,6 +161,11 @@ public final class PortalRifts {
         final PortalData data = PortalData.get(server);
         final PortalData.Rift r = data.rift(GlobalPos.of(level.dimension(), g.getBlockPos()));
         if (r == null) return;
+        if (r.token != g.riftToken()) {
+            // a different controller now stands where the rift's gate was (replaced without its removal hook, e.g. /setblock)
+            collapse(server, r, Reason.GATE_GONE);
+            return;
+        }
         final ServerLevel far = server.getLevel(r.level);
         if (far == null) {
             collapse(server, r, Reason.WORLD_GONE);
@@ -270,6 +278,16 @@ public final class PortalRifts {
     public static void levelGone(MinecraftServer server, ResourceKey<Level> key) {
         for (PortalData.Rift r : PortalData.get(server).rifts()) {
             if (r.level.equals(key) || r.gate.dimension().equals(key)) collapse(server, r, Reason.WORLD_GONE);
+        }
+    }
+
+    /** Every few seconds: a rift whose controller is gone (removed without its hook, e.g. by /setblock) collapses. */
+    static void sweep(MinecraftServer server) {
+        for (PortalData.Rift r : PortalData.get(server).rifts()) {
+            final ServerLevel gl = server.getLevel(r.gate.dimension());
+            if (gl != null && gl.isLoaded(r.gate.pos()) && !(gl.getBlockEntity(r.gate.pos()) instanceof GateControllerBlockEntity)) {
+                collapse(server, r, Reason.GATE_GONE);
+            }
         }
     }
 
