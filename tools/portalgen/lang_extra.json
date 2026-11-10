@@ -1,7 +1,6 @@
 {
   "gui.simplemachines.portal.open": "Open",
   "gui.simplemachines.portal.close": "Close",
-  "gui.simplemachines.portal.cost": "Jump: %s pellets, %s FE",
   "gui.simplemachines.portal.frame": "Frame: %s, %sx%s",
   "gui.simplemachines.portal.frame_none": "No frame found",
   "gui.simplemachines.portal.tier.none": "None",
@@ -76,5 +75,9 @@
   "commands.simplemachines.portal.locked": "Locked %s",
   "commands.simplemachines.portal.unlocked_all": "Unlocked %s entries",
   "commands.simplemachines.portal.gave_card": "Gave card %s to %s",
-  "commands.simplemachines.portal.cost": "Card %s: %s pellets, %s FE per jump"
+  "commands.simplemachines.portal.cost": "Card %s: %s pellets, %s FE per jump",
+  "gui.simplemachines.portal.cost_pellet": "Jump: %s pellet",
+  "gui.simplemachines.portal.cost_pellets": "Jump: %s pellets",
+  "gui.simplemachines.portal.cost_energy": "and %s FE",
+  "message.simplemachines.research.imprinted": "Card programmed with %s"
 }

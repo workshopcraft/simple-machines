@@ -41,7 +41,7 @@ public class ResearchScreen extends AbstractContainerScreen<ResearchMenu> {
         graphics.blit(RenderPipelines.GUI_TEXTURED, TEXTURE, x, y, 0, 0, imageWidth, imageHeight, 256, 256);
         final int h = Mth.ceil(menu.energyFraction() * BAR_H);
         if (h > 0) graphics.fillGradient(x + BAR_X, y + BAR_Y + BAR_H - h, x + BAR_X + BAR_W, y + BAR_Y + BAR_H, 0xFFF4785C, 0xFF9E2A22);
-        final float done = menu.need() <= 0 ? 0 : Mth.clamp((float) menu.count() / menu.need(), 0, 1);
+        final float done = menu.unlocked() ? 1 : menu.need() <= 0 ? 0 : Mth.clamp((float) menu.count() / menu.need(), 0, 1);
         graphics.fill(x + 46, y + 44, x + 146, y + 48, 0xFF3A3A3A);
         graphics.fill(x + 46, y + 44, x + 46 + Mth.ceil(done * 100), y + 48, menu.unlocked() ? 0xFF43A047 : 0xFF26A69A);
         final int w = Mth.ceil(menu.itemProgress() * 16);
@@ -61,7 +61,8 @@ public class ResearchScreen extends AbstractContainerScreen<ResearchMenu> {
             graphics.text(font, Component.translatable("gui.simplemachines.research.none"), 62, 21, TEXT, false);
             return;
         }
-        final String name = font.plainSubstrByWidth(shown.getHoverName().getString(), 70);
+        final String full = shown.getHoverName().getString();
+        final String name = font.width(full) <= 68 ? full : font.plainSubstrByWidth(full, 60) + "..";
         graphics.text(font, Component.literal(name), 62, 21, TEXT, false);
         final Component line = menu.unlocked() ? Component.translatable("gui.simplemachines.research.done")
                 : Component.translatable(menu.mob() ? "gui.simplemachines.research.scans" : "gui.simplemachines.research.items",

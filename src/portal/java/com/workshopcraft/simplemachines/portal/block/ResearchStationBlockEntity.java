@@ -166,7 +166,8 @@ public class ResearchStationBlockEntity extends WorkBlockEntity {
             mob = r.mob();
             need = mob ? r.scans() : r.count();
             count = data.scans(key(r));
-            unlocked = count >= need;
+            // done by feeding it, or unlocked by a command, a quest reward or the API
+            unlocked = count >= need || data.unlocked("research:" + r.id());
             show(r);
             final ItemStack in = items.get(SLOT_INPUT);
             if (!mob && !unlocked && r.takes(in)) {
@@ -258,7 +259,7 @@ public class ResearchStationBlockEntity extends WorkBlockEntity {
         final ItemStack card = items.get(SLOT_CARD);
         if (r == null || !card.is(Portal.jumpCard)) return false;
         final PortalData data = PortalData.get(player.level().getServer());
-        if (!player.isCreative() && data.scans(key(r)) < (r.mob() ? r.scans() : r.count())) {
+        if (!player.isCreative() && data.scans(key(r)) < (r.mob() ? r.scans() : r.count()) && !data.unlocked("research:" + r.id())) {
             player.sendSystemMessage(Component.translatable("message.simplemachines.research.not_done"));
             return false;
         }
@@ -288,6 +289,7 @@ public class ResearchStationBlockEntity extends WorkBlockEntity {
         }
         card.set(Portal.FORCED, List.copyOf(forced));
         setChanged();
+        player.sendSystemMessage(Component.translatable("message.simplemachines.research.imprinted", r.name()));
         return true;
     }
 

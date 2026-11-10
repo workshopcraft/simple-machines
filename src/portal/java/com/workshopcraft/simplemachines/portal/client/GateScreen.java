@@ -65,7 +65,7 @@ public class GateScreen extends AbstractContainerScreen<GateMenu> {
     @Override
     protected void extractLabels(GuiGraphicsExtractor graphics, int xm, int ym) {
         graphics.text(font, title, 8, 6, TEXT, false);
-        graphics.text(font, playerInventoryTitle, inventoryLabelX, inventoryLabelY, TEXT, false);
+        // no inventory label: the pellet row sits where it would go
         final int status = menu.status();
         final int color = status == GateControllerBlockEntity.OK || status == GateControllerBlockEntity.OPEN ? 0xFF2E7D32 : 0xFFB02020;
         graphics.text(font, Component.translatable("gui.simplemachines.portal.status." + GateControllerBlockEntity.STATUS[status]), 30, 20, color, false);
@@ -75,8 +75,21 @@ public class GateScreen extends AbstractContainerScreen<GateMenu> {
                 menu.frameWidth(), menu.frameHeight());
         graphics.text(font, frame, 30, 31, TEXT, false);
         if (menu.needPellets() > 0) {
-            graphics.text(font, Component.translatable("gui.simplemachines.portal.cost", menu.needPellets(), PowerTooltip.num(menu.needEnergy())),
-                    30, 42, TEXT, false);
+            graphics.text(font, Component.translatable(menu.needPellets() == 1 ? "gui.simplemachines.portal.cost_pellet"
+                    : "gui.simplemachines.portal.cost_pellets", menu.needPellets()), 30, 42, TEXT, false);
+            graphics.text(font, Component.translatable("gui.simplemachines.portal.cost_energy", shortFe(menu.needEnergy())), 30, 51, TEXT, false);
         }
+    }
+
+    /** 1500000 as 1.5M, so the cost fits beside the energy bar. */
+    static String shortFe(long fe) {
+        if (fe >= 1_000_000) return trim(fe / 1_000_000.0) + "M";
+        if (fe >= 1_000) return trim(fe / 1_000.0) + "k";
+        return Long.toString(fe);
+    }
+
+    private static String trim(double v) {
+        final String s = String.format(java.util.Locale.ROOT, "%.1f", v);
+        return s.endsWith(".0") ? s.substring(0, s.length() - 2) : s;
     }
 }
