@@ -1,0 +1,64 @@
+{
+  "section": "portals",
+  "sort": 3,
+  "title": "Cards and Worlds",
+  "subtitle": "Every card is one world",
+  "text": "A blank Jump Card makes a random world the first time it is used. After that the card is bound to that world for good and always goes back to it.\n\nProgram a blank card at a Research Station to choose its world type or add ores and mobs you have researched. A bound card cannot be programmed.\n\nNether and End Cards open to the Nether and the End.\n\nStory Cards come from quests. They lead to a world with an objective. Collect it to finish the story. If you come back without it, the next jump makes a fresh world to try again.",
+  "right_title": "Recipes",
+  "steps": [
+    {
+      "kind": "craft_shaped",
+      "pattern": [
+        "AAB",
+        "C  "
+      ],
+      "key": {
+        "A": "minecraft:paper",
+        "B": "simplemachines:entangled_pellet",
+        "C": "#c:plates/iron"
+      },
+      "output": {
+        "item": "simplemachines:jump_card",
+        "count": 1
+      },
+      "note": "Crafting Table, any shape\n2x Paper, 1x Entangled Pellet, 1x Iron Plate",
+      "title": "Jump Card"
+    },
+    {
+      "kind": "craft_shaped",
+      "pattern": [
+        "ABC",
+        "C  "
+      ],
+      "key": {
+        "A": "minecraft:paper",
+        "B": "simplemachines:entangled_pellet",
+        "C": "minecraft:obsidian"
+      },
+      "output": {
+        "item": "simplemachines:nether_card",
+        "count": 1
+      },
+      "note": "Crafting Table, any shape\n1x Paper, 1x Entangled Pellet, 2x Obsidian",
+      "title": "Nether Card"
+    },
+    {
+      "kind": "craft_shaped",
+      "pattern": [
+        "ABC",
+        "C  "
+      ],
+      "key": {
+        "A": "minecraft:paper",
+        "B": "simplemachines:entangled_pellet",
+        "C": "minecraft:ender_eye"
+      },
+      "output": {
+        "item": "simplemachines:end_card",
+        "count": 1
+      },
+      "note": "Crafting Table, any shape\n1x Paper, 1x Entangled Pellet, 2x Ender Eye",
+      "title": "End Card"
+    }
+  ]
+}

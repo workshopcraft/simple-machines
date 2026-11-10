@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "axis=x": {
+      "model": "simplemachines:block/portal_field_ns"
+    },
+    "axis=z": {
+      "model": "simplemachines:block/portal_field_ew"
+    }
+  }
+}

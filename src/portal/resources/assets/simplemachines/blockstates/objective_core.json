@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "spent=false": {
+      "model": "simplemachines:block/objective_core"
+    },
+    "spent=true": {
+      "model": "simplemachines:block/objective_core_spent"
+    }
+  }
+}

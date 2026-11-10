@@ -1,0 +1,64 @@
+{
+  "section": "portals",
+  "sort": 2,
+  "title": "Portal Gates",
+  "subtitle": "Build a frame, power it, jump",
+  "text": "Build a rectangle of frame blocks standing upright, with the Portal Gate Controller as one of its blocks. The inside must be empty, at least 2 wide and 3 tall.\n\nFrames: Iron, Steel or Titanium blocks (Netherite if the server allows it). Wood and other blocks do not form a gate. Some worlds need a better frame. Bigger frames need more power to open.\n\nThe controller is an HV machine. Put an Entangled Core and a card in it, and Entangled Pellets for fuel. Each jump uses pellets and a lot of energy; rich, high tier worlds cost more. Press Open and walk through. A Return Beacon waits where you land: use it to come home.",
+  "right_title": "Recipes",
+  "steps": [
+    {
+      "kind": "craft_shaped",
+      "pattern": [
+        "TCT",
+        "WSW",
+        "TWT"
+      ],
+      "key": {
+        "T": "#c:plates/titanium",
+        "C": "simplemachines:control_board",
+        "W": "simplemachines:entangled_coil",
+        "S": "simplemachines:steel_chassis"
+      },
+      "output": {
+        "item": "simplemachines:portal_gate_controller",
+        "count": 1
+      },
+      "note": "Crafting Table\n4x Titanium Plate, 1x Control Board, 3x Entangled Coil, 1x Steel Chassis",
+      "title": "Portal Gate Controller"
+    },
+    {
+      "kind": "craft_shaped",
+      "pattern": [
+        "TET",
+        "EDE",
+        "TET"
+      ],
+      "key": {
+        "T": "#c:plates/titanium",
+        "E": "simplemachines:entangled_ingot",
+        "D": "simplemachines:diamond_core"
+      },
+      "output": {
+        "item": "simplemachines:entangled_core",
+        "count": 1
+      },
+      "note": "Crafting Table\n4x Titanium Plate, 4x Entangled Ingot, 1x Diamond Core",
+      "title": "Entangled Core"
+    },
+    {
+      "kind": "craft_shaped",
+      "pattern": [
+        "A  "
+      ],
+      "key": {
+        "A": "simplemachines:entangled_ingot"
+      },
+      "output": {
+        "item": "simplemachines:entangled_pellet",
+        "count": 4
+      },
+      "note": "Crafting Table, any shape\n1x Entangled Ingot",
+      "title": "Entangled Pellet"
+    }
+  ]
+}

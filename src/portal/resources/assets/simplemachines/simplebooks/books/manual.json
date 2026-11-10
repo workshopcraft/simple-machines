@@ -1,0 +1,9 @@
+{
+  "sections": [
+    {
+      "id": "portals",
+      "title": "Portals",
+      "icon": "simplemachines:portal_gate_controller"
+    }
+  ]
+}

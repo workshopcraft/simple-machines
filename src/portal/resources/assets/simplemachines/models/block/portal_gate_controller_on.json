@@ -1,0 +1,8 @@
+{
+  "parent": "minecraft:block/orientable",
+  "textures": {
+    "front": "simplemachines:block/portal_gate_controller_front_on",
+    "side": "simplemachines:block/portal_machine_side",
+    "top": "simplemachines:block/portal_machine_top"
+  }
+}

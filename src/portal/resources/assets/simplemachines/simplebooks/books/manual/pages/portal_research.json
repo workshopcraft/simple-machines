@@ -1,0 +1,51 @@
+{
+  "section": "portals",
+  "sort": 4,
+  "title": "Research",
+  "subtitle": "Feed it to learn",
+  "text": "The Research Station is a powered machine that eats resources. Choose a project with the arrows and feed it the items it asks for. When it is done, new world types and resources unlock for everyone on the server.\n\nMob research needs scans. Charge a Mob Scanner in a charger and use it on a mob. Each mob can only be scanned once.\n\nPut a blank Jump Card in the card slot and press Imprint to program it with the chosen project.",
+  "right_title": "Recipes",
+  "steps": [
+    {
+      "kind": "craft_shaped",
+      "pattern": [
+        "SGS",
+        "CXC",
+        "SRS"
+      ],
+      "key": {
+        "S": "#c:plates/steel",
+        "G": "minecraft:spyglass",
+        "C": "simplemachines:control_board",
+        "X": "simplemachines:steel_chassis",
+        "R": "#c:rods/steel"
+      },
+      "output": {
+        "item": "simplemachines:research_station",
+        "count": 1
+      },
+      "note": "Crafting Table\n4x Steel Plate, 1x Spyglass, 2x Control Board, 1x Steel Chassis, 1x Steel Rod",
+      "title": "Research Station"
+    },
+    {
+      "kind": "craft_shaped",
+      "pattern": [
+        " G ",
+        "SBS",
+        " R "
+      ],
+      "key": {
+        "G": "minecraft:spyglass",
+        "S": "#c:plates/steel",
+        "B": "simplemachines:battery_module",
+        "R": "#c:rods/steel"
+      },
+      "output": {
+        "item": "simplemachines:mob_scanner",
+        "count": 1
+      },
+      "note": "Crafting Table\n1x Spyglass, 2x Steel Plate, 1x Battery Module, 1x Steel Rod",
+      "title": "Mob Scanner"
+    }
+  ]
+}

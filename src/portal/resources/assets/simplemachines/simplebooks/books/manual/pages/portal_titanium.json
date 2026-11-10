@@ -1,0 +1,76 @@
+{
+  "section": "portals",
+  "sort": 1,
+  "title": "Titanium",
+  "subtitle": "A metal above steel",
+  "text": "Titanium Ore is rare and found deep in the Overworld, below Y 0. Portal worlds can be much richer in it.\n\nTitanium is too hard for iron machines. Crush the ore and smelt the dust in steel framed machines (a steel Chassis). An iron framed machine will not start on it.\n\nPlates, rods and blocks are made the same way as steel ones.",
+  "right_title": "Recipes",
+  "steps": [
+    {
+      "kind": "process",
+      "inputs": [
+        "#c:ores/titanium"
+      ],
+      "appliance": "simplemachines:crusher",
+      "output": {
+        "item": "simplemachines:titanium_dust",
+        "count": 2
+      }
+    },
+    {
+      "kind": "process",
+      "inputs": [
+        "#c:raw_materials/titanium"
+      ],
+      "appliance": "simplemachines:crusher",
+      "output": {
+        "item": "simplemachines:titanium_dust",
+        "count": 2
+      }
+    },
+    {
+      "kind": "process",
+      "inputs": [
+        "simplemachines:titanium_dust"
+      ],
+      "appliance": "simplemachines:electric_furnace",
+      "output": "simplemachines:titanium_ingot"
+    },
+    {
+      "kind": "process",
+      "inputs": [
+        "#c:ingots/titanium"
+      ],
+      "appliance": "simplemachines:compressor",
+      "output": "simplemachines:titanium_sheet"
+    },
+    {
+      "kind": "process",
+      "inputs": [
+        "#c:ingots/titanium"
+      ],
+      "appliance": "simplemachines:rolling_mill",
+      "output": {
+        "item": "simplemachines:titanium_rod",
+        "count": 2
+      }
+    },
+    {
+      "kind": "craft_shaped",
+      "pattern": [
+        "III",
+        "III",
+        "III"
+      ],
+      "key": {
+        "I": "#c:ingots/titanium"
+      },
+      "output": {
+        "item": "simplemachines:titanium_block",
+        "count": 1
+      },
+      "note": "Crafting Table\n9x Titanium Ingot",
+      "title": "Block of Titanium"
+    }
+  ]
+}
