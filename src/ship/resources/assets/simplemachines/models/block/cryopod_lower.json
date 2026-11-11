@@ -175,7 +175,7 @@
       "from": [
         4,
         3,
-        14
+        13.5
       ],
       "to": [
         12,
@@ -185,6 +185,18 @@
       "faces": {
         "north": {
           "texture": "#console"
+        },
+        "east": {
+          "texture": "#shell"
+        },
+        "west": {
+          "texture": "#shell"
+        },
+        "up": {
+          "texture": "#shell"
+        },
+        "down": {
+          "texture": "#shell"
         }
       }
     }

@@ -355,7 +355,9 @@ low = [
     el([0, 0, 0], [16, 2, 16], {'all': '#shell', 'up': '#base'}),
     el([0, 2, 14], [16, 16, 16], sh), el([0, 2, 0], [2, 16, 14], sh), el([14, 2, 0], [16, 16, 14], sh),
     el([2, 2, 1], [14, 16, 1.5], {'all': '#glass'}, faces=('north', 'south')),
-    el([4, 3, 14], [12, 9, 14], {'north': '#console'}, faces=('north',)),
+    # the console is a raised panel standing 0.5 px proud of the back wall; it used to be a flat face in the wall's own
+    # plane (z 14) and z-fought with it at ankle height. No south face: that one would lie in the wall.
+    el([4, 3, 13.5], [12, 9, 14], {'north': '#console', 'all': '#shell'}, faces=('north', 'east', 'west', 'up', 'down')),
 ]
 upp = [
     el([0, 14, 0], [16, 16, 16], sh),
