@@ -45,7 +45,6 @@ loom {
 }
 
 sourceSets.main {
-    if (extras.isNotEmpty()) applyShip(rootProject.file("."), extras)
     java.exclude("com/workshopcraft/simplemachines/neoforge/**", "com/workshopcraft/simplemachines/forge/**")
     if (!modern) resources.setSrcDirs(listOf("1.20.1", "1.21.1").filter { sc.current.parsed < "1.21" || it == "1.21.1" }.map { rootProject.file("src/legacy/$it") } + rootProject.file("src/main/resources"))
     if (sc.current.parsed < "1.21") resources.srcDir(tasks.register<Data120>("data120") {
@@ -56,6 +55,7 @@ sourceSets.main {
     // Whole-file replacements for old targets; the main copy of each file is left out
     if (!modern) applyOverlays(rootProject.file("."), overlayChain(sc.current.version, "fabric"), layout.buildDirectory.get().asFile)
 }
+if (extras.isNotEmpty()) applyShip(rootProject.file("."), extras)
 
 java {
     withSourcesJar()

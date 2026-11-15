@@ -44,14 +44,14 @@ deps.neo_loader = "26.1.2.122"
 deps.jei = "29.53.0.115"
 
 [fabric."26.2"]
-mod.version = "2.2.0-rc.1"
+mod.version = "2.3.0-alpha.9"
 mod.mc_compat = "~26.2"
 deps.fabric_api = "0.161.0+26.2"
 deps.energy = "5.0.0"
 deps.jei = "30.48.0.244"
 
 [neoforge."26.2"]
-mod.version = "2.2.0-rc.1"
+mod.version = "2.3.0-alpha.9"
 mod.mc_compat = "[26.2,26.3)"
 deps.neo_loader = "26.2.0.93"
 deps.jei = "30.48.0.244"

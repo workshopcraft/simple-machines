@@ -65,10 +65,13 @@ public class CryopodBedBlock extends BedBlock {
         return RenderShape.MODEL;
     }
 
+    // 26.2: BedBlock no longer implements EntityBlock, so there is nothing to override
+    //? if <26.2 {
     @Override
     public @Nullable BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
         return null;
     }
+    //?}
 
     @Override
     protected VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext ctx) {
@@ -102,7 +105,11 @@ public class CryopodBedBlock extends BedBlock {
     }
 
     public static Optional<Vec3> standUp(ServerLevel level, BlockPos head, BlockState headState, float yaw) {
+        //? if >=26.2 {
+        /*return BedBlock.findStandUpPosition(net.minecraft.world.entity.EntityTypes.PLAYER, level, head, headState.getValue(FACING), yaw);
+        *///?} else {
         return BedBlock.findStandUpPosition(EntityType.PLAYER, level, head, headState.getValue(FACING), yaw);
+        //?}
     }
 
     @Override

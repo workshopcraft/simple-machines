@@ -45,7 +45,12 @@ public final class RiftHud {
         }
         readConfig(now);
         final Minecraft mc = Minecraft.getInstance();
+        // 26.2: the HUD moved off Gui onto mc.gui.hud
+        //? if >=26.2 {
+        /*if (!enabled || mc.gui.hud.isHidden() || mc.player == null) return;
+        *///?} else {
         if (!enabled || mc.options.hideGui || mc.player == null) return;
+        //?}
         final int left = (int) Math.max(0, seconds - age / 1000);
         final Font font = mc.font;
         final String text = Component.translatable(low ? "hud.simplemachines.rift_low" : "hud.simplemachines.rift",
@@ -72,7 +77,12 @@ public final class RiftHud {
                 bossEvents = net.minecraft.client.gui.components.BossHealthOverlay.class.getDeclaredField("events");
                 bossEvents.setAccessible(true);
             }
+            // 26.2: the boss overlay lives on Hud now
+            //? if >=26.2 {
+            /*return ((java.util.Map<?, ?>) bossEvents.get(mc.gui.hud.getBossOverlay())).size();
+            *///?} else {
             return ((java.util.Map<?, ?>) bossEvents.get(mc.gui.getBossOverlay())).size();
+            //?}
         } catch (ReflectiveOperationException | RuntimeException e) {
             bossFailed = true;
             return 0;

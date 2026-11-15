@@ -1,6 +1,8 @@
 import groovy.json.JsonOutput
 import groovy.json.JsonSlurper
+import org.gradle.api.Project
 import org.gradle.api.tasks.SourceSet
+import org.gradle.api.tasks.SourceSetContainer
 import org.gradle.language.jvm.tasks.ProcessResources
 import java.io.File
 import java.io.FilterReader
@@ -12,13 +14,13 @@ import java.io.StringReader
  * until they are backfilled. Main code that calls into them sits behind the stonecutter constant `ship`.
  */
 object Ship {
-    val VERSIONS = setOf("26.1.2")
+    val VERSIONS = setOf("26.1.2", "26.2")
     fun enabled(mc: String) = mc in VERSIONS
 }
 
 /** Simple Machines 2.3 portal core (M2): src/portal, same versions and rules as Ship. Stonecutter constant `portal`. */
 object Portal {
-    val VERSIONS = setOf("26.1.2")
+    val VERSIONS = setOf("26.1.2", "26.2")
     fun enabled(mc: String) = mc in VERSIONS
 }
 
@@ -28,11 +30,25 @@ fun extraDirs(mc: String): List<String> = buildList {
     if (Portal.enabled(mc)) add("src/portal")
 }
 
-/** Adds src/<extra>/java and src/<extra>/resources to the source set. */
-fun SourceSet.applyShip(root: File, dirs: List<String> = listOf("src/ship")) {
+/**
+ * Adds src/<extra>/resources to main and builds the Java from there through Stonecutter. Stonecutter only processes
+ * src/<sourceSet>, so each extra dir gets a dedicated source set and its processed output is compiled as part of main.
+ * That keeps the processed copies (and their `//?` guards) working while main and the extra dirs can still reference
+ * each other.
+ */
+fun Project.applyShip(root: File, dirs: List<String> = listOf("src/ship")) {
+    val sourceSets = extensions.getByType(SourceSetContainer::class.java)
+    val main = sourceSets.getByName(SourceSet.MAIN_SOURCE_SET_NAME)
     for (d in dirs) {
-        java.srcDir(File(root, "$d/java"))
-        resources.srcDir(File(root, "$d/resources"))
+        val name = File(d).name
+        val extra = sourceSets.create(name)
+        main.resources.srcDir(File(root, "$d/resources"))
+        // Only the processed copy is needed; main compiles it so both directions can reference each other
+        extra.java.setSrcDirs(emptyList<File>())
+        extra.resources.setSrcDirs(emptyList<File>())
+        val suffix = name.replaceFirstChar { it.uppercaseChar() }
+        main.java.srcDir(files(layout.buildDirectory.dir("generated/stonecutter/$name/java"))
+            .builtBy("stonecutterGenerate$suffix"))
     }
 }
 
