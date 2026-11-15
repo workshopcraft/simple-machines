@@ -22,17 +22,21 @@ import org.jspecify.annotations.Nullable;
 
 /** Placeholder for the M3 return rift: placed next to the landing spot; use it to go back to the gate you came from. */
 public class ReturnBeaconBlock extends BaseEntityBlock {
+    //? if <26.3 {
     public static final MapCodec<ReturnBeaconBlock> CODEC = simpleCodec(ReturnBeaconBlock::new);
+    //?}
     private static final VoxelShape SHAPE = Block.box(3, 0, 3, 13, 14, 13);
 
     public ReturnBeaconBlock(Properties properties) {
         super(properties);
     }
 
+    //? if <26.3 {
     @Override
     protected MapCodec<? extends BaseEntityBlock> codec() {
         return CODEC;
     }
+    //?}
 
     @Override
     public @Nullable BlockEntity newBlockEntity(BlockPos pos, BlockState state) {

@@ -40,7 +40,9 @@ import java.util.Optional;
  */
 public class CryopodBedBlock extends BedBlock {
     public static final BooleanProperty START = BooleanProperty.create("start");
+    //? if <26.3 {
     public static final MapCodec<CryopodBedBlock> CODEC = simpleCodec(CryopodBedBlock::new);
+    //?}
     private static final VoxelShape SHAPE = Block.box(0, 0, 0, 16, 12, 16);
 
     public CryopodBedBlock(Properties properties) {
@@ -48,11 +50,13 @@ public class CryopodBedBlock extends BedBlock {
         registerDefaultState(defaultBlockState().setValue(START, false));
     }
 
+    //? if <26.3 {
     @Override
     @SuppressWarnings({"unchecked", "rawtypes"})
     public MapCodec<BedBlock> codec() {
         return (MapCodec) CODEC;
     }
+    //?}
 
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
@@ -85,7 +89,11 @@ public class CryopodBedBlock extends BedBlock {
         final BlockState headState = level.getBlockState(head);
         if (!headState.is(this)) return InteractionResult.CONSUME;
         final BedRule rule = level.environmentAttributes().getValue(EnvironmentAttributes.BED_RULE, head);
+        //? if >=26.3 {
+        /*if (rule.destroyOnUse() || rule.destroyOnLeave() || !rule.canSetSpawn(level)) {
+        *///?} else {
         if (rule.explodes() || !rule.canSetSpawn(level)) {
+        //?}
             // no explosion in a pod: link spawn and say so, the player stays awake
             if (player instanceof ServerPlayer sp && linkSpawn(sp, (ServerLevel) level, head, headState)) {
                 sp.sendOverlayMessage(Component.translatable("message.simplemachines.cryopod_linked"));

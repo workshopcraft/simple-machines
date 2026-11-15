@@ -12,16 +12,20 @@ import net.minecraft.world.level.block.state.BlockState;
 
 /** A hull panel breached to space: frost, drifting snow and a chill on anyone standing on it. */
 public class FrostyPanelBlock extends Block {
+    //? if <26.3 {
     public static final MapCodec<FrostyPanelBlock> CODEC = simpleCodec(FrostyPanelBlock::new);
+    //?}
 
     public FrostyPanelBlock(Properties properties) {
         super(properties);
     }
 
+    //? if <26.3 {
     @Override
     protected MapCodec<? extends Block> codec() {
         return CODEC;
     }
+    //?}
 
     @Override
     public void animateTick(BlockState state, Level level, BlockPos pos, RandomSource random) {

@@ -52,7 +52,9 @@ public class HydroponicsTrayBlock extends Block {
 
     public static final EnumProperty<Crop> CROP = EnumProperty.create("crop", Crop.class);
     public static final IntegerProperty AGE = IntegerProperty.create("age", 0, 3);
+    //? if <26.3 {
     public static final MapCodec<HydroponicsTrayBlock> CODEC = simpleCodec(HydroponicsTrayBlock::new);
+    //?}
     private static final VoxelShape SHAPE = Block.box(0, 0, 0, 16, 8, 16);
 
     public HydroponicsTrayBlock(Properties properties) {
@@ -60,10 +62,12 @@ public class HydroponicsTrayBlock extends Block {
         registerDefaultState(stateDefinition.any().setValue(CROP, Crop.NONE).setValue(AGE, 0));
     }
 
+    //? if <26.3 {
     @Override
     protected MapCodec<? extends Block> codec() {
         return CODEC;
     }
+    //?}
 
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {

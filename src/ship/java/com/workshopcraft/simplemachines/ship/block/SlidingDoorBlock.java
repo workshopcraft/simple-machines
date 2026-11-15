@@ -10,7 +10,9 @@ import net.minecraft.world.level.block.state.properties.DoubleBlockHalf;
 
 /** Two tall sliding doors: plain, airlock and locked. */
 public class SlidingDoorBlock extends SlideBlock {
+    //? if <26.3 {
     private MapCodec<SlidingDoorBlock> codec;
+    //?}
 
     public SlidingDoorBlock(Properties properties, Kind kind) {
         super(properties, kind);
@@ -18,11 +20,13 @@ public class SlidingDoorBlock extends SlideBlock {
                 .setValue(OPEN, false).setValue(POWERED, false));
     }
 
+    //? if <26.3 {
     @Override
     protected MapCodec<? extends BaseEntityBlock> codec() {
         if (codec == null) codec = simpleCodec(p -> this);
         return codec;
     }
+    //?}
 
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {

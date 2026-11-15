@@ -15,16 +15,20 @@ import org.jspecify.annotations.Nullable;
 
 /** Research Station: an MV machine that eats large amounts of a resource to unlock it for portal worlds, and imprints jump cards. */
 public class ResearchStationBlock extends MachineBlock {
+    //? if <26.3 {
     public static final MapCodec<ResearchStationBlock> CODEC = simpleCodec(ResearchStationBlock::new);
+    //?}
 
     public ResearchStationBlock(Properties properties) {
         super(properties);
     }
 
+    //? if <26.3 {
     @Override
     protected MapCodec<? extends BaseEntityBlock> codec() {
         return CODEC;
     }
+    //?}
 
     @Override
     protected BlockEntityType<?> entityType() {

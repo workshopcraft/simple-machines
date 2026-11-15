@@ -96,7 +96,12 @@ public class CryopodRenderer implements BlockEntityRenderer<CryopodBlockEntity, 
         pose.scale(-1F, -1F, 1F);
         pose.translate(0F, -1.501F, 0F);
         final AvatarRenderState avatar = new AvatarRenderState();
+        // 26.3 dropped the trailing CrumblingOverlay argument
+        //? if >=26.3 {
+        /*out.submitModel(s.slim ? slim : wide, avatar, pose, RenderTypes.entityTranslucent(s.texture), s.lightCoords, OverlayTexture.NO_OVERLAY, 0);
+        *///?} else {
         out.submitModel(s.slim ? slim : wide, avatar, pose, RenderTypes.entityTranslucent(s.texture), s.lightCoords, OverlayTexture.NO_OVERLAY, 0, null);
+        //?}
         pose.popPose();
     }
 }

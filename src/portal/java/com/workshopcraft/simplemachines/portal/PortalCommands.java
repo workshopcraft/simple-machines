@@ -401,7 +401,12 @@ public final class PortalCommands {
         final PortalCard card = PortalResources.cards(c.getSource().getServer()).get(id);
         if (card == null) return fail(c, "commands.simplemachines.portal.no_card", id.toString());
         final ServerPlayer p = target != null ? target : c.getSource().getPlayerOrException();
+        // 26.3's placeItemBackInInventory wants a client prediction hint
+        //? if >=26.3 {
+        /*p.getInventory().placeItemBackInInventory(Portal.cardStack(card), net.minecraft.util.Prediction.SERVER_ONLY);
+        *///?} else {
         p.getInventory().placeItemBackInInventory(Portal.cardStack(card));
+        //?}
         return ok(c, "commands.simplemachines.portal.gave_card", id.toString(), p.getDisplayName());
     }
 

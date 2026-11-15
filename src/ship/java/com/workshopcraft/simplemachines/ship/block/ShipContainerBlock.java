@@ -26,7 +26,9 @@ import java.util.Map;
 public class ShipContainerBlock extends BaseEntityBlock {
     public static final EnumProperty<Direction> FACING = HorizontalDirectionalBlock.FACING;
     private final Map<Direction, VoxelShape> shapes;
+    //? if <26.3 {
     private MapCodec<ShipContainerBlock> codec;
+    //?}
 
     public ShipContainerBlock(Properties properties, double[][] north) {
         super(properties);
@@ -34,11 +36,13 @@ public class ShipContainerBlock extends BaseEntityBlock {
         registerDefaultState(stateDefinition.any().setValue(FACING, Direction.NORTH));
     }
 
+    //? if <26.3 {
     @Override
     protected MapCodec<? extends BaseEntityBlock> codec() {
         if (codec == null) codec = simpleCodec(p -> this);
         return codec;
     }
+    //?}
 
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {

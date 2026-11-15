@@ -21,7 +21,9 @@ import org.jspecify.annotations.Nullable;
 
 /** A standing decoration cryopod with a sleeper inside. Who it is comes from its block entity. */
 public class CryopodBlock extends TallBlock {
+    //? if <26.3 {
     public static final MapCodec<CryopodBlock> CODEC = simpleCodec(CryopodBlock::new);
+    //?}
     private static final VoxelShape SHAPE = Block.box(1, 0, 1, 15, 16, 15);
 
     public CryopodBlock(Properties properties) {
@@ -29,10 +31,12 @@ public class CryopodBlock extends TallBlock {
         registerDefaultState(stateDefinition.any().setValue(FACING, net.minecraft.core.Direction.NORTH).setValue(HALF, DoubleBlockHalf.LOWER));
     }
 
+    //? if <26.3 {
     @Override
     protected MapCodec<? extends BaseEntityBlock> codec() {
         return CODEC;
     }
+    //?}
 
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {

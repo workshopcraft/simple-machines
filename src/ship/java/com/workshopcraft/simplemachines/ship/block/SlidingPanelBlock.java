@@ -9,18 +9,22 @@ import net.minecraft.world.level.block.state.StateDefinition;
 
 /** One block sliding panels: floor hatches and blast shutters. */
 public class SlidingPanelBlock extends SlideBlock {
+    //? if <26.3 {
     private MapCodec<SlidingPanelBlock> codec;
+    //?}
 
     public SlidingPanelBlock(Properties properties, Kind kind) {
         super(properties, kind);
         registerDefaultState(stateDefinition.any().setValue(FACING, Direction.NORTH).setValue(OPEN, false).setValue(POWERED, false));
     }
 
+    //? if <26.3 {
     @Override
     protected MapCodec<? extends BaseEntityBlock> codec() {
         if (codec == null) codec = simpleCodec(p -> this);
         return codec;
     }
+    //?}
 
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {

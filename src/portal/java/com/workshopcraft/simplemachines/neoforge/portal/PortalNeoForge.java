@@ -39,7 +39,10 @@ public final class PortalNeoForge {
 
     public static void init(IEventBus modBus) {
         Portal.init();
+        // 26.3 NeoForge keeps its level array live; markWorldsDirty is gone
+        //? if <26.3 {
         PortalPlatform.worldsChanged = server -> server.markWorldsDirty();
+        //?}
         PortalPlatform.loaded = level -> NeoForge.EVENT_BUS.post(new LevelEvent.Load(level));
         PortalPlatform.unloaded = level -> NeoForge.EVENT_BUS.post(new LevelEvent.Unload(level));
         PortalPlatform.stem = (type, generator, seed) -> new LevelStem(type, generator, OptionalLong.of(seed));

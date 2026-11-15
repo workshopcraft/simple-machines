@@ -29,17 +29,21 @@ import java.util.List;
  * pages as the log (unless the terminal is locked, or ship_story_logs_editable is off). /simplemachines log sets it too.
  */
 public class TerminalBlock extends FacingEntityBlock {
+    //? if <26.3 {
     private MapCodec<TerminalBlock> codec;
+    //?}
 
     public TerminalBlock(Properties properties, double[][] north) {
         super(properties, north);
     }
 
+    //? if <26.3 {
     @Override
     protected MapCodec<? extends BaseEntityBlock> codec() {
         if (codec == null) codec = simpleCodec(p -> this);
         return codec;
     }
+    //?}
 
     @Override
     public @Nullable BlockEntity newBlockEntity(BlockPos pos, BlockState state) {

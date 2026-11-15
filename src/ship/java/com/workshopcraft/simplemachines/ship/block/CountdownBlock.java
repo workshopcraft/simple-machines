@@ -25,18 +25,22 @@ import org.jspecify.annotations.Nullable;
 public class CountdownBlock extends FacingEntityBlock {
     public static final BooleanProperty POWERED = BlockStateProperties.POWERED;
     public static final BooleanProperty TRIGGERED = BlockStateProperties.TRIGGERED;
+    //? if <26.3 {
     private MapCodec<CountdownBlock> codec;
+    //?}
 
     public CountdownBlock(Properties properties, double[][] north) {
         super(properties, north);
         registerDefaultState(defaultBlockState().setValue(POWERED, false).setValue(TRIGGERED, false));
     }
 
+    //? if <26.3 {
     @Override
     protected MapCodec<? extends BaseEntityBlock> codec() {
         if (codec == null) codec = simpleCodec(p -> this);
         return codec;
     }
+    //?}
 
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {

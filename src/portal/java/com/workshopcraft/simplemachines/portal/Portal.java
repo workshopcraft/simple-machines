@@ -5,6 +5,8 @@ import com.mojang.serialization.MapCodec;
 import com.workshopcraft.simplemachines.SimpleMachines;
 import com.workshopcraft.simplemachines.cable.PowerInfo;
 import com.workshopcraft.simplemachines.cable.Voltage;
+import com.workshopcraft.simplemachines.compat.mc.BlockProps;
+import com.workshopcraft.simplemachines.compat.mc.Pushes;
 import com.workshopcraft.simplemachines.compat.mc.Registration;
 import com.workshopcraft.simplemachines.portal.block.GateControllerBlock;
 import com.workshopcraft.simplemachines.portal.block.GateControllerBlockEntity;
@@ -41,9 +43,10 @@ import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.NoteBlockInstrument;
 import net.minecraft.world.level.chunk.ChunkGenerator;
+import net.minecraft.world.level.levelgen.placement.PlacementModifier;
+//? if <26.3
 import net.minecraft.world.level.levelgen.placement.PlacementModifierType;
 import net.minecraft.world.level.material.MapColor;
-import net.minecraft.world.level.material.PushReaction;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -69,7 +72,11 @@ public final class Portal {
 
     public static final MenuType<GateMenu> GATE_MENU = new MenuType<>(GateMenu::client, FeatureFlags.VANILLA_SET);
     public static final MenuType<ResearchMenu> RESEARCH_MENU = new MenuType<>(ResearchMenu::client, FeatureFlags.VANILLA_SET);
+    //? if >=26.3 {
+    /*public static final MapCodec<? extends PlacementModifier> CONFIG_FILTER = ConfigFilter.CODEC;
+    *///?} else {
     public static final PlacementModifierType<ConfigFilter> CONFIG_FILTER = () -> ConfigFilter.CODEC;
+    //?}
 
     public static Block titaniumOre, deepslateTitaniumOre, titaniumBlock, steelBlock;
     public static Block gateController, portalField, objectiveCore, returnBeacon, researchStation, returnRift;
@@ -102,7 +109,11 @@ public final class Portal {
         r.accept(SimpleMachines.id("portal"), PortalChunkGenerator.CODEC);
     }
 
+    //? if >=26.3 {
+    /*public static void registerPlacementModifiers(BiConsumer<Identifier, MapCodec<? extends PlacementModifier>> r) {
+    *///?} else {
     public static void registerPlacementModifiers(BiConsumer<Identifier, PlacementModifierType<?>> r) {
+    //?}
         r.accept(SimpleMachines.id("config_enabled"), CONFIG_FILTER);
     }
 
@@ -132,16 +143,15 @@ public final class Portal {
         gateController = block(r, "portal_gate_controller", new GateControllerBlock(props("portal_gate_controller").mapColor(MapColor.METAL)
                 .requiresCorrectToolForDrops().strength(5.0F, 8.0F).sound(SoundType.METAL)
                 .lightLevel(s -> s.getValue(BlockStateProperties.LIT) ? 10 : 0)));
-        portalField = block(r, "portal_field", new PortalFieldBlock(props("portal_field").noCollision().strength(-1.0F, 3600000.0F)
-                .lightLevel(s -> 12).noLootTable().pushReaction(PushReaction.BLOCK).sound(SoundType.GLASS).forceSolidOn()
-                .isViewBlocking((s, l, p) -> false).isSuffocating((s, l, p) -> false)));
+        portalField = block(r, "portal_field", new PortalFieldBlock(BlockProps.seeThrough(props("portal_field").noCollision().strength(-1.0F, 3600000.0F)
+                .lightLevel(s -> 12).noLootTable().pushReaction(Pushes.immoveable()).sound(SoundType.GLASS).forceSolidOn())));
         objectiveCore = block(r, "objective_core", new ObjectiveCoreBlock(props("objective_core").mapColor(MapColor.COLOR_CYAN)
                 .strength(-1.0F, 3600000.0F).noLootTable().lightLevel(s -> s.getValue(ObjectiveCoreBlock.SPENT) ? 3 : 14).sound(SoundType.AMETHYST)));
         returnBeacon = block(r, "return_beacon", new ReturnBeaconBlock(props("return_beacon").mapColor(MapColor.COLOR_LIGHT_BLUE)
                 .strength(-1.0F, 3600000.0F).noLootTable().lightLevel(s -> 15).sound(SoundType.METAL).noOcclusion()));
-        returnRift = block(r, "return_rift", new ReturnRiftBlock(props("return_rift").noCollision().strength(-1.0F, 3600000.0F)
-                .lightLevel(s -> s.getValue(ReturnRiftBlock.LOW) ? 6 : 11).noLootTable().pushReaction(PushReaction.BLOCK).sound(SoundType.GLASS)
-                .forceSolidOn().isViewBlocking((s, l, p) -> false).isSuffocating((s, l, p) -> false)));
+        returnRift = block(r, "return_rift", new ReturnRiftBlock(BlockProps.seeThrough(props("return_rift").noCollision().strength(-1.0F, 3600000.0F)
+                .lightLevel(s -> s.getValue(ReturnRiftBlock.LOW) ? 6 : 11).noLootTable().pushReaction(Pushes.immoveable()).sound(SoundType.GLASS)
+                .forceSolidOn())));
         researchStation = block(r, "research_station", new ResearchStationBlock(props("research_station").mapColor(MapColor.METAL)
                 .requiresCorrectToolForDrops().strength(3.5F).sound(SoundType.METAL)
                 .lightLevel(s -> s.getValue(BlockStateProperties.LIT) ? 9 : 0)));

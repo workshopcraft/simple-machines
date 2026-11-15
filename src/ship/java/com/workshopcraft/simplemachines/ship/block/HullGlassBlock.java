@@ -14,17 +14,21 @@ import net.minecraft.world.level.block.state.StateDefinition;
 
 /** Unbreakable see-through hull; joins up with the hull glass next to it like the windows (see {@link ConnectedGlass}). */
 public class HullGlassBlock extends TransparentBlock implements Hull {
+    //? if <26.3 {
     public static final MapCodec<HullGlassBlock> CODEC = simpleCodec(HullGlassBlock::new);
+    //?}
 
     public HullGlassBlock(Properties properties) {
         super(properties);
         registerDefaultState(ConnectedGlass.unjoined(stateDefinition.any()));
     }
 
+    //? if <26.3 {
     @Override
     protected MapCodec<? extends TransparentBlock> codec() {
         return CODEC;
     }
+    //?}
 
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {

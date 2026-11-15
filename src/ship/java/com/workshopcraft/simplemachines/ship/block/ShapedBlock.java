@@ -19,7 +19,9 @@ import java.util.Map;
 public class ShapedBlock extends HorizontalDirectionalBlock {
     private final Map<Direction, VoxelShape> shapes;
     private final boolean solid;
+    //? if <26.3 {
     private MapCodec<ShapedBlock> codec;
+    //?}
 
     /** solid false: no collision, like a carpet of debris or a screen. */
     public ShapedBlock(Properties properties, double[][] north, boolean solid) {
@@ -33,11 +35,13 @@ public class ShapedBlock extends HorizontalDirectionalBlock {
         this(properties, north, true);
     }
 
+    //? if <26.3 {
     @Override
     protected MapCodec<? extends HorizontalDirectionalBlock> codec() {
         if (codec == null) codec = simpleCodec(p -> this);
         return codec;
     }
+    //?}
 
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {

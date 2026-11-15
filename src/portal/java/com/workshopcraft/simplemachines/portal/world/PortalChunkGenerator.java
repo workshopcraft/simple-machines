@@ -2,6 +2,7 @@ package com.workshopcraft.simplemachines.portal.world;
 
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
+import com.workshopcraft.simplemachines.compat.mc.MobSpawns;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Holder;
 import net.minecraft.core.RegistryAccess;
@@ -65,7 +66,7 @@ public class PortalChunkGenerator extends NoiseBasedChunkGenerator {
             final List<Weighted<MobSpawnSettings.SpawnerData>> list = new ArrayList<>();
             for (WorldPreset.Mob m : e.getValue()) {
                 final Optional<EntityType<?>> type = BuiltInRegistries.ENTITY_TYPE.getOptional(m.type());
-                type.ifPresent(t -> list.add(new Weighted<>(new MobSpawnSettings.SpawnerData(t, Math.max(1, m.min()), Math.max(m.min(), m.max())),
+                type.ifPresent(t -> list.add(new Weighted<>(MobSpawns.spawner(t, Math.max(1, m.min()), Math.max(m.min(), m.max())),
                         Math.max(1, m.weight()))));
             }
             mobs.put(e.getKey(), list);
@@ -87,12 +88,19 @@ public class PortalChunkGenerator extends NoiseBasedChunkGenerator {
         // no vanilla structures in portal worlds; the objective site is placed in applyBiomeDecoration
     }
 
+    //? if >=26.3 {
+    /*@Override
+    public WeightedList<MobSpawnSettings.SpawnerData> getMobsAt(Level level, StructureManager structureManager, MobCategory category, BlockPos pos) {
+        final WeightedList<MobSpawnSettings.SpawnerData> vanilla = super.getMobsAt(level, structureManager, category, pos);
+    *///?} else {
     @Override
     public WeightedList<MobSpawnSettings.SpawnerData> getMobsAt(Holder<Biome> biome, StructureManager structureManager, MobCategory category, BlockPos pos) {
+        final WeightedList<MobSpawnSettings.SpawnerData> vanilla = super.getMobsAt(biome, structureManager, category, pos);
+    //?}
         final List<Weighted<MobSpawnSettings.SpawnerData>> extra = mobs.get(category);
-        if (extra == null || extra.isEmpty()) return plan.replaceMobs() ? WeightedList.of() : super.getMobsAt(biome, structureManager, category, pos);
+        if (extra == null || extra.isEmpty()) return plan.replaceMobs() ? WeightedList.of() : vanilla;
         if (plan.replaceMobs()) return WeightedList.of(extra);
-        final List<Weighted<MobSpawnSettings.SpawnerData>> all = new ArrayList<>(super.getMobsAt(biome, structureManager, category, pos).unwrap());
+        final List<Weighted<MobSpawnSettings.SpawnerData>> all = new ArrayList<>(vanilla.unwrap());
         all.addAll(extra);
         return WeightedList.of(all);
     }
@@ -160,7 +168,12 @@ public class PortalChunkGenerator extends NoiseBasedChunkGenerator {
         final BlockPos centre = new BlockPos(column.getX(), y, column.getZ());
         final Block core = BuiltInRegistries.BLOCK.getValue(plan.objectiveBlock());
         if (plan.structure() != null && level.getServer() != null) {
+            // 26.3 renamed ServerLevel#getStructureManager to getStructureTemplateManager
+            //? if >=26.3 {
+            /*final Optional<StructureTemplate> t = level.getLevel().getStructureTemplateManager().get(plan.structure());
+            *///?} else {
             final Optional<StructureTemplate> t = level.getLevel().getStructureManager().get(plan.structure());
+            //?}
             if (t.isPresent()) {
                 final var size = t.get().getSize();
                 final BlockPos origin = centre.offset(-size.getX() / 2, 0, -size.getZ() / 2);

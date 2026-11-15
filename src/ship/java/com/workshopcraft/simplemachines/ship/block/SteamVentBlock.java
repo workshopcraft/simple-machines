@@ -13,16 +13,20 @@ import net.minecraft.world.level.block.state.BlockState;
 
 /** A broken vent that puffs steam. Standing on it scalds unless you sneak. */
 public class SteamVentBlock extends Block {
+    //? if <26.3 {
     public static final MapCodec<SteamVentBlock> CODEC = simpleCodec(SteamVentBlock::new);
+    //?}
 
     public SteamVentBlock(Properties properties) {
         super(properties);
     }
 
+    //? if <26.3 {
     @Override
     protected MapCodec<? extends Block> codec() {
         return CODEC;
     }
+    //?}
 
     @Override
     public void animateTick(BlockState state, Level level, BlockPos pos, RandomSource random) {

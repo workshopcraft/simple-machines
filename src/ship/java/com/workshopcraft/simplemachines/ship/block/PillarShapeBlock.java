@@ -13,7 +13,9 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 /** Pipes, cables and struts: a bar through the block along its axis, half width w pixels. */
 public class PillarShapeBlock extends RotatedPillarBlock {
     private final VoxelShape x, y, z;
+    //? if <26.3 {
     private MapCodec<PillarShapeBlock> codec;
+    //?}
 
     public PillarShapeBlock(Properties properties, double half) {
         super(properties);
@@ -23,11 +25,13 @@ public class PillarShapeBlock extends RotatedPillarBlock {
         z = Block.box(a, a, 0, b, b, 16);
     }
 
+    //? if <26.3 {
     @Override
     public MapCodec<? extends RotatedPillarBlock> codec() {
         if (codec == null) codec = simpleCodec(p -> this);
         return codec;
     }
+    //?}
 
     @Override
     protected VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext ctx) {

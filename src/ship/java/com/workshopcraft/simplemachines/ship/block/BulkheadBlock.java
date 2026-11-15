@@ -31,16 +31,20 @@ import java.util.Set;
  * sneaking takes down one block. Pickaxes break them too unless ship_bulkheads_need_tool is on.
  */
 public class BulkheadBlock extends Block {
+    //? if <26.3 {
     public static final MapCodec<BulkheadBlock> CODEC = simpleCodec(BulkheadBlock::new);
+    //?}
 
     public BulkheadBlock(Properties properties) {
         super(properties);
     }
 
+    //? if <26.3 {
     @Override
     protected MapCodec<? extends Block> codec() {
         return CODEC;
     }
+    //?}
 
     @Override
     protected float getDestroyProgress(BlockState state, Player player, BlockGetter level, BlockPos pos) {

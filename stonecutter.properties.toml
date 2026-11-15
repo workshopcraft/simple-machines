@@ -57,12 +57,14 @@ deps.neo_loader = "26.2.0.93"
 deps.jei = "30.48.0.244"
 
 [fabric."26.3"]
+mod.version = "2.3.0-alpha.10"
 mod.mc_compat = "~26.3"
 deps.fabric_api = "0.165.0+26.3"
 deps.energy = "5.0.0"
 deps.jei = "31.17.0.108"
 
 [neoforge."26.3"]
+mod.version = "2.3.0-alpha.10"
 mod.mc_compat = "[26.3,26.4)"
 deps.neo_loader = "26.3.0.101"
 deps.jei = "31.17.0.108"

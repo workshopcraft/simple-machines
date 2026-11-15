@@ -19,7 +19,9 @@ import java.util.Map;
 public class AttachedBlock extends DirectionalBlock {
     private final Map<Direction, VoxelShape> shapes;
     private final boolean solid;
+    //? if <26.3 {
     private MapCodec<AttachedBlock> codec;
+    //?}
 
     public AttachedBlock(Properties properties, double[][] floor, boolean solid) {
         super(properties);
@@ -28,11 +30,13 @@ public class AttachedBlock extends DirectionalBlock {
         registerDefaultState(stateDefinition.any().setValue(FACING, Direction.UP));
     }
 
+    //? if <26.3 {
     @Override
     protected MapCodec<? extends DirectionalBlock> codec() {
         if (codec == null) codec = simpleCodec(p -> this);
         return codec;
     }
+    //?}
 
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
