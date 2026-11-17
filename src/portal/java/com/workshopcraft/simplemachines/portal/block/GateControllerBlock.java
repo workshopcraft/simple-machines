@@ -55,4 +55,12 @@ public class GateControllerBlock extends MachineBlock {
                     0.0, 0.3, 0.0);
         }
     }
+
+    // 1.21.1 entity blocks are invisible unless they ask for their model
+    //? if <1.21.2 {
+    /*@Override
+    protected net.minecraft.world.level.block.RenderShape getRenderShape(BlockState state) {
+        return net.minecraft.world.level.block.RenderShape.MODEL;
+    }
+    *///?}
 }

@@ -30,4 +30,12 @@ public class SlidingPanelBlock extends SlideBlock {
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
         builder.add(FACING, OPEN, POWERED);
     }
+
+    // 1.21.1 entity blocks are invisible unless they ask for their model
+    //? if <1.21.2 {
+    /*@Override
+    protected net.minecraft.world.level.block.RenderShape getRenderShape(BlockState state) {
+        return net.minecraft.world.level.block.RenderShape.MODEL;
+    }
+    *///?}
 }

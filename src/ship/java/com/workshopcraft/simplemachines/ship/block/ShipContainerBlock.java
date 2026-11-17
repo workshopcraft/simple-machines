@@ -79,4 +79,12 @@ public class ShipContainerBlock extends BaseEntityBlock {
     protected int getAnalogOutputSignal(BlockState state, Level level, BlockPos pos, Direction direction) {
         return net.minecraft.world.inventory.AbstractContainerMenu.getRedstoneSignalFromBlockEntity(level.getBlockEntity(pos));
     }
+
+    // 1.21.1 entity blocks are invisible unless they ask for their model
+    //? if <1.21.2 {
+    /*@Override
+    protected net.minecraft.world.level.block.RenderShape getRenderShape(BlockState state) {
+        return net.minecraft.world.level.block.RenderShape.MODEL;
+    }
+    *///?}
 }

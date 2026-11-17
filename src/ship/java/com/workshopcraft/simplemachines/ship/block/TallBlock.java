@@ -117,4 +117,11 @@ public abstract class TallBlock extends BaseEntityBlock {
         }
     }
 
+    // 1.21.1 entity blocks are invisible unless they ask for their model
+    //? if <1.21.2 {
+    /*@Override
+    protected net.minecraft.world.level.block.RenderShape getRenderShape(BlockState state) {
+        return net.minecraft.world.level.block.RenderShape.MODEL;
+    }
+    *///?}
 }
