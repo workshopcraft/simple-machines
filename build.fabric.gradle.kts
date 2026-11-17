@@ -83,6 +83,8 @@ tasks {
         if (sc.current.parsed < "26.3") exclude("data/simplemachines/context_int_provider/**")
         if (sc.current.parsed >= "26.3") filesMatching("data/simplemachines/advancement/**") { filter { it.replace("\"recipe\":", "\"recipes\":") } }
         if (sc.current.parsed >= "26.3") filesMatching("data/simplemachines/loot_table/**") { filter(LootTable263::class.java) }
+        if (sc.current.parsed >= "26.3") filesMatching("data/simplemachines/dimension_type/**") { filter(DimensionType263::class.java) }
+        if (sc.current.parsed >= "26.3") filesMatching("data/simplemachines/worldgen/configured_feature/**") { path = path.replace("/worldgen/configured_feature/", "/worldgen/feature/"); filter(Feature263::class.java) }
         exclude("META-INF/neoforge.mods.toml", "META-INF/mods.toml")
         if (!modern) exclude("pack.mcmeta", "META-INF/accesstransformer.cfg", "assets/simplemachines/items/**")
         if (sc.current.parsed < "1.21") exclude("data/simplemachines/recipe/**", "data/simplemachines/loot_table/**", "data/*/advancement/**", "data/*/tags/block/**", "data/*/tags/item/**", "data/neoforge/**", "simplemachines.neoforge.mixins.json", "simplemachines.forge.mixins.json")

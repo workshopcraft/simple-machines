@@ -85,6 +85,8 @@ tasks {
             exclude("data/neoforge/data_maps/item/furnace_fuels.json")
             filesMatching("data/simplemachines/advancement/**") { filter { it.replace("\"recipe\":", "\"recipes\":") } }
             filesMatching("data/simplemachines/loot_table/**") { filter(LootTable263::class.java) }
+            filesMatching("data/simplemachines/dimension_type/**") { filter(DimensionType263::class.java) }
+            filesMatching("data/simplemachines/worldgen/configured_feature/**") { path = path.replace("/worldgen/configured_feature/", "/worldgen/feature/"); filter(Feature263::class.java) }
         } else exclude("data/simplemachines/context_int_provider/**")
         exclude("fabric.mod.json", "META-INF/mods.toml")
         if (!modern) exclude("pack.mcmeta", "simplemachines.accesswidener", "META-INF/accesstransformer.cfg", "assets/simplemachines/items/**")
