@@ -19,6 +19,7 @@ public final class ByteBufCodecs {
     public static final StreamCodec<Object, Float> FLOAT = StreamCodec.of(FriendlyByteBuf::readFloat, FriendlyByteBuf::writeFloat);
     public static final StreamCodec<Object, Boolean> BOOL = StreamCodec.of(FriendlyByteBuf::readBoolean, FriendlyByteBuf::writeBoolean);
     public static final StreamCodec<Object, String> STRING_UTF8 = StreamCodec.of(FriendlyByteBuf::readUtf, FriendlyByteBuf::writeUtf);
+    public static final StreamCodec<Object, net.minecraft.resources.ResourceLocation> RESOURCE_LOCATION = StreamCodec.of(FriendlyByteBuf::readResourceLocation, FriendlyByteBuf::writeResourceLocation);
     public static final StreamCodec<Object, java.util.UUID> UUID = StreamCodec.of(FriendlyByteBuf::readUUID, FriendlyByteBuf::writeUUID);
 
     private ByteBufCodecs() {
@@ -43,8 +44,13 @@ public final class ByteBufCodecs {
     }
 
     public static <B, V> Function<StreamCodec<B, V>, StreamCodec<B, List<V>>> list() {
+        return list(Integer.MAX_VALUE);
+    }
+
+    public static <B, V> Function<StreamCodec<B, V>, StreamCodec<B, List<V>>> list(int max) {
         return c -> StreamCodec.of(b -> {
             final int n = b.readVarInt();
+            if (n > max) throw new io.netty.handler.codec.DecoderException(n + " elements exceeds max " + max);
             final List<V> out = new ArrayList<>(n);
             for (int i = 0; i < n; i++) out.add(c.decode(b));
             return out;

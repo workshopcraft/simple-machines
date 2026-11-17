@@ -37,7 +37,7 @@ public class TerminalBlock extends FacingEntityBlock {
         super(properties, north);
     }
 
-    //? if <26.3 {
+    //? if >=1.20.5 <26.3 {
     @Override
     protected MapCodec<? extends BaseEntityBlock> codec() {
         if (codec == null) codec = simpleCodec(p -> this);

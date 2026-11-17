@@ -13,7 +13,7 @@ import net.minecraft.world.level.block.state.BlockState;
 
 /** A broken vent that puffs steam. Standing on it scalds unless you sneak. */
 public class SteamVentBlock extends Block {
-    //? if <26.3 {
+    //? if >=1.20.5 <26.3 {
     public static final MapCodec<SteamVentBlock> CODEC = simpleCodec(SteamVentBlock::new);
     //?}
 
@@ -21,7 +21,7 @@ public class SteamVentBlock extends Block {
         super(properties);
     }
 
-    //? if <26.3 {
+    //? if >=1.20.5 <26.3 {
     @Override
     protected MapCodec<? extends Block> codec() {
         return CODEC;
@@ -32,7 +32,11 @@ public class SteamVentBlock extends Block {
     public void animateTick(BlockState state, Level level, BlockPos pos, RandomSource random) {
         final double x = pos.getX() + 0.3 + random.nextDouble() * 0.4, z = pos.getZ() + 0.3 + random.nextDouble() * 0.4;
         level.addParticle(ParticleTypes.CLOUD, x, pos.getY() + 1.05, z, 0, 0.08 + random.nextDouble() * 0.06, 0);
+        //? if >=1.20.5 {
         if (random.nextInt(4) == 0) level.addParticle(ParticleTypes.WHITE_SMOKE, x, pos.getY() + 1.05, z, 0, 0.12, 0);
+        //?} else {
+        /*if (random.nextInt(4) == 0) level.addParticle(ParticleTypes.POOF, x, pos.getY() + 1.05, z, 0, 0.12, 0);
+        *///?}
         if (random.nextInt(30) == 0) level.playLocalSound(pos.getX() + 0.5, pos.getY() + 1, pos.getZ() + 0.5, SoundEvents.FIRE_EXTINGUISH, SoundSource.BLOCKS, 0.3F, 0.6F + random.nextFloat() * 0.3F, false);
     }
 

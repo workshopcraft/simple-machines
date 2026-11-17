@@ -81,8 +81,13 @@ public final class Ship {
         ShipBlocks.registerItems(r);
         shipTool = tool(r, "ship_tool", new HintItem(props("ship_tool").durability(512), "tooltip.simplemachines.ship_tool", "tooltip.simplemachines.ship_tool_sneak"));
         repairKit = tool(r, "repair_kit", new RepairKitItem(props("repair_kit").stacksTo(16)));
+        //? if >=1.20.5 {
         finishKit = tool(r, "machine_finish_kit", new MachineFinishKitItem(props("machine_finish_kit").stacksTo(16)
                 .component(MACHINE_FINISH, MachineFinishes.NONE)));
+        //?} else {
+        /*finishKit = tool(r, "machine_finish_kit", new MachineFinishKitItem(props("machine_finish_kit").stacksTo(16)));
+        MACHINE_FINISH.setDefault(finishKit, MachineFinishes.NONE);
+        *///?}
     }
 
     private static Item tool(BiConsumer<Identifier, Item> r, String name, Item item) {
@@ -112,7 +117,7 @@ public final class Ship {
 
     public static ItemStack finishKit(String finish) {
         final ItemStack s = new ItemStack(finishKit);
-        s.set(MACHINE_FINISH, SimpleMachines.id(finish));
+        s.set(Ship.MACHINE_FINISH, SimpleMachines.id(finish));
         return s;
     }
 

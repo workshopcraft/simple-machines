@@ -47,18 +47,32 @@ public final class PortalFabric {
         PortalPlatform.unloaded = level -> ServerLevelEvents.UNLOAD.invoker().onLevelUnload(level.getServer(), level);
         net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry.clientboundPlay().register(
                 com.workshopcraft.simplemachines.portal.RiftHudPayload.TYPE, com.workshopcraft.simplemachines.portal.RiftHudPayload.CODEC);
-        //?} else {
+        //?} else if >=1.20.5 {
         /*PortalPlatform.loaded = level -> ServerWorldEvents.LOAD.invoker().onWorldLoad(level.getServer(), level);
         PortalPlatform.unloaded = level -> ServerWorldEvents.UNLOAD.invoker().onWorldUnload(level.getServer(), level);
         net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry.playS2C().register(
                 com.workshopcraft.simplemachines.portal.RiftHudPayload.TYPE, com.workshopcraft.simplemachines.portal.RiftHudPayload.CODEC);
+        *///?} else {
+        /*PortalPlatform.loaded = level -> ServerWorldEvents.LOAD.invoker().onWorldLoad(level.getServer(), level);
+        PortalPlatform.unloaded = level -> ServerWorldEvents.UNLOAD.invoker().onWorldUnload(level.getServer(), level);
         *///?}
+        //? if >=1.20.5 {
         PortalPlatform.sendHud = (player, payload) -> {
             if (net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking.canSend(player, payload.type())) {
                 net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking.send(player, payload);
             }
         };
         Portal.registerComponents(direct(BuiltInRegistries.DATA_COMPONENT_TYPE));
+        //?} else {
+        /*PortalPlatform.sendHud = (player, payload) -> {
+            if (net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking.canSend(player, payload.type().id())) {
+                final var buf = net.fabricmc.fabric.api.networking.v1.PacketByteBufs.create();
+                com.workshopcraft.simplemachines.portal.RiftHudPayload.CODEC.encode(buf, payload);
+                net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking.send(player, payload.type().id(), buf);
+            }
+        };
+        Portal.registerComponents((id, t) -> t.bind(id.getPath()));
+        *///?}
         Portal.registerBlocks(direct(BuiltInRegistries.BLOCK));
         Portal.registerItems(direct(BuiltInRegistries.ITEM));
         Portal.registerTabs(direct(BuiltInRegistries.CREATIVE_MODE_TAB));
@@ -66,7 +80,10 @@ public final class PortalFabric {
         Portal.registerMenus(direct(BuiltInRegistries.MENU));
         //? if >=26.1
         Portal.registerTicketTypes(direct(BuiltInRegistries.TICKET_TYPE));
+        //? if >=1.20.5 {
         Portal.registerChunkGenerators(direct(BuiltInRegistries.CHUNK_GENERATOR));
+        //?} else
+        /*Portal.registerChunkGenerators((id, c) -> Registry.register(BuiltInRegistries.CHUNK_GENERATOR, id, c.codec()));*/
         Portal.registerPlacementModifiers(direct(BuiltInRegistries.PLACEMENT_MODIFIER_TYPE));
         EnergyStorage.SIDED.registerForBlockEntity((be, side) -> new BufferEnergyStorage(be.energy(), true, false) {
             // HV only: anything lower is refused and browns the gate out

@@ -36,7 +36,7 @@ public class ShipContainerBlock extends BaseEntityBlock {
         registerDefaultState(stateDefinition.any().setValue(FACING, Direction.NORTH));
     }
 
-    //? if <26.3 {
+    //? if >=1.20.5 <26.3 {
     @Override
     protected MapCodec<? extends BaseEntityBlock> codec() {
         if (codec == null) codec = simpleCodec(p -> this);

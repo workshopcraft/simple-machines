@@ -31,7 +31,7 @@ import java.util.Set;
  * sneaking takes down one block. Pickaxes break them too unless ship_bulkheads_need_tool is on.
  */
 public class BulkheadBlock extends Block {
-    //? if <26.3 {
+    //? if >=1.20.5 <26.3 {
     public static final MapCodec<BulkheadBlock> CODEC = simpleCodec(BulkheadBlock::new);
     //?}
 
@@ -39,7 +39,7 @@ public class BulkheadBlock extends Block {
         super(properties);
     }
 
-    //? if <26.3 {
+    //? if >=1.20.5 <26.3 {
     @Override
     protected MapCodec<? extends Block> codec() {
         return CODEC;
@@ -62,7 +62,11 @@ public class BulkheadBlock extends Block {
         level.playSound(null, pos, SoundEvents.IRON_DOOR_OPEN, SoundSource.BLOCKS, 1F, 0.6F);
         if (!player.isCreative()) {
             if (stack.is(Ship.REPAIR_KITS)) stack.shrink(1);
+            //? if >=1.20.5 {
             else if (stack.isDamageableItem()) stack.hurtAndBreak(wall.size(), player, hand == InteractionHand.MAIN_HAND ? EquipmentSlot.MAINHAND : EquipmentSlot.OFFHAND);
+            //?} else {
+            /*else if (stack.isDamageableItem()) stack.hurtAndBreak(wall.size(), player, p -> p.broadcastBreakEvent(hand));
+            *///?}
         }
         player.sendOverlayMessage(Component.translatable("message.simplemachines.bulkhead_removed", wall.size()));
         return InteractionResult.SUCCESS_SERVER;

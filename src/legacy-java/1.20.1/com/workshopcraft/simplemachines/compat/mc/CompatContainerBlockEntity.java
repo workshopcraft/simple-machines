@@ -1,6 +1,7 @@
 package com.workshopcraft.simplemachines.compat.mc;
 
 import com.workshopcraft.simplemachines.compat.mc.component.DataComponentMap;
+import com.workshopcraft.simplemachines.compat.mc.component.DataComponentType;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
@@ -12,6 +13,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BaseContainerBlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
+import org.jetbrains.annotations.Nullable;
 
 /** 1.20.1 BaseContainerBlockEntity with the 1.20.5+ item list helpers and 26.x style save/load. */
 public abstract class CompatContainerBlockEntity extends BaseContainerBlockEntity implements Removal, ComponentHolder {
@@ -23,10 +25,17 @@ public abstract class CompatContainerBlockEntity extends BaseContainerBlockEntit
 
     protected abstract void setItems(NonNullList<ItemStack> items);
 
+    // components set on the block entity itself (26.x setComponents), kept beside the implicit ones under SimpleMachines
+    private CompoundTag explicit = new CompoundTag();
+
     @Override
     public final void load(CompoundTag tag) {
         super.load(tag);
         loadAdditional(new ValueInput(tag, null));
+        explicit = tag.getCompound(Comps.KEY).copy();
+        final DataComponentMap.Builder b = new DataComponentMap.Builder();
+        collectImplicitComponents(b);
+        for (DataComponentType<?> t : b.values().keySet()) if (t.name() != null) explicit.remove(t.name());
     }
 
     @Override
@@ -35,11 +44,23 @@ public abstract class CompatContainerBlockEntity extends BaseContainerBlockEntit
         saveAdditional(new ValueOutput(tag, null));
         final DataComponentMap.Builder b = new DataComponentMap.Builder();
         collectImplicitComponents(b);
-        if (!b.values().isEmpty()) {
-            final CompoundTag data = new CompoundTag();
-            Comps.write(data, b);
-            tag.put(Comps.KEY, data);
-        }
+        final CompoundTag data = explicit.copy();
+        Comps.write(data, b);
+        if (!data.isEmpty()) tag.put(Comps.KEY, data);
+    }
+
+    public CompoundTag explicitComponents() {
+        return explicit;
+    }
+
+    @Nullable
+    public <T> T getComponent(DataComponentType<T> type) {
+        return Comps.read(explicit, type);
+    }
+
+    public <T> void setComponent(DataComponentType<T> type, @Nullable T value) {
+        explicit.remove(type.name());
+        if (value != null) Comps.write(explicit, new DataComponentMap.Builder().set(type, value));
     }
 
     @Override

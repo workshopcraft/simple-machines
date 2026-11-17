@@ -20,6 +20,7 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.levelgen.Heightmap;
+//? if >=1.20.5
 import net.minecraft.world.level.levelgen.feature.EndPlatformFeature;
 import net.minecraft.world.level.portal.TeleportTransition;
 import net.minecraft.world.phys.AABB;
@@ -95,7 +96,11 @@ public final class PortalTravel {
         BlockPos spot;
         if (target.dimension() == Level.END) {
             spot = ServerLevel.END_SPAWN_POINT;
+            //? if >=1.20.5 {
             EndPlatformFeature.createEndPlatform(target, spot.below(), true);
+            //?} else {
+            /*ServerLevel.makeObsidianPlatform(target);
+            *///?}
         } else if (target.dimension() == Level.NETHER) {
             final double scale = from.dimensionType().coordinateScale() / target.dimensionType().coordinateScale();
             final int x = (int) Math.floor(gate.getX() * scale), z = (int) Math.floor(gate.getZ() * scale);

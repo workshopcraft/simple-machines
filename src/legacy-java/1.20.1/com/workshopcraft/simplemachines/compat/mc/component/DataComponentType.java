@@ -19,6 +19,11 @@ public final class DataComponentType<T> {
         if (this.name == null) this.name = name;
     }
 
+    /** Stands in for Item.Properties.component(...): the value an item reports when its stack has none. */
+    public void setDefault(net.minecraft.world.item.Item item, T value) {
+        com.workshopcraft.simplemachines.compat.mc.Comps.setDefault(item, this, value);
+    }
+
     public String name() {
         return name;
     }

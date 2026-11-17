@@ -30,7 +30,7 @@ public class AttachedBlock extends DirectionalBlock {
         registerDefaultState(stateDefinition.any().setValue(FACING, Direction.UP));
     }
 
-    //? if <26.3 {
+    //? if >=1.20.5 <26.3 {
     @Override
     protected MapCodec<? extends DirectionalBlock> codec() {
         if (codec == null) codec = simpleCodec(p -> this);

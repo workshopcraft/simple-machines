@@ -91,13 +91,21 @@ public abstract class TallBlock extends BaseEntityBlock {
     }
 
     @Override
+    //? if >=1.20.5 {
     public BlockState playerWillDestroy(Level level, BlockPos pos, BlockState state, Player player) {
+    //?} else {
+    /*public void playerWillDestroy(Level level, BlockPos pos, BlockState state, Player player) {
+    *///?}
         // creative breaking the top half must not drop the bottom
         if (tall() && !level.isClientSide() && player.isCreative() && !lower(state)) {
             final BlockPos b = pos.below();
             if (level.getBlockState(b).is(this)) level.setBlock(b, Blocks.AIR.defaultBlockState(), 35);
         }
+        //? if >=1.20.5 {
         return super.playerWillDestroy(level, pos, state, player);
+        //?} else {
+        /*super.playerWillDestroy(level, pos, state, player);
+        *///?}
     }
 
     /** Sets a value on both halves. */

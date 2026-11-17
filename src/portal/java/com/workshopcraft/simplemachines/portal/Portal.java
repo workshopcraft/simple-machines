@@ -74,9 +74,11 @@ public final class Portal {
     public static final MenuType<ResearchMenu> RESEARCH_MENU = new MenuType<>(ResearchMenu::client, FeatureFlags.VANILLA_SET);
     //? if >=26.3 {
     /*public static final MapCodec<? extends PlacementModifier> CONFIG_FILTER = ConfigFilter.CODEC;
-    *///?} else {
+    *///?} else if >=1.20.5 {
     public static final PlacementModifierType<ConfigFilter> CONFIG_FILTER = () -> ConfigFilter.CODEC;
-    //?}
+    //?} else {
+    /*public static final PlacementModifierType<ConfigFilter> CONFIG_FILTER = () -> ConfigFilter.CODEC.codec();
+    *///?}
 
     public static Block titaniumOre, deepslateTitaniumOre, titaniumBlock, steelBlock;
     public static Block gateController, portalField, objectiveCore, returnBeacon, researchStation, returnRift;
@@ -144,11 +146,19 @@ public final class Portal {
     }
 
     public static void registerBlocks(BiConsumer<Identifier, Block> r) {
+        //? if >=1.20.5 {
         titaniumOre = block(r, "titanium_ore", new DropExperienceBlock(UniformInt.of(1, 3), props("titanium_ore")
                 .mapColor(MapColor.STONE).instrument(NoteBlockInstrument.BASEDRUM).requiresCorrectToolForDrops().strength(4.5F, 6.0F)));
         deepslateTitaniumOre = block(r, "deepslate_titanium_ore", new DropExperienceBlock(UniformInt.of(1, 3), props("deepslate_titanium_ore")
                 .mapColor(MapColor.DEEPSLATE).instrument(NoteBlockInstrument.BASEDRUM).requiresCorrectToolForDrops().strength(6.0F, 6.0F)
                 .sound(SoundType.DEEPSLATE)));
+        //?} else {
+        /*titaniumOre = block(r, "titanium_ore", new DropExperienceBlock(props("titanium_ore")
+                .mapColor(MapColor.STONE).instrument(NoteBlockInstrument.BASEDRUM).requiresCorrectToolForDrops().strength(4.5F, 6.0F), UniformInt.of(1, 3)));
+        deepslateTitaniumOre = block(r, "deepslate_titanium_ore", new DropExperienceBlock(props("deepslate_titanium_ore")
+                .mapColor(MapColor.DEEPSLATE).instrument(NoteBlockInstrument.BASEDRUM).requiresCorrectToolForDrops().strength(6.0F, 6.0F)
+                .sound(SoundType.DEEPSLATE), UniformInt.of(1, 3)));
+        *///?}
         titaniumBlock = block(r, "titanium_block", new Block(props("titanium_block").mapColor(MapColor.COLOR_LIGHT_GRAY)
                 .requiresCorrectToolForDrops().strength(6.0F, 8.0F).sound(SoundType.METAL)));
         steelBlock = block(r, "steel_block", new Block(props("steel_block").mapColor(MapColor.METAL)
@@ -194,6 +204,7 @@ public final class Portal {
         entangledCore = item(r, "entangled_core", new Item(itemProps("entangled_core").stacksTo(1)));
         blockItem(r, "portal_gate_controller", gateController);
         blockItem(r, "research_station", researchStation);
+        //? if >=1.20.5 {
         jumpCard = item(r, "jump_card", new PortalCardItem(itemProps("jump_card").stacksTo(1)
                 .component(CARD, SimpleMachines.id("jump")), PortalCard.Kind.JUMP));
         storyCard = item(r, "story_card", new PortalCardItem(itemProps("story_card").stacksTo(1), PortalCard.Kind.STORY));
@@ -201,6 +212,15 @@ public final class Portal {
                 .component(CARD, SimpleMachines.id("nether")), PortalCard.Kind.NETHER));
         endCard = item(r, "end_card", new PortalCardItem(itemProps("end_card").stacksTo(1)
                 .component(CARD, SimpleMachines.id("end")), PortalCard.Kind.END));
+        //?} else {
+        /*jumpCard = item(r, "jump_card", new PortalCardItem(itemProps("jump_card").stacksTo(1), PortalCard.Kind.JUMP));
+        storyCard = item(r, "story_card", new PortalCardItem(itemProps("story_card").stacksTo(1), PortalCard.Kind.STORY));
+        netherCard = item(r, "nether_card", new PortalCardItem(itemProps("nether_card").stacksTo(1), PortalCard.Kind.NETHER));
+        endCard = item(r, "end_card", new PortalCardItem(itemProps("end_card").stacksTo(1), PortalCard.Kind.END));
+        CARD.setDefault(jumpCard, SimpleMachines.id("jump"));
+        CARD.setDefault(netherCard, SimpleMachines.id("nether"));
+        CARD.setDefault(endCard, SimpleMachines.id("end"));
+        *///?}
         mobScanner = item(r, "mob_scanner", new MobScannerItem(itemProps("mob_scanner").stacksTo(1)));
         // placed by worldgen and gates only; items exist so creative players and commands can use them.
         // The Return Beacon was the 2.3.0-alpha.2 stand-in for the return rift; it stays registered so old test worlds load.
@@ -245,7 +265,7 @@ public final class Portal {
             default -> jumpCard;
         };
         final ItemStack s = new ItemStack(item);
-        s.set(CARD, card.id());
+        s.set(Portal.CARD, card.id());
         return s;
     }
 

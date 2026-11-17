@@ -238,8 +238,11 @@ public final class PortalWorlds {
             //? if >=26.1 {
             final String dim = net.minecraft.nbt.NbtIo.readCompressed(file, net.minecraft.nbt.NbtAccounter.unlimitedHeap())
                     .getStringOr("Dimension", "minecraft:overworld");
-            //?} else {
+            //?} else if >=1.20.5 {
             /*final net.minecraft.nbt.CompoundTag tag = net.minecraft.nbt.NbtIo.readCompressed(file, net.minecraft.nbt.NbtAccounter.unlimitedHeap());
+            final String dim = tag.contains("Dimension", net.minecraft.nbt.Tag.TAG_STRING) ? tag.getString("Dimension") : "minecraft:overworld";
+            *///?} else {
+            /*final net.minecraft.nbt.CompoundTag tag = net.minecraft.nbt.NbtIo.readCompressed(file.toFile());
             final String dim = tag.contains("Dimension", net.minecraft.nbt.Tag.TAG_STRING) ? tag.getString("Dimension") : "minecraft:overworld";
             *///?}
             SAVED_DIMS.put(file, Pair.of(stamp, dim));

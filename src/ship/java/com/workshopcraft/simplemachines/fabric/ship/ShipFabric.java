@@ -18,7 +18,10 @@ public final class ShipFabric {
 
     public static void init() {
         Ship.init();
+        //? if >=1.20.5 {
         Ship.registerComponents(direct(BuiltInRegistries.DATA_COMPONENT_TYPE));
+        //?} else
+        /*Ship.registerComponents((id, t) -> t.bind(id.getPath()));*/
         Ship.registerBlocks(direct(BuiltInRegistries.BLOCK));
         Ship.registerItems(direct(BuiltInRegistries.ITEM));
         Ship.registerTabs(direct(BuiltInRegistries.CREATIVE_MODE_TAB));

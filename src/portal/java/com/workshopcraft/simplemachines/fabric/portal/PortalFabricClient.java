@@ -20,7 +20,14 @@ public final class PortalFabricClient {
     public static void init() {
         MenuScreens.register(Portal.GATE_MENU, GateScreen::new);
         MenuScreens.register(Portal.RESEARCH_MENU, ResearchScreen::new);
+        //? if >=1.20.5 {
         ClientPlayNetworking.registerGlobalReceiver(RiftHudPayload.TYPE, (payload, ctx) -> ctx.client().execute(() -> RiftHud.receive(payload)));
+        //?} else {
+        /*ClientPlayNetworking.registerGlobalReceiver(RiftHudPayload.TYPE.id(), (client, handler, buf, sender) -> {
+            final RiftHudPayload payload = RiftHudPayload.CODEC.decode(buf);
+            client.execute(() -> RiftHud.receive(payload));
+        });
+        *///?}
         //? if >=26.1 {
         HudElementRegistry.attachElementAfter(VanillaHudElements.BOSS_BAR, Identifier.fromNamespaceAndPath("simplemachines", "rift_hud"),
                 (graphics, delta) -> RiftHud.render(graphics));

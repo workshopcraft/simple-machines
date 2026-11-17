@@ -15,7 +15,7 @@ import net.minecraft.world.level.block.state.StateDefinition;
 
 /** Ship windows: see-through, and a group of them joins into one framed sheet (see {@link ConnectedGlass}). */
 public class ConnectedGlassBlock extends ShipGlassBlock {
-    //? if <26.3 {
+    //? if >=1.20.5 <26.3 {
     @SuppressWarnings({"unchecked", "rawtypes"})
     private static final MapCodec<TransparentBlock> CODEC = (MapCodec) simpleCodec(ConnectedGlassBlock::new);
     //?}
@@ -25,7 +25,7 @@ public class ConnectedGlassBlock extends ShipGlassBlock {
         registerDefaultState(ConnectedGlass.unjoined(stateDefinition.any()));
     }
 
-    //? if <26.3 {
+    //? if >=1.20.5 <26.3 {
     @Override
     protected MapCodec<? extends TransparentBlock> codec() {
         return CODEC;

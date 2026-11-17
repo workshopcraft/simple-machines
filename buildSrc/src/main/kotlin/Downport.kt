@@ -6,7 +6,7 @@ object Downport {
 
     private val regex: List<Pair<Regex, String>> = listOf(
         "@Override(\\s+)protected " to "@Override$1public ",
-        "(?<![\\w.])(?!components\\b|ViewerRecipes\\b)([a-zA-Z_]\\w*(?:\\.\\w+\\([^()]*\\))*)\\.(get|set|has|remove|getOrDefault)\\(((?:[\\w.]*\\.)?(?:SimpleMachines|DataComponents)\\.[A-Z_]+)" to "$MC.Comps.$2($1, $3",
+        "(?<![\\w.])(?!components\\b|ViewerRecipes\\b)([a-zA-Z_]\\w*(?:\\.\\w+\\([^()]*\\))*)\\.(get|set|has|remove|getOrDefault)\\(((?:[\\w.]*\\.)?(?:SimpleMachines|DataComponents|Portal|Ship)\\.[A-Z_]+)" to "$MC.Comps.$2($1, $3",
         "(?<!\\w)Ingredient\\.CONTENTS_STREAM_CODEC" to "$MC.codec.Ingredients.STREAM_CODEC",
         "(?<!\\w)Ingredient\\.CODEC_NONEMPTY" to "$MC.codec.Ingredients.CODEC_NONEMPTY",
         "(?<!\\w)Ingredient\\.CODEC" to "$MC.codec.Ingredients.CODEC",

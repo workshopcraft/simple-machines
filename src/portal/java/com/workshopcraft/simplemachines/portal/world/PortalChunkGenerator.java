@@ -18,6 +18,7 @@ import net.minecraft.util.random.Weighted;
 import net.minecraft.util.random.WeightedList;
 //?} else
 /*import net.minecraft.util.random.WeightedRandomList;*/
+//? if >=1.20.5
 import net.minecraft.world.RandomizableContainer;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
@@ -91,10 +92,17 @@ public class PortalChunkGenerator extends NoiseBasedChunkGenerator {
         return plan;
     }
 
+    //? if >=1.20.5 {
     @Override
     protected MapCodec<? extends ChunkGenerator> codec() {
         return CODEC;
     }
+    //?} else {
+    /*@Override
+    public com.mojang.serialization.Codec<? extends ChunkGenerator> codec() {
+        return CODEC.codec();
+    }
+    *///?}
 
     @Override
     //? if >=1.21.2 {
@@ -226,7 +234,11 @@ public class PortalChunkGenerator extends NoiseBasedChunkGenerator {
         if (plan.loot() != null) {
             final BlockPos chest = centre.offset(2, 0, 0);
             level.setBlock(chest, Blocks.CHEST.defaultBlockState(), 2);
+            //? if >=1.20.5 {
             RandomizableContainer.setBlockEntityLootTable(level, random, chest, ResourceKey.create(Registries.LOOT_TABLE, plan.loot()));
+            //?} else {
+            /*net.minecraft.world.level.block.entity.RandomizableContainerBlockEntity.setLootTable(level, random, chest, plan.loot());
+            *///?}
         }
     }
 

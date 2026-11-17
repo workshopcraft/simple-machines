@@ -27,7 +27,11 @@ public class SparkingWiresBlock extends AttachedBlock {
         final double z = pos.getZ() + 0.5 - f.getStepZ() * 0.35 + (random.nextDouble() - 0.5) * 0.6;
         for (int i = 0; i < 1 + random.nextInt(3); i++) level.addParticle(ParticleTypes.ELECTRIC_SPARK, x, y, z,
                 (random.nextDouble() - 0.5) * 0.2, random.nextDouble() * 0.1, (random.nextDouble() - 0.5) * 0.2);
+        //? if >=1.20.5 {
         if (random.nextInt(12) == 0) level.playLocalSound(x, y, z, SoundEvents.COPPER_BULB_TURN_ON, SoundSource.BLOCKS, 0.4F, 1.6F + random.nextFloat() * 0.4F, false);
+        //?} else {
+        /*if (random.nextInt(12) == 0) level.playLocalSound(x, y, z, SoundEvents.LEVER_CLICK, SoundSource.BLOCKS, 0.4F, 1.6F + random.nextFloat() * 0.4F, false);
+        *///?}
     }
 
     @Override

@@ -4,7 +4,7 @@ import com.mojang.serialization.MapCodec;
 import net.minecraft.world.level.block.Block;
 
 public class HullBlock extends Block implements Hull {
-    //? if <26.3 {
+    //? if >=1.20.5 <26.3 {
     public static final MapCodec<HullBlock> CODEC = simpleCodec(HullBlock::new);
     //?}
 
@@ -12,7 +12,7 @@ public class HullBlock extends Block implements Hull {
         super(properties);
     }
 
-    //? if <26.3 {
+    //? if >=1.20.5 <26.3 {
     @Override
     protected MapCodec<? extends Block> codec() {
         return CODEC;

@@ -73,8 +73,10 @@ public class PortalFieldBlock extends Block {
     @Override
     //? if >=26.1 {
     protected ItemStack getCloneItemStack(LevelReader level, BlockPos pos, BlockState state, boolean includeData) {
-    //?} else {
+    //?} else if >=1.20.5 {
     /*public ItemStack getCloneItemStack(LevelReader level, BlockPos pos, BlockState state) {
+    *///?} else {
+    /*public ItemStack getCloneItemStack(net.minecraft.world.level.BlockGetter level, BlockPos pos, BlockState state) {
     *///?}
         return ItemStack.EMPTY;
     }

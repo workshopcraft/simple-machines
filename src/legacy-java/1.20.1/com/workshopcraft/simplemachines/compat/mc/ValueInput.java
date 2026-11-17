@@ -30,6 +30,10 @@ public record ValueInput(CompoundTag tag, HolderLookup.Provider registries) {
         return tag.contains(key, Tag.TAG_STRING) ? tag.getString(key) : def;
     }
 
+    public Optional<String> getString(String key) {
+        return tag.contains(key, Tag.TAG_STRING) ? Optional.of(tag.getString(key)) : Optional.empty();
+    }
+
     public Optional<Long> getLong(String key) {
         return tag.contains(key, Tag.TAG_ANY_NUMERIC) ? Optional.of(tag.getLong(key)) : Optional.empty();
     }

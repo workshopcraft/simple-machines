@@ -32,7 +32,11 @@ public record GateFrame(Direction.Axis axis, BlockPos low, int width, int height
     public AABB box() {
         final Direction along = axis == Direction.Axis.X ? Direction.EAST : Direction.SOUTH;
         final BlockPos high = low.relative(along, width - 1).above(height - 1);
+        //? if >=1.20.5 {
         return AABB.encapsulatingFullBlocks(low, high);
+        //?} else {
+        /*return new AABB(low.getX(), low.getY(), low.getZ(), high.getX() + 1, high.getY() + 1, high.getZ() + 1);
+        *///?}
     }
 
     public static @Nullable FrameTier tierOf(ServerLevel level, BlockState s) {

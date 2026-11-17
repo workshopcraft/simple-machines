@@ -15,7 +15,7 @@ import org.jspecify.annotations.Nullable;
 
 /** Portal Gate Controller. Part of the bottom edge of a gate frame. HV only. */
 public class GateControllerBlock extends MachineBlock {
-    //? if <26.3 {
+    //? if >=1.20.5 <26.3 {
     public static final MapCodec<GateControllerBlock> CODEC = simpleCodec(GateControllerBlock::new);
     //?}
 
@@ -23,7 +23,7 @@ public class GateControllerBlock extends MachineBlock {
         super(properties);
     }
 
-    //? if <26.3 {
+    //? if >=1.20.5 <26.3 {
     @Override
     protected MapCodec<? extends BaseEntityBlock> codec() {
         return CODEC;

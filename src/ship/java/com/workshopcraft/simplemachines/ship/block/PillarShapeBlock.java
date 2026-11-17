@@ -25,7 +25,7 @@ public class PillarShapeBlock extends RotatedPillarBlock {
         z = Block.box(a, a, 0, b, b, 16);
     }
 
-    //? if <26.3 {
+    //? if >=1.20.5 <26.3 {
     @Override
     public MapCodec<? extends RotatedPillarBlock> codec() {
         if (codec == null) codec = simpleCodec(p -> this);

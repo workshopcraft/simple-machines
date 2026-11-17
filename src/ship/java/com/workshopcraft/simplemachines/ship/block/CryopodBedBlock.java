@@ -42,7 +42,7 @@ import java.util.Optional;
  */
 public class CryopodBedBlock extends BedBlock {
     public static final BooleanProperty START = BooleanProperty.create("start");
-    //? if <26.3 {
+    //? if >=1.20.5 <26.3 {
     public static final MapCodec<CryopodBedBlock> CODEC = simpleCodec(CryopodBedBlock::new);
     //?}
     private static final VoxelShape SHAPE = Block.box(0, 0, 0, 16, 12, 16);
@@ -52,7 +52,7 @@ public class CryopodBedBlock extends BedBlock {
         registerDefaultState(defaultBlockState().setValue(START, false));
     }
 
-    //? if <26.3 {
+    //? if >=1.20.5 <26.3 {
     @Override
     @SuppressWarnings({"unchecked", "rawtypes"})
     public MapCodec<BedBlock> codec() {
@@ -84,8 +84,13 @@ public class CryopodBedBlock extends BedBlock {
         return SHAPE;
     }
 
+    //? if >=1.20.5 {
     @Override
     protected InteractionResult useWithoutItem(BlockState state, Level level, BlockPos pos, Player player, BlockHitResult hit) {
+    //?} else {
+    /*@Override
+    public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, net.minecraft.world.InteractionHand hand, BlockHitResult hit) {
+    *///?}
         if (level.isClientSide()) return InteractionResult.SUCCESS_SERVER;
         final BlockPos head = state.getValue(PART) == BedPart.HEAD ? pos : pos.relative(state.getValue(FACING));
         final BlockState headState = level.getBlockState(head);
@@ -97,7 +102,11 @@ public class CryopodBedBlock extends BedBlock {
             }
             return InteractionResult.SUCCESS_SERVER;
         }
+        //? if >=1.20.5 {
         return super.useWithoutItem(state, level, pos, player, hit);
+        //?} else {
+        /*return super.use(state, level, pos, player, hand, hit);
+        *///?}
     }
 
     /** Whether sleeping here is refused and would hurt the sleeper, so the pod links a spawn instead. */

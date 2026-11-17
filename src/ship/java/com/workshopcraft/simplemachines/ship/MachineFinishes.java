@@ -26,7 +26,11 @@ public final class MachineFinishes {
 
     /** The finish on a machine, or null. */
     public static @Nullable Identifier of(BlockEntity be) {
+        //? if >=1.20.5 {
         final Identifier id = be.components().get(Ship.MACHINE_FINISH);
+        //?} else {
+        /*final Identifier id = be instanceof com.workshopcraft.simplemachines.compat.mc.CompatContainerBlockEntity c ? c.getComponent(Ship.MACHINE_FINISH) : null;
+        *///?}
         return id == null || id.equals(NONE) ? null : id;
     }
 
@@ -35,15 +39,20 @@ public final class MachineFinishes {
         final Identifier now = of(be);
         final boolean remove = finish.equals(NONE);
         if (remove ? now == null : finish.equals(now)) return false;
+        //? if >=1.20.5 {
         final DataComponentMap.Builder b = DataComponentMap.builder();
         for (var c : be.components()) if (c.type() != Ship.MACHINE_FINISH) add(b, c);
         if (!remove) b.set(Ship.MACHINE_FINISH, finish);
         be.setComponents(b.build());
+        //?} else {
+        /*((com.workshopcraft.simplemachines.compat.mc.CompatContainerBlockEntity) be).setComponent(Ship.MACHINE_FINISH, remove ? null : finish);
+        *///?}
         be.setChanged();
         if (be.getLevel() != null) be.getLevel().sendBlockUpdated(be.getBlockPos(), be.getBlockState(), be.getBlockState(), 3);
         return true;
     }
 
+    //? if >=1.20.5 {
     @SuppressWarnings({"unchecked", "rawtypes"})
     private static void add(DataComponentMap.Builder b, net.minecraft.core.component.TypedDataComponent c) {
         b.set(c.type(), c.value());
@@ -55,6 +64,13 @@ public final class MachineFinishes {
         DataComponentMap.CODEC.encodeStart(registries.createSerializationContext(NbtOps.INSTANCE), be.components())
                 .ifSuccess(t -> tag.put("components", t));
     }
+    //?} else {
+    /*public static void updateTag(BlockEntity be, CompoundTag tag, HolderLookup.Provider registries) {
+        if (be instanceof com.workshopcraft.simplemachines.compat.mc.CompatContainerBlockEntity c && !c.explicitComponents().isEmpty()) {
+            tag.put(com.workshopcraft.simplemachines.compat.mc.Comps.KEY, c.explicitComponents().copy());
+        }
+    }
+    *///?}
 
     public static Component name(Identifier finish) {
         return Component.translatable("finish." + finish.getNamespace() + "." + finish.getPath());

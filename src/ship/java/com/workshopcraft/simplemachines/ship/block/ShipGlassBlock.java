@@ -6,7 +6,7 @@ import net.minecraft.world.level.block.TransparentBlock;
 /** Windows and grates: see-through, joins up with the same block next to it. */
 public class ShipGlassBlock extends TransparentBlock {
     @SuppressWarnings({"unchecked", "rawtypes"})
-    //? if <26.3 {
+    //? if >=1.20.5 <26.3 {
     private static final MapCodec<TransparentBlock> CODEC = (MapCodec) simpleCodec(ShipGlassBlock::new);
     //?}
 
@@ -14,7 +14,7 @@ public class ShipGlassBlock extends TransparentBlock {
         super(properties);
     }
 
-    //? if <26.3 {
+    //? if >=1.20.5 <26.3 {
     @Override
     protected MapCodec<? extends TransparentBlock> codec() {
         return CODEC;

@@ -24,11 +24,7 @@ stonecutter parameters {
 
     // 26.x useItemOn returns InteractionResult; 1.21.1 gets a bridge to ItemInteractionResult
     replacements.regex(current.parsed >= "1.20.5" && current.parsed < "1.21.2") {
-        // 1.21.1 getMaxBuildHeight is one above the top block; getMaxY is the top block
-        replace("(\\w+)\\.getMaxY\\(\\)", "($1.getMaxBuildHeight() - 1)", "\\((\\w+)\\.getMaxBuildHeight\\(\\) - 1\\)", "$1.getMaxY()")
         replace("\\.teleport\\(new (?:Teleport|Dimension)Transition\\(", ".changeDimension(new DimensionTransition(", "\\.changeDimension\\(new (?:Teleport|Dimension)Transition\\(", ".teleport(new TeleportTransition(")
-        replace("\\.identifier\\(\\)", ".location()/*id*/", "\\.location\\(\\)/\\*id\\*/", ".identifier()")
-        replace("\\bcp\\.([xz])\\(\\)", "cp.$1/*cp*/", "\\bcp\\.([xz])/\\*cp\\*/", "cp.$1()")
         replace(
             "protected InteractionResult useItemOn\\(",
             "protected net.minecraft.world.ItemInteractionResult useItemOn(ItemStack s$, BlockState b$, Level l$, BlockPos p$, Player e$, InteractionHand h$, BlockHitResult r$) { return com.workshopcraft.simplemachines.compat.mc.Interactions.item(useItemOn$(s$, b$, l$, p$, e$, h$, r$)); }\n    protected InteractionResult useItemOn$(",
@@ -93,11 +89,20 @@ stonecutter parameters {
         replace("cp.pack()", "cp.toLong()")
     }
     // 1.20.1: no item components, codecs or split block use hooks; stand-ins in compat.mc under src/legacy-java/1.20.1
+    replacements.regex(current.parsed < "1.21.2") {
+        // 1.21.1 getMaxBuildHeight is one above the top block; getMaxY is the top block
+        replace("(\\w+)\\.getMaxY\\(\\)", "($1.getMaxBuildHeight() - 1)", "\\((\\w+)\\.getMaxBuildHeight\\(\\) - 1\\)", "$1.getMaxY()")
+        replace("\\.identifier\\(\\)", ".location()/*id*/", "\\.location\\(\\)/\\*id\\*/", ".identifier()")
+        replace("\\bcp\\.([xz])\\(\\)", "cp.$1/*cp*/", "\\bcp\\.([xz])/\\*cp\\*/", "cp.$1()")
+    }
     replacements.regex(current.parsed < "1.20.5") {
+        // 1.20.1 has no transition record; a compat one does the same trip with teleportTo
+        replace("(?<![\\w.])(\\w+)\\.teleport\\(new (?:Teleport|Dimension)Transition\\(", "com.workshopcraft.simplemachines.compat.mc.DimensionTransition.go($1, new DimensionTransition(", "com\\.workshopcraft\\.simplemachines\\.compat\\.mc\\.DimensionTransition\\.go\\((\\w+), new (?:Teleport|Dimension)Transition\\(", "$1.teleport(new TeleportTransition(")
+        replace("net\\.minecraft\\.world\\.level\\.portal\\.(?:Teleport|Dimension)Transition;", "com.workshopcraft.simplemachines.compat.mc.DimensionTransition;", "com\\.workshopcraft\\.simplemachines\\.compat\\.mc\\.DimensionTransition;", "net.minecraft.world.level.portal.TeleportTransition;")
         replace("(?m)^(\\s+)protected boolean propagatesSkylightDown\\(BlockState state\\)", "$1public boolean propagatesSkylightDown(BlockState state, net.minecraft.world.level.BlockGetter getter_, net.minecraft.core.BlockPos pos_)", "(?m)^(\\s+)public boolean propagatesSkylightDown\\(BlockState state, net\\.minecraft\\.world\\.level\\.BlockGetter getter_, net\\.minecraft\\.core\\.BlockPos pos_\\)", "$1protected boolean propagatesSkylightDown(BlockState state)")
         replace("@Override(\\s+)protected (?!boolean propagatesSkylightDown)", "@Override$1public /*p*/ ", "@Override(\\s+)public /\\*p\\*/ ", "@Override$1protected ")
         replace(
-            "(?<![\\w.])(?!components\\b|ViewerRecipes\\b)([a-zA-Z_]\\w*(?:\\.\\w+\\([^()]*\\))*)\\.(get|set|has|remove|getOrDefault)\\(((?:[\\w.]*\\.)?(?:SimpleMachines|DataComponents)\\.[A-Z_]+)",
+            "(?<![\\w.])(?!components\\b|ViewerRecipes\\b)([a-zA-Z_]\\w*(?:\\.\\w+\\([^()]*\\))*)\\.(get|set|has|remove|getOrDefault)\\(((?:[\\w.]*\\.)?(?:SimpleMachines|DataComponents|Portal|Ship)\\.[A-Z_]+)",
             "com.workshopcraft.simplemachines.compat.mc.Comps.$2($1, $3",
             "com\\.workshopcraft\\.simplemachines\\.compat\\.mc\\.Comps\\.(\\w+)\\(([^,]+), ",
             "$2.$1("
@@ -110,6 +115,7 @@ stonecutter parameters {
         replace("(?<![\\w.])(\\w+)\\.removeLast\\(\\)", "$1.remove($1.size() - 1)", "(?<![\\w.])(\\w+)\\.remove\\(\\1\\.size\\(\\) - 1\\)", "$1.removeLast()")
         replace("(\\w+)\\.componentsMatch\\([\\w.]*DataComponentPatch\\.EMPTY\\)", "!$1.hasNbt()", "!(\\w+)\\.hasNbt\\(\\)", "$1.componentsMatch(DataComponentPatch.EMPTY)")
         replace("(?<!\\w)(\\w+)\\.addVertex\\((?=[^;]*\\bcolour\\b)", "com.workshopcraft.simplemachines.compat.mc.Verts.add($1, ", "com\\.workshopcraft\\.simplemachines\\.compat\\.mc\\.Verts\\.add\\((\\w+), ", "$1.addVertex(")
+        replace("(?:Identifier|ResourceLocation)\\.STREAM_CODEC", "com.workshopcraft.simplemachines.compat.mc.codec.ByteBufCodecs.RESOURCE_LOCATION", "com\\.workshopcraft\\.simplemachines\\.compat\\.mc\\.codec\\.ByteBufCodecs\\.RESOURCE_LOCATION", "Identifier.STREAM_CODEC")
         replace("(?:Identifier|ResourceLocation)\\.(?:fromNamespaceAndPath|withDefaultNamespace|parse)\\(", "new ResourceLocation(", "new ResourceLocation\\(", "ResourceLocation.parse(")
     }
     replacements.string(current.parsed >= "1.20.5" && current.parsed < "1.21.2") {
@@ -156,5 +162,8 @@ stonecutter parameters {
         replace("extends Block {", "extends $mc.CompatBlock {")
         replace("extends Block implements", "extends $mc.CompatBlock implements")
         replace("extends BaseEntityBlock ", "extends $mc.CompatEntityBlock ")
+        replace("net.minecraft.world.level.block.TransparentBlock;", "$mc.TransparentBlock;")
+        replace(".canUsePortal(false)", ".canChangeDimensions()")
+        replace("net.minecraft.world.level.chunk.status.ChunkStatus", "net.minecraft.world.level.chunk.ChunkStatus")
     }
 }

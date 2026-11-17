@@ -15,7 +15,7 @@ import net.minecraft.world.level.block.state.StateDefinition;
 
 /** Unbreakable see-through hull; joins up with the hull glass next to it like the windows (see {@link ConnectedGlass}). */
 public class HullGlassBlock extends TransparentBlock implements Hull {
-    //? if <26.3 {
+    //? if >=1.20.5 <26.3 {
     public static final MapCodec<HullGlassBlock> CODEC = simpleCodec(HullGlassBlock::new);
     //?}
 
@@ -24,7 +24,7 @@ public class HullGlassBlock extends TransparentBlock implements Hull {
         registerDefaultState(ConnectedGlass.unjoined(stateDefinition.any()));
     }
 
-    //? if <26.3 {
+    //? if >=1.20.5 <26.3 {
     @Override
     protected MapCodec<? extends TransparentBlock> codec() {
         return CODEC;
