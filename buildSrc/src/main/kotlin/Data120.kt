@@ -79,6 +79,7 @@ abstract class Data120 : DefaultTask() {
         // mod process recipes read the 1.21 shape through ItemStackTemplate
         if ((j["type"] as? String)?.startsWith("simplemachines:") == true && j["type"] !in vanillaShaped) return
         if (j["type"] in cooking) { j["result"] = r["id"]; return }
+        if (j["type"] == "minecraft:stonecutting") { j["result"] = r["id"]; j["count"] = r["count"] ?: 1; return }
         val n = LinkedHashMap<String, Any?>()
         n["item"] = r["id"]
         val mod = (r["components"] as? Map<*, *>).orEmpty().filterKeys { (it as String).startsWith("simplemachines:") }
