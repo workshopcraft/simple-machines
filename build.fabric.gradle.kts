@@ -51,7 +51,8 @@ sourceSets.main {
         resources.setSrcDirs(legacy.map { rootProject.file("src/legacy/$it") } + extraLegacyDirs(rootProject.file("."), extras, legacy) + rootProject.file("src/main/resources"))
     }
     if (sc.current.parsed < "1.21") resources.srcDir(tasks.register<Data120>("data120") {
-        sources.from(rootProject.file("src/legacy/1.21.1"), rootProject.file("src/main/resources"))
+        sources.from(listOf(rootProject.file("src/legacy/1.21.1")) + extraLegacyDirs(rootProject.file("."), extras, listOf("1.20.1", "1.21.1")) +
+            rootProject.file("src/main/resources") + extras.map { rootProject.file("$it/resources") })
         forge = false
         outputDir = layout.buildDirectory.dir("generated/data120")
     }.map { it.outputDir })

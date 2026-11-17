@@ -31,9 +31,14 @@ public class KeepToolRecipe implements CraftingRecipe {
             for (JsonElement e : arr) ingredients.add(Ingredient.fromJson(e, false));
             if (ingredients.isEmpty() || ingredients.size() > 9) throw new com.google.gson.JsonParseException("1 to 9 ingredients");
             final CraftingBookCategory category = CraftingBookCategory.CODEC.byName(GsonHelper.getAsString(json, "category", null), CraftingBookCategory.MISC);
-            return new KeepToolRecipe(id, GsonHelper.getAsString(json, "group", ""), category,
-                    ShapedRecipe.itemStackFromJson(GsonHelper.getAsJsonObject(json, "result")), ingredients,
-                    Ingredient.fromJson(json.get("keep"), false));
+            final JsonObject res = GsonHelper.getAsJsonObject(json, "result");
+            final ItemStack result = ShapedRecipe.itemStackFromJson(res);
+            // vanilla 1.20.1 drops result nbt; Data120 routes recipes whose result has mod components through here
+            if (res.has("nbt") && res.get("nbt").isJsonObject()) {
+                result.setTag((net.minecraft.nbt.CompoundTag) com.mojang.serialization.JsonOps.INSTANCE.convertTo(net.minecraft.nbt.NbtOps.INSTANCE, res.get("nbt")));
+            }
+            return new KeepToolRecipe(id, GsonHelper.getAsString(json, "group", ""), category, result, ingredients,
+                    json.has("keep") ? Ingredient.fromJson(json.get("keep"), false) : Ingredient.EMPTY);
         }
 
         @Override
@@ -135,7 +140,7 @@ public class KeepToolRecipe implements CraftingRecipe {
         boolean kept = false;
         for (int slot = 0; slot < left.size(); slot++) {
             final ItemStack in = input.getItem(slot);
-            if (!kept && !in.isEmpty() && keep.test(in)) {
+            if (!kept && !in.isEmpty() && !keep.isEmpty() && keep.test(in)) {
                 left.set(slot, in.copyWithCount(1));
                 kept = true;
             }

@@ -9,12 +9,14 @@ deps.fabric_loader = "0.19.5"
 loomx.loom_version = "1.19.3"
 
 [fabric."1.20.1"]
+mod.version = "2.3.0-alpha.12"
 mod.mc_compat = "~1.20.1"
 deps.fabric_api = "0.92.12+1.20.1"
 deps.energy = "3.0.0"
 deps.jei = "15.74.0.234"
 
 [forge."1.20.1"]
+mod.version = "2.3.0-alpha.12"
 mod.mc_compat = "[1.20.1,1.20.2)"
 deps.forge = "1.20.1-47.4.28"
 deps.jei = "15.74.0.234"

@@ -81,7 +81,13 @@ abstract class Data120 : DefaultTask() {
         if (j["type"] in cooking) { j["result"] = r["id"]; return }
         val n = LinkedHashMap<String, Any?>()
         n["item"] = r["id"]
-        for ((k, v) in r) if (k != "id") n[k as String] = v
+        val mod = (r["components"] as? Map<*, *>).orEmpty().filterKeys { (it as String).startsWith("simplemachines:") }
+        for ((k, v) in r) if (k != "id" && !(k == "components" && mod.isNotEmpty())) n[k as String] = v
+        if (mod.isNotEmpty()) {
+            // components become the SimpleMachines nbt compound; the keep tool serializer is the one that reads result nbt on both loaders
+            n["nbt"] = linkedMapOf("SimpleMachines" to mod.entries.associate { (k, v) -> (k as String).substringAfter(':') to v })
+            if (j["type"] == "minecraft:crafting_shapeless") j["type"] = "simplemachines:crafting_shapeless_keep_tool"
+        }
         j["result"] = n
     }
 
@@ -94,9 +100,25 @@ abstract class Data120 : DefaultTask() {
                 val comps = (o["components"] as Map<*, *>).filterKeys { it == "simplebooks:book" }
                 linkedMapOf("function" to "minecraft:set_nbt", "tag" to JsonOutput.toJson(comps))
             }
-            else -> LinkedHashMap<String, Any?>().also { m -> for ((k, v) in o) m[k as String] = loot(v) }
+            else -> if (o["condition"] == "minecraft:match_tool") matchTool(o)
+                else LinkedHashMap<String, Any?>().also { m -> for ((k, v) in o) m[k as String] = loot(v) }
         }
         else -> o
+    }
+
+    // 1.20.5 item predicates: "items" may be a tag string, enchantments sit under "predicates"
+    private fun matchTool(o: Map<*, *>): Map<String, Any?> {
+        val pred = LinkedHashMap<String, Any?>()
+        for ((k, v) in o["predicate"] as Map<*, *>) when (k) {
+            "items" -> if (v is String && v.startsWith("#")) pred["tag"] = v.substring(1) else pred["items"] = if (v is String) listOf(v) else v
+            "predicates" -> (v as Map<*, *>)["minecraft:enchantments"]?.let { e ->
+                pred["enchantments"] = (e as List<*>).map { x -> LinkedHashMap<String, Any?>().also { m ->
+                    for ((ek, ev) in x as Map<*, *>) m[if (ek == "enchantments") "enchantment" else ek as String] = ev
+                } }
+            }
+            else -> pred[k as String] = v
+        }
+        return linkedMapOf("condition" to "minecraft:match_tool", "predicate" to pred)
     }
 
     private fun advancement(j: MutableMap<String, Any?>) {
@@ -109,6 +131,14 @@ abstract class Data120 : DefaultTask() {
                 if (v.startsWith("#")) { m.remove("items"); m["tag"] = v.substring(1) } else m["items"] = listOf(v)
             }
         }
+    }
+
+    private fun mergeTag(target: File, add: Map<String, Any?>) {
+        val j = obj(JsonSlurper().parse(target))
+        val vals = ArrayList(j["values"] as List<*>)
+        for (v in add["values"] as List<*>) if (v !in vals) vals.add(v)
+        j["values"] = vals
+        write(target, j)
     }
 
     private fun write(f: File, j: Any?) {
@@ -130,7 +160,12 @@ abstract class Data120 : DefaultTask() {
                 val ns = rel.substringBefore('/'); val rest = rel.substringAfter('/')
                 val (a, b) = dirs.firstOrNull { rest.startsWith(it.first) } ?: return@forEach
                 val new = "$ns/$b${rest.removePrefix(a)}"
-                if (!done.add(new)) return@forEach
+                if (!done.add(new)) {
+                    // tags from the ship and portal dirs join the main copy, like mergeShipJson does on newer versions
+                    val extra = f.invariantSeparatorsPath.let { "/src/ship/" in it || "/src/portal/" in it }
+                    if (extra && b.startsWith("tags/") && File(data, new).exists()) mergeTag(File(data, new), obj(JsonSlurper().parseText(f.readText())))
+                    return@forEach
+                }
                 // 1.20.5+ vanilla items that 1.20.1 lacks
                 val text = f.readText().replace("\"minecraft:crafter\"", "\"minecraft:crafting_table\"")
                 if (text.contains("\"neoforge:false\"")) return@forEach
