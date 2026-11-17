@@ -1,0 +1,10 @@
+{
+  "type": "simplemachines:crushing",
+  "ingredient": {
+    "tag": "c:ores/titanium"
+  },
+  "result": "#c:dusts/titanium",
+  "count": 2,
+  "bonus": 0.1,
+  "cooking_time": 300
+}

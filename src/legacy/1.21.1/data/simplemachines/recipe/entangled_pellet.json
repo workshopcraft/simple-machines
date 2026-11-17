@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "simplemachines:entangled_ingot"
+    }
+  ],
+  "result": {
+    "id": "simplemachines:entangled_pellet",
+    "count": 4
+  }
+}

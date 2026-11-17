@@ -1,0 +1,10 @@
+{
+  "type": "minecraft:stonecutting",
+  "ingredient": {
+    "item": "simplemachines:strip_light"
+  },
+  "result": {
+    "id": "simplemachines:floor_guide_light",
+    "count": 1
+  }
+}

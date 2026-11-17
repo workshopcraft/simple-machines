@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "pattern": [
+    "PGP",
+    "PBP",
+    "P P"
+  ],
+  "key": {
+    "P": {
+      "item": "simplemachines:clean_plating"
+    },
+    "G": {
+      "tag": "c:glass_panes"
+    },
+    "B": {
+      "item": "simplemachines:control_board"
+    }
+  },
+  "result": {
+    "id": "simplemachines:med_scanner",
+    "count": 1
+  }
+}

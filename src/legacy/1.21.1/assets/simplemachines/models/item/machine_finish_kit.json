@@ -1,0 +1,26 @@
+{
+  "parent": "minecraft:item/generated",
+  "textures": {
+    "layer0": "simplemachines:item/machine_finish_kit"
+  },
+  "overrides": [
+    {
+      "predicate": {
+        "simplemachines:finish": 0.25
+      },
+      "model": "simplemachines:item/machine_finish_kit_ancient"
+    },
+    {
+      "predicate": {
+        "simplemachines:finish": 0.5
+      },
+      "model": "simplemachines:item/machine_finish_kit_industrial"
+    },
+    {
+      "predicate": {
+        "simplemachines:finish": 0.75
+      },
+      "model": "simplemachines:item/machine_finish_kit_clean"
+    }
+  ]
+}

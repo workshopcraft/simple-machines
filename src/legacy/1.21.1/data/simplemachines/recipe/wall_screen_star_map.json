@@ -1,0 +1,10 @@
+{
+  "type": "minecraft:stonecutting",
+  "ingredient": {
+    "item": "simplemachines:wall_screen_status"
+  },
+  "result": {
+    "id": "simplemachines:wall_screen_star_map",
+    "count": 1
+  }
+}

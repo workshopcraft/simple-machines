@@ -1,0 +1,26 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "T": {
+      "tag": "c:plates/titanium"
+    },
+    "C": {
+      "item": "simplemachines:control_board"
+    },
+    "W": {
+      "item": "simplemachines:entangled_coil"
+    },
+    "S": {
+      "item": "simplemachines:steel_chassis"
+    }
+  },
+  "pattern": [
+    "TCT",
+    "WSW",
+    "TWT"
+  ],
+  "result": {
+    "id": "simplemachines:portal_gate_controller"
+  }
+}

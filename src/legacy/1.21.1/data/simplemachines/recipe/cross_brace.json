@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "pattern": [
+    "R R",
+    " R ",
+    "R R"
+  ],
+  "key": {
+    "R": {
+      "tag": "c:rods/steel"
+    }
+  },
+  "result": {
+    "id": "simplemachines:cross_brace",
+    "count": 4
+  }
+}

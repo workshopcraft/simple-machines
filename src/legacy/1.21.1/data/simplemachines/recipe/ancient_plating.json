@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "pattern": [
+    "PPP",
+    "PXP",
+    "PPP"
+  ],
+  "key": {
+    "P": {
+      "tag": "c:plates/iron"
+    },
+    "X": {
+      "tag": "c:plates/copper"
+    }
+  },
+  "result": {
+    "id": "simplemachines:ancient_plating",
+    "count": 8
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "pattern": [
+    "PGP",
+    "GRG",
+    "PGP"
+  ],
+  "key": {
+    "P": {
+      "item": "simplemachines:industrial_plating"
+    },
+    "G": {
+      "tag": "c:dusts/glowstone"
+    },
+    "R": {
+      "tag": "c:dusts/redstone"
+    }
+  },
+  "result": {
+    "id": "simplemachines:industrial_light",
+    "count": 4
+  }
+}

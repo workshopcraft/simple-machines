@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "pattern": [
+    " P ",
+    " RP",
+    "R  "
+  ],
+  "key": {
+    "P": {
+      "tag": "c:plates/steel"
+    },
+    "R": {
+      "tag": "c:rods/steel"
+    }
+  },
+  "result": {
+    "id": "simplemachines:ship_tool",
+    "count": 1
+  }
+}

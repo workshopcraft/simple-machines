@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "simplemachines:steel_block"
+    }
+  ],
+  "result": {
+    "id": "simplemachines:steel_ingot",
+    "count": 9
+  }
+}

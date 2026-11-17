@@ -1,0 +1,10 @@
+{
+  "type": "minecraft:stonecutting",
+  "ingredient": {
+    "item": "simplemachines:industrial_panel_damaged"
+  },
+  "result": {
+    "id": "simplemachines:debris",
+    "count": 2
+  }
+}

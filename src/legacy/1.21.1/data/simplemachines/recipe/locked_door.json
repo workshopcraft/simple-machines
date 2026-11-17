@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "building",
+  "ingredients": [
+    {
+      "item": "simplemachines:industrial_sliding_door"
+    },
+    {
+      "item": "minecraft:tripwire_hook"
+    },
+    {
+      "tag": "c:plates/steel"
+    }
+  ],
+  "result": {
+    "id": "simplemachines:locked_door",
+    "count": 1
+  }
+}

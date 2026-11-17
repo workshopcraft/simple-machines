@@ -1,0 +1,10 @@
+{
+  "type": "minecraft:stonecutting",
+  "ingredient": {
+    "item": "simplemachines:wall_screen_status"
+  },
+  "result": {
+    "id": "simplemachines:jump_countdown_display",
+    "count": 1
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "pattern": [
+    "GGG",
+    "PWP",
+    "PPP"
+  ],
+  "key": {
+    "G": {
+      "tag": "c:glass_blocks"
+    },
+    "W": {
+      "tag": "minecraft:wool"
+    },
+    "P": {
+      "item": "simplemachines:clean_plating"
+    }
+  },
+  "result": {
+    "id": "simplemachines:cryopod_bed",
+    "count": 1
+  }
+}

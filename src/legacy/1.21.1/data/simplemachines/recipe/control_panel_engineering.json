@@ -1,0 +1,10 @@
+{
+  "type": "minecraft:stonecutting",
+  "ingredient": {
+    "item": "simplemachines:control_panel_nav"
+  },
+  "result": {
+    "id": "simplemachines:control_panel_engineering",
+    "count": 1
+  }
+}

@@ -1,0 +1,27 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "pattern": [
+    "GGG",
+    "RBR",
+    "PPP"
+  ],
+  "key": {
+    "G": {
+      "tag": "c:glass_panes"
+    },
+    "R": {
+      "tag": "c:dusts/redstone"
+    },
+    "B": {
+      "item": "simplemachines:control_board"
+    },
+    "P": {
+      "item": "simplemachines:industrial_plating"
+    }
+  },
+  "result": {
+    "id": "simplemachines:control_panel_nav",
+    "count": 1
+  }
+}

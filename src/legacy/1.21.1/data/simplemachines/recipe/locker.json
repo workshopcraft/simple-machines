@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "pattern": [
+    "PPP",
+    "P P",
+    "PPP"
+  ],
+  "key": {
+    "P": {
+      "item": "simplemachines:industrial_plating"
+    }
+  },
+  "result": {
+    "id": "simplemachines:locker",
+    "count": 1
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "pattern": [
+    "PP",
+    "PR",
+    "PP"
+  ],
+  "key": {
+    "P": {
+      "item": "simplemachines:clean_plating"
+    },
+    "R": {
+      "tag": "c:dusts/redstone"
+    }
+  },
+  "result": {
+    "id": "simplemachines:clean_sliding_door",
+    "count": 2
+  }
+}

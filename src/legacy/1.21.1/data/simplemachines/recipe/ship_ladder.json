@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "pattern": [
+    "R R",
+    "RRR",
+    "R R"
+  ],
+  "key": {
+    "R": {
+      "tag": "c:rods/steel"
+    }
+  },
+  "result": {
+    "id": "simplemachines:ship_ladder",
+    "count": 8
+  }
+}

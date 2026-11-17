@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "pattern": [
+    "PRP",
+    "PRP",
+    "PRP"
+  ],
+  "key": {
+    "P": {
+      "item": "simplemachines:ancient_plating"
+    },
+    "R": {
+      "tag": "c:rods/steel"
+    }
+  },
+  "result": {
+    "id": "simplemachines:ancient_bulkhead",
+    "count": 6
+  }
+}

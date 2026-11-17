@@ -1,0 +1,10 @@
+{
+  "type": "minecraft:stonecutting",
+  "ingredient": {
+    "item": "simplemachines:clean_plating"
+  },
+  "result": {
+    "id": "simplemachines:clean_panel_damaged",
+    "count": 1
+  }
+}

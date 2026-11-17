@@ -1,0 +1,10 @@
+{
+  "type": "minecraft:stonecutting",
+  "ingredient": {
+    "item": "simplemachines:industrial_plating"
+  },
+  "result": {
+    "id": "simplemachines:industrial_panel",
+    "count": 1
+  }
+}

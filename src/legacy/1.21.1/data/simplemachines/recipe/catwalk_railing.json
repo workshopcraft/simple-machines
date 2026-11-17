@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "pattern": [
+    "RRR",
+    "RRR"
+  ],
+  "key": {
+    "R": {
+      "tag": "c:rods/iron"
+    }
+  },
+  "result": {
+    "id": "simplemachines:catwalk_railing",
+    "count": 6
+  }
+}

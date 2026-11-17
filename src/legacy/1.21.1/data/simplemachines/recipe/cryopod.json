@@ -1,0 +1,24 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "building",
+  "pattern": [
+    "PGP",
+    "PGP",
+    "PCP"
+  ],
+  "key": {
+    "P": {
+      "item": "simplemachines:clean_plating"
+    },
+    "G": {
+      "tag": "c:glass_blocks"
+    },
+    "C": {
+      "item": "simplemachines:control_board"
+    }
+  },
+  "result": {
+    "id": "simplemachines:cryopod",
+    "count": 1
+  }
+}

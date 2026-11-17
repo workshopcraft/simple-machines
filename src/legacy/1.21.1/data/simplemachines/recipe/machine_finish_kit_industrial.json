@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "simplemachines:machine_finish_kit"
+    },
+    {
+      "item": "simplemachines:industrial_plating"
+    },
+    {
+      "item": "simplemachines:industrial_plating"
+    }
+  ],
+  "result": {
+    "id": "simplemachines:machine_finish_kit",
+    "count": 1,
+    "components": {
+      "simplemachines:machine_finish": "simplemachines:industrial"
+    }
+  }
+}

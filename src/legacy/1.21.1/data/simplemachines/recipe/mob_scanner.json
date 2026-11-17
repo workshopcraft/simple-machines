@@ -1,0 +1,26 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "G": {
+      "item": "minecraft:spyglass"
+    },
+    "S": {
+      "tag": "c:plates/steel"
+    },
+    "B": {
+      "item": "simplemachines:battery_module"
+    },
+    "R": {
+      "tag": "c:rods/steel"
+    }
+  },
+  "pattern": [
+    " G ",
+    "SBS",
+    " R "
+  ],
+  "result": {
+    "id": "simplemachines:mob_scanner"
+  }
+}
