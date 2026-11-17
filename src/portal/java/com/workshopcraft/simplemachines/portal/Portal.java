@@ -135,7 +135,7 @@ public final class Portal {
 
     private static Item.Properties blockItemProps(String name) {
         //? if >=26.1 {
-        return blockItemProps(name);
+        return itemProps(name).useBlockDescriptionPrefix();
         //?} else
         /*return itemProps(name);*/
     }
