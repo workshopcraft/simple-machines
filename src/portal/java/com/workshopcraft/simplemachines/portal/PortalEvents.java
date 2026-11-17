@@ -11,6 +11,7 @@ public final class PortalEvents {
     public static void serverTickEnd(MinecraftServer server) {
         PortalWorlds.tick(server);
         PortalTravel.tick(server);
+        PortalRifts.keepAwake(server);
     }
 
     public static void serverStarted(MinecraftServer server) {

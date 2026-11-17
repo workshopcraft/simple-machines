@@ -315,6 +315,16 @@ public final class PortalRifts {
         *///?}
     }
 
+    /** Before 26.1 a ticket does not keep an empty dimension ticking, so the gate's level is kept awake while its rift is open. */
+    static void keepAwake(MinecraftServer server) {
+        //? if <26.1 {
+        /*for (GlobalPos g : TICKETED) {
+            final ServerLevel level = server.getLevel(g.dimension());
+            if (level != null) level.resetEmptyTime();
+        }
+        *///?}
+    }
+
     /** Server start: drops rifts whose gate or world is gone, and puts the chunk tickets back for the rest. */
     public static void restore(MinecraftServer server) {
         TICKETED.clear();
