@@ -15,6 +15,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
+//? if >=26.1
 import net.minecraft.world.level.redstone.Orientation;
 import org.jspecify.annotations.Nullable;
 
@@ -59,7 +60,11 @@ public class CountdownBlock extends FacingEntityBlock {
     }
 
     @Override
+    //? if >=26.1 {
     protected void neighborChanged(BlockState state, Level level, BlockPos pos, Block block, @Nullable Orientation orientation, boolean moved) {
+    //?} else {
+    /*protected void neighborChanged(BlockState state, Level level, BlockPos pos, Block block, BlockPos fromPos, boolean moved) {
+    *///?}
         if (level.isClientSide()) return;
         final boolean on = level.hasNeighborSignal(pos);
         if (on == state.getValue(TRIGGERED)) return;

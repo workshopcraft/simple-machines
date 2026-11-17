@@ -6,6 +6,7 @@ import net.minecraft.core.Direction;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.LevelReader;
+//? if >=26.1
 import net.minecraft.world.level.ScheduledTickAccess;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.TransparentBlock;
@@ -41,8 +42,13 @@ public class HullGlassBlock extends TransparentBlock implements Hull {
     }
 
     @Override
+    //? if >=26.1 {
     protected BlockState updateShape(BlockState state, LevelReader level, ScheduledTickAccess ticks, BlockPos pos, Direction dir,
                                      BlockPos neighbourPos, BlockState neighbour, RandomSource random) {
+    //?} else {
+    /*protected BlockState updateShape(BlockState state, Direction dir, BlockState neighbour, net.minecraft.world.level.LevelAccessor level,
+                                     BlockPos pos, BlockPos neighbourPos) {
+    *///?}
         return ConnectedGlass.join(state, dir, neighbour);
     }
 }

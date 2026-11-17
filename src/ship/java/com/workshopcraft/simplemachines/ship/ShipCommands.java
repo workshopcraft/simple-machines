@@ -28,7 +28,11 @@ public final class ShipCommands {
 
     public static void register(CommandDispatcher<CommandSourceStack> d) {
         final LiteralArgumentBuilder<CommandSourceStack> root = Commands.literal("simplemachines")
+                //? if >=26.1 {
                 .requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS));
+                //?} else {
+                /*.requires(s -> s.hasPermission(Commands.LEVEL_GAMEMASTERS));
+                *///?}
         root.then(Commands.literal("pod").then(Commands.argument("pos", BlockPosArgument.blockPos())
                 .then(Commands.literal("clear").executes(c -> pod(c, "")))
                 .then(Commands.literal("auto").executes(c -> podAuto(c)))

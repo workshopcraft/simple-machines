@@ -14,7 +14,7 @@ import java.io.StringReader
  * until they are backfilled. Main code that calls into them sits behind the stonecutter constant `ship`.
  */
 object Ship {
-    val VERSIONS = setOf("26.1.2", "26.2", "26.3")
+    val VERSIONS = setOf("1.21.1", "26.1.2", "26.2", "26.3")
     fun enabled(mc: String) = mc in VERSIONS
 }
 

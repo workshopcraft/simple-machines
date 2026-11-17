@@ -10,6 +10,7 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
+//? if >=26.1
 import net.minecraft.world.item.component.TooltipDisplay;
 import net.minecraft.world.item.context.UseOnContext;
 
@@ -39,7 +40,12 @@ public class MachineFinishKitItem extends Item {
     }
 
     @Override
+    //? if >=26.1 {
     public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay display, Consumer<Component> out, TooltipFlag flag) {
+    //?} else {
+    /*public void appendHoverText(ItemStack stack, TooltipContext context, java.util.List<Component> lines, TooltipFlag flag) {
+        final Consumer<Component> out = lines::add;
+    *///?}
         out.accept(Component.translatable("tooltip.simplemachines.machine_finish_kit").withStyle(ChatFormatting.GRAY));
         if (flag.isAdvanced()) out.accept(Component.literal(stack.getOrDefault(Ship.MACHINE_FINISH, MachineFinishes.NONE).toString()).withStyle(ChatFormatting.DARK_GRAY));
     }

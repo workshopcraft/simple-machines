@@ -62,10 +62,23 @@ public final class ShipEvents {
             final BlockPos head = gp.pos();
             final Optional<Vec3> stand = CryopodBedBlock.standUp(level, head, s, player.getYRot());
             final Vec3 at = stand.orElse(Vec3.atBottomCenterOf(head.above()));
+            //? if >=26.1 {
             player.teleportTo(level, at.x, at.y, at.z, Set.of(), s.getValue(CryopodBedBlock.FACING).getOpposite().toYRot(), 0F, true);
+            //?} else {
+            /*player.teleportTo(level, at.x, at.y, at.z, Set.of(), s.getValue(CryopodBedBlock.FACING).getOpposite().toYRot(), 0F);
+            *///?}
+            // 26.1 moved bed rules into environment attributes; older versions ask the dimension
+            //? if >=26.1 {
             final boolean bedsWork = level.environmentAttributes().getValue(net.minecraft.world.attribute.EnvironmentAttributes.BED_RULE, head).canSetSpawn(level);
+            //?} else {
+            /*final boolean bedsWork = level.dimensionType().bedWorks();
+            *///?}
             if (bedsWork) {
+                //? if >=26.1 {
                 player.setRespawnPosition(new ServerPlayer.RespawnConfig(LevelData.RespawnData.of(level.dimension(), head, player.getYRot(), 0F), false), false);
+                //?} else {
+                /*player.setRespawnPosition(level.dimension(), head, player.getYRot(), false, false);
+                *///?}
             } else CryopodBedBlock.linkSpawn(player, level, head, s);
             player.addTag(STARTED);
             player.sendSystemMessage(Component.translatable("message.simplemachines.cryopod_wake"));

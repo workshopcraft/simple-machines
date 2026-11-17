@@ -76,9 +76,15 @@ stonecutter parameters {
         replace("((Shearable) mob).shear(level, SoundSource.BLOCKS, new ItemStack(Items.SHEARS))", "((Shearable) mob).shear(SoundSource.BLOCKS)")
         replace("level.recipeAccess()", "level.getRecipeManager()")
         replace(".getMinY()", ".getMinBuildHeight()")
+        replace(".getMaxY()", ".getMaxBuildHeight()")
+        replace(".noCollision()", ".noCollission()")
+        replace("entityTags()", "getTags()")
+        replace("BuiltInRegistries.BLOCK.getValue(", "BuiltInRegistries.BLOCK.get(")
         replace("BuiltInRegistries.ITEM.getValue(", "BuiltInRegistries.ITEM.get(")
         replace("BuiltInRegistries.FLUID.getValue(", "BuiltInRegistries.FLUID.get(")
         replace("InteractionResult.TRY_WITH_EMPTY_HAND", "$mc.Interactions.TRY_WITH_EMPTY_HAND")
+        // 1.21.1 has no server-only success; plain success is the closest
+        replace("InteractionResult.SUCCESS_SERVER", "InteractionResult.SUCCESS")
     }
     // 1.20.1: no item components, codecs or split block use hooks; stand-ins in compat.mc under src/legacy-java/1.20.1
     replacements.regex(current.parsed < "1.20.5") {

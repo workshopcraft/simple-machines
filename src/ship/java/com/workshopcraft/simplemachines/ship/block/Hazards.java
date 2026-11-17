@@ -16,6 +16,10 @@ final class Hazards {
 
     static void burn(Level level, Entity entity) {
         if (!(level instanceof ServerLevel sl) || !(entity instanceof LivingEntity living) || living.isSteppingCarefully() || !on(level)) return;
+        //? if >=26.1 {
         if (living.tickCount % 10 == 0) living.hurtServer(sl, level.damageSources().hotFloor(), 1F);
+        //?} else {
+        /*if (living.tickCount % 10 == 0) living.hurt(level.damageSources().hotFloor(), 1F);
+        *///?}
     }
 }

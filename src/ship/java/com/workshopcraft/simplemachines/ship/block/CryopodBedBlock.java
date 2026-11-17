@@ -9,8 +9,10 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionResult;
+//? if >=26.1 {
 import net.minecraft.world.attribute.BedRule;
 import net.minecraft.world.attribute.EnvironmentAttributes;
+//?}
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.DyeColor;
@@ -88,27 +90,45 @@ public class CryopodBedBlock extends BedBlock {
         final BlockPos head = state.getValue(PART) == BedPart.HEAD ? pos : pos.relative(state.getValue(FACING));
         final BlockState headState = level.getBlockState(head);
         if (!headState.is(this)) return InteractionResult.CONSUME;
-        final BedRule rule = level.environmentAttributes().getValue(EnvironmentAttributes.BED_RULE, head);
-        //? if >=26.3 {
-        /*if (rule.destroyOnUse() || rule.destroyOnLeave() || !rule.canSetSpawn(level)) {
-        *///?} else {
-        if (rule.explodes() || !rule.canSetSpawn(level)) {
-        //?}
+        if (refusesSleep(level, head)) {
             // no explosion in a pod: link spawn and say so, the player stays awake
             if (player instanceof ServerPlayer sp && linkSpawn(sp, (ServerLevel) level, head, headState)) {
-                sp.sendOverlayMessage(Component.translatable("message.simplemachines.cryopod_linked"));
+                player.sendOverlayMessage(Component.translatable("message.simplemachines.cryopod_linked"));
             }
             return InteractionResult.SUCCESS_SERVER;
         }
         return super.useWithoutItem(state, level, pos, player, hit);
     }
 
+    /** Whether sleeping here is refused and would hurt the sleeper, so the pod links a spawn instead. */
+    private static boolean refusesSleep(Level level, BlockPos head) {
+        //? if >=26.3 {
+        /*final BedRule rule = bedRule(level, head);
+        return rule.destroyOnUse() || rule.destroyOnLeave() || !rule.canSetSpawn(level);
+        *///?} else if >=26.1 {
+        final BedRule rule = bedRule(level, head);
+        return rule.explodes() || !rule.canSetSpawn(level);
+        //?} else {
+        return !level.dimensionType().bedWorks();
+        //?}
+    }
+
+    //? if >=26.1 {
+    private static BedRule bedRule(Level level, BlockPos head) {
+        return level.environmentAttributes().getValue(EnvironmentAttributes.BED_RULE, head);
+    }
+    //?}
+
     /** Sets a forced spawn next to the pod, for dimensions where beds cannot set spawn. */
     public static boolean linkSpawn(ServerPlayer player, ServerLevel level, BlockPos head, BlockState headState) {
         final Optional<Vec3> stand = standUp(level, head, headState, player.getYRot());
         if (stand.isEmpty()) return false;
         final BlockPos at = BlockPos.containing(stand.get());
+        //? if >=26.1 {
         player.setRespawnPosition(new ServerPlayer.RespawnConfig(LevelData.RespawnData.of(level.dimension(), at, player.getYRot(), 0F), true), false);
+        //?} else {
+        /*player.setRespawnPosition(level.dimension(), at, player.getYRot(), true, false);
+        *///?}
         return true;
     }
 

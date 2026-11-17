@@ -10,6 +10,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
+//? if >=26.1
 import net.minecraft.world.level.ScheduledTickAccess;
 import net.minecraft.world.level.block.BaseEntityBlock;
 import net.minecraft.world.level.block.Block;
@@ -65,14 +66,23 @@ public abstract class TallBlock extends BaseEntityBlock {
     }
 
     @Override
+    //? if >=26.1 {
     protected BlockState updateShape(BlockState state, LevelReader level, ScheduledTickAccess ticks, BlockPos pos, Direction dir,
                                      BlockPos neighbourPos, BlockState neighbour, RandomSource random) {
+    //?} else {
+    /*protected BlockState updateShape(BlockState state, Direction dir, BlockState neighbour, net.minecraft.world.level.LevelAccessor level,
+                                     BlockPos pos, BlockPos neighbourPos) {
+    *///?}
         if (tall() && dir.getAxis() == Direction.Axis.Y && (lower(state) == (dir == Direction.UP))) {
             final boolean partner = neighbour.is(this) && lower(neighbour) != lower(state);
             if (!partner) return Blocks.AIR.defaultBlockState();
             return withPartner(state, neighbour);
         }
+        //? if >=26.1 {
         return super.updateShape(state, level, ticks, pos, dir, neighbourPos, neighbour, random);
+        //?} else {
+        /*return super.updateShape(state, dir, neighbour, level, pos, neighbourPos);
+        *///?}
     }
 
     /** Copies shared values (like open) from the other half. */

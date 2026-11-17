@@ -12,8 +12,10 @@ public final class MobSpawns {
     public static MobSpawnSettings.SpawnerData spawner(EntityType<?> type, int min, int max) {
         //? if >=26.3 {
         /*return new MobSpawnSettings.SpawnerData(type, UniformInt.of(min, max));
-        *///?} else {
+        *///?} else if >=1.21.2 {
         return new MobSpawnSettings.SpawnerData(type, min, max);
-        //?}
+        //?} else {
+        /*return new MobSpawnSettings.SpawnerData(type, 1, min, max);
+        *///?}
     }
 }

@@ -70,7 +70,11 @@ public final class Ship {
     }
 
     private static Item.Properties props(String name) {
+        //? if >=26.1 {
         return new Item.Properties().setId(ResourceKey.create(Registries.ITEM, SimpleMachines.id(name)));
+        //?} else {
+        /*return new Item.Properties();
+        *///?}
     }
 
     public static void registerItems(BiConsumer<Identifier, Item> r) {

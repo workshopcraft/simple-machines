@@ -111,7 +111,11 @@ public final class ShipBlocks {
     private ShipBlocks() {}
 
     private static BlockBehaviour.Properties base(String n) {
+        //? if >=26.1 {
         return BlockBehaviour.Properties.of().setId(ResourceKey.create(Registries.BLOCK, SimpleMachines.id(n)));
+        //?} else {
+        /*return BlockBehaviour.Properties.of();
+        *///?}
     }
 
     private static BlockBehaviour.Properties metal(String n) {
@@ -135,7 +139,11 @@ public final class ShipBlocks {
     }
 
     private static Item.Properties props(String name) {
+        //? if >=26.1 {
         return new Item.Properties().setId(ResourceKey.create(Registries.ITEM, SimpleMachines.id(name))).useBlockDescriptionPrefix();
+        //?} else {
+        /*return new Item.Properties();
+        *///?}
     }
 
     private static void item(BiConsumer<Identifier, Item> r, String name, Item item) {
