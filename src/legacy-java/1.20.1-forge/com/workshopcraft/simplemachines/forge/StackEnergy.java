@@ -6,12 +6,12 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.energy.IEnergyStorage;
 
 /** Item energy kept in the stack's energy component, like NeoForge's ComponentEnergyStorage. */
-final class StackEnergy implements IEnergyStorage {
+public final class StackEnergy implements IEnergyStorage {
     private final ItemStack stack;
     private final int capacity;
     private final int rate;
 
-    StackEnergy(ItemStack stack, int capacity, int rate) {
+    public StackEnergy(ItemStack stack, int capacity, int rate) {
         this.stack = stack;
         this.capacity = capacity;
         this.rate = rate;

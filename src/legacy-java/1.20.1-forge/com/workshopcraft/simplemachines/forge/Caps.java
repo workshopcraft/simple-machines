@@ -13,17 +13,17 @@ import org.jetbrains.annotations.Nullable;
 import java.util.function.Function;
 
 /** Block capability lookups and attachable providers that ask the block entity each time, so exposed() changes apply at once. */
-final class Caps {
+public final class Caps {
     private Caps() {
     }
 
     @Nullable
-    static <T> T find(Level level, BlockPos pos, @Nullable Direction side, Capability<T> cap) {
+    public static <T> T find(Level level, BlockPos pos, @Nullable Direction side, Capability<T> cap) {
         final BlockEntity be = level.getBlockEntity(pos);
         return be == null ? null : be.getCapability(cap, side).resolve().orElse(null);
     }
 
-    static <H> ICapabilityProvider provider(Capability<H> cap, Function<Direction, H> make) {
+    public static <H> ICapabilityProvider provider(Capability<H> cap, Function<Direction, H> make) {
         return new ICapabilityProvider() {
             @Override
             public <T> @NotNull LazyOptional<T> getCapability(@NotNull Capability<T> asked, @Nullable Direction side) {

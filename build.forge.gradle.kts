@@ -5,6 +5,7 @@ plugins {
 
 val modVersion = providers.gradleProperty("version").orNull ?: sc.properties.get<String>("mod.version")
 val mc = sc.current.version
+val extras = extraDirs(mc)
 version = modVersion
 group = property("mod.group") as String
 base.archivesName = "${property("mod.id")}-forge-$mc"
@@ -18,19 +19,24 @@ repositories {
 
 sourceSets.main {
     java.exclude("com/workshopcraft/simplemachines/fabric/**", "com/workshopcraft/simplemachines/neoforge/**", "com/workshopcraft/simplemachines/mixin/**")
-    resources.setSrcDirs(listOf(rootProject.file("src/legacy/1.20.1"), rootProject.file("src/legacy/1.21.1"), rootProject.file("src/main/resources")))
+    resources.setSrcDirs(listOf(rootProject.file("src/legacy/1.20.1"), rootProject.file("src/legacy/1.21.1")) +
+        extraLegacyDirs(rootProject.file("."), extras, listOf("1.20.1", "1.21.1")) + rootProject.file("src/main/resources"))
     resources.srcDir(tasks.register<Data120>("data120") {
-        sources.from(rootProject.file("src/legacy/1.21.1"), rootProject.file("src/main/resources"))
+        sources.from(listOf(rootProject.file("src/legacy/1.21.1")) + extraLegacyDirs(rootProject.file("."), extras, listOf("1.20.1", "1.21.1")) +
+            rootProject.file("src/main/resources") + extras.map { rootProject.file("$it/resources") })
         forge = true
         outputDir = layout.buildDirectory.dir("generated/data120")
     }.map { it.outputDir })
     applyOverlays(rootProject.file("."), overlayChain(sc.current.version, "forge"), layout.buildDirectory.get().asFile)
     skipDisabledExtras(mc)
 }
+if (extras.isNotEmpty()) applyShip(rootProject.file("."), extras)
+// the portal chunk generator extends NoiseBasedChunkGenerator, which is final on 1.20.1
+val portalAt = rootProject.file("src/portal/legacy/1.20.1/META-INF/accesstransformer.cfg")
 
 legacyForge {
     version = property("deps.forge") as String
-    accessTransformers.files.setFrom()
+    if (Portal.enabled(mc)) accessTransformers.files.setFrom(portalAt) else accessTransformers.files.setFrom()
     mods {
         register(property("mod.id") as String) {
             sourceSet(sourceSets.main.get())
@@ -69,6 +75,7 @@ java {
 
 tasks {
     processResources {
+        if (extras.isNotEmpty()) mergeShipJson(rootProject.file("."), extras)
         val props = mapOf(
             "id" to sc.properties.get<String>("mod.id"),
             "name" to sc.properties.get<String>("mod.name"),
@@ -79,7 +86,9 @@ tasks {
         )
         inputs.properties(props)
         filesMatching(listOf("META-INF/mods.toml", "pack.mcmeta")) { expand(props) }
-        exclude("fabric.mod.json", "META-INF/neoforge.mods.toml", "simplemachines.accesswidener", "META-INF/accesstransformer.cfg",
+        val mainAt = rootProject.file("src/main/resources/META-INF/accesstransformer.cfg")
+        exclude { it.file == mainAt }
+        exclude("fabric.mod.json", "META-INF/neoforge.mods.toml", "simplemachines.accesswidener",
             "assets/simplemachines/items/**", "data/simplemachines/recipe/**", "data/simplemachines/loot_table/**",
             "data/*/advancement/**", "data/*/tags/block/**", "data/*/tags/item/**", "data/neoforge/**", "data/simplemachines/context_int_provider/**", "simplemachines.mixins.json", "simplemachines.neoforge.mixins.json", "simplemachines.accesswidener")
         duplicatesStrategy = DuplicatesStrategy.EXCLUDE

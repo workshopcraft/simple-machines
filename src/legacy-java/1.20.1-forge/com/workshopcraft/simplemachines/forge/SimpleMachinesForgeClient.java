@@ -95,6 +95,10 @@ final class SimpleMachinesForgeClient {
             e.registerBlockEntityRenderer(SimpleMachines.rollingMillEntity, WorktopRenderer::new);
             e.registerBlockEntityRenderer(SimpleMachines.electricFurnaceEntity, WorktopRenderer::new);
         });
+        com.workshopcraft.simplemachines.forge.ship.ShipForgeClient.init(modBus);
+        com.workshopcraft.simplemachines.forge.portal.PortalForgeClient.init(modBus);
+        modBus.addListener((net.minecraftforge.fml.event.lifecycle.FMLClientSetupEvent e) -> e.enqueueWork(() ->
+                com.workshopcraft.simplemachines.client.LegacyLayers.apply(net.minecraft.client.renderer.ItemBlockRenderTypes::setRenderLayer)));
     }
 
     @SuppressWarnings("unchecked")

@@ -121,6 +121,8 @@ public class SimpleMachinesForge {
                 return h == null || h.getMaxEnergyStored() <= 0 ? 0 : (int) (1000L * h.getEnergyStored() / h.getMaxEnergyStored());
             }
         };
+        com.workshopcraft.simplemachines.forge.ship.ShipForge.init(modBus);
+        com.workshopcraft.simplemachines.forge.portal.PortalForge.init(modBus);
         DistExecutor.unsafeRunWhenOn(net.minecraftforge.api.distmarker.Dist.CLIENT, () -> () -> SimpleMachinesForgeClient.init(modBus));
     }
 
