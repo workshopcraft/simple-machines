@@ -87,6 +87,8 @@ public class SimpleMachinesNeoForge {
             }
         };
         EnergyBuffer.lookup = (level, pos, side) -> level.getCapability(Capabilities.EnergyStorage.BLOCK, pos, side) != null;
+        com.workshopcraft.simplemachines.neoforge.ship.ShipNeoForge.init(modBus);
+        com.workshopcraft.simplemachines.neoforge.portal.PortalNeoForge.init(modBus);
     }
 
     private static void onUseBlock(PlayerInteractEvent.RightClickBlock e) {

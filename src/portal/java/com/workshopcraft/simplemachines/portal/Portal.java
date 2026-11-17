@@ -118,11 +118,24 @@ public final class Portal {
     }
 
     private static BlockBehaviour.Properties props(String name) {
+        //? if >=26.1 {
         return BlockBehaviour.Properties.of().setId(ResourceKey.create(Registries.BLOCK, SimpleMachines.id(name)));
+        //?} else
+        /*return BlockBehaviour.Properties.of();*/
     }
 
     private static Item.Properties itemProps(String name) {
+        //? if >=26.1 {
         return new Item.Properties().setId(ResourceKey.create(Registries.ITEM, SimpleMachines.id(name)));
+        //?} else
+        /*return new Item.Properties();*/
+    }
+
+    private static Item.Properties blockItemProps(String name) {
+        //? if >=26.1 {
+        return blockItemProps(name);
+        //?} else
+        /*return itemProps(name);*/
     }
 
     private static Block block(BiConsumer<Identifier, Block> r, String name, Block b) {
@@ -164,7 +177,7 @@ public final class Portal {
     }
 
     private static Item blockItem(BiConsumer<Identifier, Item> r, String name, Block b) {
-        return item(r, name, new BlockItem(b, itemProps(name).useBlockDescriptionPrefix()));
+        return item(r, name, new BlockItem(b, blockItemProps(name)));
     }
 
     public static void registerItems(BiConsumer<Identifier, Item> r) {
@@ -191,8 +204,8 @@ public final class Portal {
         mobScanner = item(r, "mob_scanner", new MobScannerItem(itemProps("mob_scanner").stacksTo(1)));
         // placed by worldgen and gates only; items exist so creative players and commands can use them.
         // The Return Beacon was the 2.3.0-alpha.2 stand-in for the return rift; it stays registered so old test worlds load.
-        r.accept(SimpleMachines.id("objective_core"), new BlockItem(objectiveCore, itemProps("objective_core").useBlockDescriptionPrefix()));
-        r.accept(SimpleMachines.id("return_beacon"), new BlockItem(returnBeacon, itemProps("return_beacon").useBlockDescriptionPrefix()));
+        r.accept(SimpleMachines.id("objective_core"), new BlockItem(objectiveCore, blockItemProps("objective_core")));
+        r.accept(SimpleMachines.id("return_beacon"), new BlockItem(returnBeacon, blockItemProps("return_beacon")));
     }
 
     public static void registerBlockEntities(BiConsumer<Identifier, BlockEntityType<?>> r) {
@@ -204,9 +217,11 @@ public final class Portal {
         r.accept(SimpleMachines.id("return_beacon"), BEACON_ENTITY);
     }
 
+    //? if >=26.1 {
     public static void registerTicketTypes(BiConsumer<Identifier, net.minecraft.server.level.TicketType> r) {
         r.accept(SimpleMachines.id("portal_rift"), PortalRifts.TICKET);
     }
+    //?}
 
     public static void registerMenus(BiConsumer<Identifier, MenuType<?>> r) {
         r.accept(SimpleMachines.id("portal_gate_controller"), GATE_MENU);

@@ -18,5 +18,7 @@ public final class ShipNeoForgeClient {
             e.registerBlockEntityRenderer(Ship.TERMINAL_ENTITY, TerminalRenderer::new);
             e.registerBlockEntityRenderer(Ship.COUNTDOWN_ENTITY, CountdownRenderer::new);
         });
+        //? if <1.21.2
+        /*modBus.addListener((net.neoforged.fml.event.lifecycle.FMLClientSetupEvent e) -> e.enqueueWork(com.workshopcraft.simplemachines.ship.client.FinishModel::register));*/
     }
 }

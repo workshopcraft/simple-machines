@@ -104,7 +104,11 @@ public final class PortalCommands {
         portal.then(Commands.literal("cost").then(Commands.argument("card", IdentifierArgument.id()).suggests(CARDS).executes(PortalCommands::cost)));
         portal.then(Commands.literal("presets").executes(PortalCommands::presets));
         portal.then(Commands.literal("cards").executes(PortalCommands::cards));
+        //? if >=26.1 {
         d.register(Commands.literal("simplemachines").requires(Commands.hasPermission(Commands.LEVEL_GAMEMASTERS)).then(portal));
+        //?} else {
+        /*d.register(Commands.literal("simplemachines").requires(s -> s.hasPermission(Commands.LEVEL_GAMEMASTERS)).then(portal));
+        *///?}
     }
 
     /** Names a gate: "&lt;sub&gt; nearest ..." or "&lt;sub&gt; &lt;pos&gt; ...". */

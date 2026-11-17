@@ -15,5 +15,7 @@ public final class ShipFabricClient {
         BlockEntityRenderers.register(Ship.CRYOPOD_ENTITY, CryopodRenderer::new);
         BlockEntityRenderers.register(Ship.TERMINAL_ENTITY, TerminalRenderer::new);
         BlockEntityRenderers.register(Ship.COUNTDOWN_ENTITY, CountdownRenderer::new);
+        //? if <1.21.2
+        /*com.workshopcraft.simplemachines.ship.client.FinishModel.register();*/
     }
 }

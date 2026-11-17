@@ -329,7 +329,11 @@ public final class PortalApi {
      */
     public static boolean mayControl(com.workshopcraft.simplemachines.machine.Owned block, net.minecraft.world.entity.player.Player player) {
         if (!block.isPrivate() || block.owner() == null || block.owner().equals(player.getUUID()) || player.isCreative()) return true;
+        //? if >=26.1 {
         return player instanceof net.minecraft.server.level.ServerPlayer sp && net.minecraft.commands.Commands.LEVEL_GAMEMASTERS.check(sp.permissions());
+        //?} else {
+        /*return player instanceof net.minecraft.server.level.ServerPlayer sp && sp.hasPermissions(net.minecraft.commands.Commands.LEVEL_GAMEMASTERS);
+        *///?}
     }
 
     /** The owner of a gate or Research Station (whose research it uses), or null. */

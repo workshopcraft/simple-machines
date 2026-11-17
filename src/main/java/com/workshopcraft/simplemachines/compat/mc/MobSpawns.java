@@ -15,7 +15,8 @@ public final class MobSpawns {
         *///?} else if >=1.21.2 {
         return new MobSpawnSettings.SpawnerData(type, min, max);
         //?} else {
-        /*return new MobSpawnSettings.SpawnerData(type, 1, min, max);
+        /*// 1.21.1 keeps the weight inside SpawnerData; callers that need a weight build it themselves
+        return new MobSpawnSettings.SpawnerData(type, 1, min, max);
         *///?}
     }
 }

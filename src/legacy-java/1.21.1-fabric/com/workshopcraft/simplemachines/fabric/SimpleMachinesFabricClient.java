@@ -90,6 +90,9 @@ public class SimpleMachinesFabricClient implements ClientModInitializer {
         BlockEntityRenderers.register(SimpleMachines.generatorEntity, WorktopRenderer::new);
         BlockEntityRenderers.register(SimpleMachines.rollingMillEntity, WorktopRenderer::new);
         BlockEntityRenderers.register(SimpleMachines.electricFurnaceEntity, WorktopRenderer::new);
+        com.workshopcraft.simplemachines.fabric.ship.ShipFabricClient.init();
+        com.workshopcraft.simplemachines.fabric.portal.PortalFabricClient.init();
+        com.workshopcraft.simplemachines.client.LegacyLayers.apply(net.fabricmc.fabric.api.blockrenderlayer.v1.BlockRenderLayerMap.INSTANCE::putBlock);
     }
 
     @SuppressWarnings("unchecked")

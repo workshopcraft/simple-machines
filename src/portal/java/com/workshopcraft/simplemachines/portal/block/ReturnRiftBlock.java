@@ -11,6 +11,7 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Entity;
+//? if >=26.1
 import net.minecraft.world.entity.InsideBlockEffectApplier;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.BlockGetter;
@@ -58,7 +59,11 @@ public class ReturnRiftBlock extends Block {
     }
 
     @Override
+    //? if >=26.1 {
     protected void entityInside(BlockState state, Level level, BlockPos pos, Entity entity, InsideBlockEffectApplier effects, boolean intersects) {
+    //?} else {
+    /*protected void entityInside(BlockState state, Level level, BlockPos pos, Entity entity) {
+    *///?}
         if (level instanceof ServerLevel server && entity instanceof ServerPlayer p && !p.isPassenger()) {
             PortalRifts.entered(server, lower(state, pos), p);
         }
@@ -105,7 +110,11 @@ public class ReturnRiftBlock extends Block {
     }
 
     @Override
+    //? if >=26.1 {
     protected ItemStack getCloneItemStack(LevelReader level, BlockPos pos, BlockState state, boolean includeData) {
+    //?} else {
+    /*public ItemStack getCloneItemStack(LevelReader level, BlockPos pos, BlockState state) {
+    *///?}
         return ItemStack.EMPTY;
     }
 }

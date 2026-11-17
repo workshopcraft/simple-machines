@@ -13,9 +13,15 @@ import net.fabricmc.fabric.api.biome.v1.BiomeSelectors;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
+//? if >=26.1 {
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLevelEvents;
+//?} else
+/*import net.fabricmc.fabric.api.event.lifecycle.v1.ServerWorldEvents;*/
 import net.fabricmc.fabric.api.networking.v1.ServerPlayConnectionEvents;
+//? if >=26.1 {
 import net.fabricmc.fabric.api.transfer.v1.item.ContainerStorage;
+//?} else
+/*import net.fabricmc.fabric.api.transfer.v1.item.InventoryStorage;*/
 import net.fabricmc.fabric.api.transfer.v1.item.ItemStorage;
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -36,10 +42,17 @@ public final class PortalFabric {
 
     public static void init() {
         Portal.init();
+        //? if >=26.1 {
         PortalPlatform.loaded = level -> ServerLevelEvents.LOAD.invoker().onLevelLoad(level.getServer(), level);
         PortalPlatform.unloaded = level -> ServerLevelEvents.UNLOAD.invoker().onLevelUnload(level.getServer(), level);
         net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry.clientboundPlay().register(
                 com.workshopcraft.simplemachines.portal.RiftHudPayload.TYPE, com.workshopcraft.simplemachines.portal.RiftHudPayload.CODEC);
+        //?} else {
+        /*PortalPlatform.loaded = level -> ServerWorldEvents.LOAD.invoker().onWorldLoad(level.getServer(), level);
+        PortalPlatform.unloaded = level -> ServerWorldEvents.UNLOAD.invoker().onWorldUnload(level.getServer(), level);
+        net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry.playS2C().register(
+                com.workshopcraft.simplemachines.portal.RiftHudPayload.TYPE, com.workshopcraft.simplemachines.portal.RiftHudPayload.CODEC);
+        *///?}
         PortalPlatform.sendHud = (player, payload) -> {
             if (net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking.canSend(player, payload.type())) {
                 net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking.send(player, payload);
@@ -51,6 +64,7 @@ public final class PortalFabric {
         Portal.registerTabs(direct(BuiltInRegistries.CREATIVE_MODE_TAB));
         Portal.registerBlockEntities(direct(BuiltInRegistries.BLOCK_ENTITY_TYPE));
         Portal.registerMenus(direct(BuiltInRegistries.MENU));
+        //? if >=26.1
         Portal.registerTicketTypes(direct(BuiltInRegistries.TICKET_TYPE));
         Portal.registerChunkGenerators(direct(BuiltInRegistries.CHUNK_GENERATOR));
         Portal.registerPlacementModifiers(direct(BuiltInRegistries.PLACEMENT_MODIFIER_TYPE));
@@ -62,8 +76,13 @@ public final class PortalFabric {
             }
         }, Portal.GATE_ENTITY);
         EnergyStorage.SIDED.registerForBlockEntity((be, side) -> new BufferEnergyStorage(be.energy(), true, false), Portal.RESEARCH_ENTITY);
+        //? if >=26.1 {
         ItemStorage.SIDED.registerForBlockEntity((be, side) -> ContainerStorage.of(be, side), Portal.GATE_ENTITY);
         ItemStorage.SIDED.registerForBlockEntity((be, side) -> ContainerStorage.of(be, side), Portal.RESEARCH_ENTITY);
+        //?} else {
+        /*ItemStorage.SIDED.registerForBlockEntity((be, side) -> InventoryStorage.of(be, side), Portal.GATE_ENTITY);
+        ItemStorage.SIDED.registerForBlockEntity((be, side) -> InventoryStorage.of(be, side), Portal.RESEARCH_ENTITY);
+        *///?}
         EnergyStorage.ITEM.registerForItems((stack, ctx) -> new ItemEnergyStorage(ctx, MobScannerItem.CAPACITY, MobScannerItem.RATE), Portal.mobScanner);
         BiomeModifications.addFeature(BiomeSelectors.foundInOverworld(), GenerationStep.Decoration.UNDERGROUND_ORES,
                 ResourceKey.create(Registries.PLACED_FEATURE, SimpleMachines.id("ore_titanium")));

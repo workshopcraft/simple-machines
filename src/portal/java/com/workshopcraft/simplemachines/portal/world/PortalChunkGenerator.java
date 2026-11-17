@@ -13,8 +13,11 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.util.RandomSource;
+//? if >=1.21.2 {
 import net.minecraft.util.random.Weighted;
 import net.minecraft.util.random.WeightedList;
+//?} else
+/*import net.minecraft.util.random.WeightedRandomList;*/
 import net.minecraft.world.RandomizableContainer;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
@@ -57,18 +60,29 @@ public class PortalChunkGenerator extends NoiseBasedChunkGenerator {
     ).apply(i, (b, s) -> new PortalChunkGenerator(b, s, WorldPlan.EMPTY)));
 
     private final WorldPlan plan;
+    //? if >=1.21.2 {
     private final Map<MobCategory, List<Weighted<MobSpawnSettings.SpawnerData>>> mobs = new EnumMap<>(MobCategory.class);
+    //?} else
+    /*private final Map<MobCategory, List<MobSpawnSettings.SpawnerData>> mobs = new EnumMap<>(MobCategory.class);*/
 
     public PortalChunkGenerator(BiomeSource biomes, Holder<NoiseGeneratorSettings> settings, WorldPlan plan) {
         super(biomes, settings);
         this.plan = plan;
         for (Map.Entry<MobCategory, List<WorldPreset.Mob>> e : plan.mobs().entrySet()) {
+            //? if >=1.21.2 {
             final List<Weighted<MobSpawnSettings.SpawnerData>> list = new ArrayList<>();
             for (WorldPreset.Mob m : e.getValue()) {
                 final Optional<EntityType<?>> type = BuiltInRegistries.ENTITY_TYPE.getOptional(m.type());
                 type.ifPresent(t -> list.add(new Weighted<>(MobSpawns.spawner(t, Math.max(1, m.min()), Math.max(m.min(), m.max())),
                         Math.max(1, m.weight()))));
             }
+            //?} else {
+            /*final List<MobSpawnSettings.SpawnerData> list = new ArrayList<>();
+            for (WorldPreset.Mob m : e.getValue()) {
+                final Optional<EntityType<?>> type = BuiltInRegistries.ENTITY_TYPE.getOptional(m.type());
+                type.ifPresent(t -> list.add(new MobSpawnSettings.SpawnerData(t, Math.max(1, m.weight()), Math.max(1, m.min()), Math.max(m.min(), m.max()))));
+            }
+            *///?}
             mobs.put(e.getKey(), list);
         }
     }
@@ -83,8 +97,13 @@ public class PortalChunkGenerator extends NoiseBasedChunkGenerator {
     }
 
     @Override
+    //? if >=1.21.2 {
     public void createStructures(RegistryAccess registryAccess, ChunkGeneratorStructureState state, StructureManager structureManager,
                                  ChunkAccess centerChunk, StructureTemplateManager templates, ResourceKey<Level> level) {
+    //?} else {
+    /*public void createStructures(RegistryAccess registryAccess, ChunkGeneratorStructureState state, StructureManager structureManager,
+                                 ChunkAccess centerChunk, StructureTemplateManager templates) {
+    *///?}
         // no vanilla structures in portal worlds; the objective site is placed in applyBiomeDecoration
     }
 
@@ -92,17 +111,28 @@ public class PortalChunkGenerator extends NoiseBasedChunkGenerator {
     /*@Override
     public WeightedList<MobSpawnSettings.SpawnerData> getMobsAt(Level level, StructureManager structureManager, MobCategory category, BlockPos pos) {
         final java.util.function.Supplier<WeightedList<MobSpawnSettings.SpawnerData>> vanilla = () -> super.getMobsAt(level, structureManager, category, pos);
-    *///?} else {
+    *///?} else if >=1.21.2 {
     @Override
     public WeightedList<MobSpawnSettings.SpawnerData> getMobsAt(Holder<Biome> biome, StructureManager structureManager, MobCategory category, BlockPos pos) {
         final java.util.function.Supplier<WeightedList<MobSpawnSettings.SpawnerData>> vanilla = () -> super.getMobsAt(biome, structureManager, category, pos);
     //?}
+    //? if >=1.21.2 {
         final List<Weighted<MobSpawnSettings.SpawnerData>> extra = mobs.get(category);
         if (extra == null || extra.isEmpty()) return plan.replaceMobs() ? WeightedList.of() : vanilla.get();
         if (plan.replaceMobs()) return WeightedList.of(extra);
         final List<Weighted<MobSpawnSettings.SpawnerData>> all = new ArrayList<>(vanilla.get().unwrap());
         all.addAll(extra);
         return WeightedList.of(all);
+    //?} else {
+    /*@Override
+    public WeightedRandomList<MobSpawnSettings.SpawnerData> getMobsAt(Holder<Biome> biome, StructureManager structureManager, MobCategory category, BlockPos pos) {
+        final List<MobSpawnSettings.SpawnerData> extra = mobs.get(category);
+        if (extra == null || extra.isEmpty()) return plan.replaceMobs() ? WeightedRandomList.create() : super.getMobsAt(biome, structureManager, category, pos);
+        if (plan.replaceMobs()) return WeightedRandomList.create(extra);
+        final List<MobSpawnSettings.SpawnerData> all = new ArrayList<>(super.getMobsAt(biome, structureManager, category, pos).unwrap());
+        all.addAll(extra);
+        return WeightedRandomList.create(all);
+    *///?}
     }
 
     @Override

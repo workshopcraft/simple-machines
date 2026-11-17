@@ -7,6 +7,7 @@ import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Entity;
+//? if >=26.1
 import net.minecraft.world.entity.InsideBlockEffectApplier;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.BlockGetter;
@@ -42,7 +43,11 @@ public class PortalFieldBlock extends Block {
     }
 
     @Override
+    //? if >=26.1 {
     protected void entityInside(BlockState state, Level level, BlockPos pos, Entity entity, InsideBlockEffectApplier effects, boolean intersects) {
+    //?} else {
+    /*protected void entityInside(BlockState state, Level level, BlockPos pos, Entity entity) {
+    *///?}
         if (level instanceof ServerLevel server) PortalTravel.entered(server, pos, entity);
     }
 
@@ -66,7 +71,11 @@ public class PortalFieldBlock extends Block {
     }
 
     @Override
+    //? if >=26.1 {
     protected ItemStack getCloneItemStack(LevelReader level, BlockPos pos, BlockState state, boolean includeData) {
+    //?} else {
+    /*public ItemStack getCloneItemStack(LevelReader level, BlockPos pos, BlockState state) {
+    *///?}
         return ItemStack.EMPTY;
     }
 }

@@ -24,6 +24,11 @@ stonecutter parameters {
 
     // 26.x useItemOn returns InteractionResult; 1.21.1 gets a bridge to ItemInteractionResult
     replacements.regex(current.parsed >= "1.20.5" && current.parsed < "1.21.2") {
+        // 1.21.1 getMaxBuildHeight is one above the top block; getMaxY is the top block
+        replace("(\\w+)\\.getMaxY\\(\\)", "($1.getMaxBuildHeight() - 1)", "\\((\\w+)\\.getMaxBuildHeight\\(\\) - 1\\)", "$1.getMaxY()")
+        replace("\\.teleport\\(new (?:Teleport|Dimension)Transition\\(", ".changeDimension(new DimensionTransition(", "\\.changeDimension\\(new (?:Teleport|Dimension)Transition\\(", ".teleport(new TeleportTransition(")
+        replace("\\.identifier\\(\\)", ".location()/*id*/", "\\.location\\(\\)/\\*id\\*/", ".identifier()")
+        replace("\\bcp\\.([xz])\\(\\)", "cp.$1/*cp*/", "\\bcp\\.([xz])/\\*cp\\*/", "cp.$1()")
         replace(
             "protected InteractionResult useItemOn\\(",
             "protected net.minecraft.world.ItemInteractionResult useItemOn(ItemStack s$, BlockState b$, Level l$, BlockPos p$, Player e$, InteractionHand h$, BlockHitResult r$) { return com.workshopcraft.simplemachines.compat.mc.Interactions.item(useItemOn$(s$, b$, l$, p$, e$, h$, r$)); }\n    protected InteractionResult useItemOn$(",
@@ -55,6 +60,7 @@ stonecutter parameters {
         replace("extends AbstractContainerMenu ", "extends $mc.CompatMenu ")
         replace("player.sendOverlayMessage(", "$mc.Players.overlay(player, ")
         replace("p.sendOverlayMessage(", "$mc.Players.overlay(p, ")
+        replace("sp.sendOverlayMessage(", "$mc.Players.overlay(sp, ")
         replace("net.minecraft.world.level.saveddata.SavedDataType", "$mc.SavedDataType")
         replace("extends SavedData {", "extends $mc.CodecSavedData {")
         replace("server.getDataStorage().computeIfAbsent(TYPE)", "TYPE.get(server)")
@@ -76,15 +82,15 @@ stonecutter parameters {
         replace("((Shearable) mob).shear(level, SoundSource.BLOCKS, new ItemStack(Items.SHEARS))", "((Shearable) mob).shear(SoundSource.BLOCKS)")
         replace("level.recipeAccess()", "level.getRecipeManager()")
         replace(".getMinY()", ".getMinBuildHeight()")
-        replace(".getMaxY()", ".getMaxBuildHeight()")
         replace(".noCollision()", ".noCollission()")
         replace("entityTags()", "getTags()")
         replace("BuiltInRegistries.BLOCK.getValue(", "BuiltInRegistries.BLOCK.get(")
         replace("BuiltInRegistries.ITEM.getValue(", "BuiltInRegistries.ITEM.get(")
         replace("BuiltInRegistries.FLUID.getValue(", "BuiltInRegistries.FLUID.get(")
         replace("InteractionResult.TRY_WITH_EMPTY_HAND", "$mc.Interactions.TRY_WITH_EMPTY_HAND")
-        // 1.21.1 has no server-only success; plain success is the closest
-        replace("InteractionResult.SUCCESS_SERVER", "InteractionResult.SUCCESS")
+        replace("InteractionResult.SUCCESS_SERVER", "$mc.Interactions.SUCCESS_SERVER")
+        replace("TeleportTransition", "DimensionTransition")
+        replace("cp.pack()", "cp.toLong()")
     }
     // 1.20.1: no item components, codecs or split block use hooks; stand-ins in compat.mc under src/legacy-java/1.20.1
     replacements.regex(current.parsed < "1.20.5") {

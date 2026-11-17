@@ -10,6 +10,7 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
+//? if >=26.1
 import net.minecraft.world.item.component.TooltipDisplay;
 
 import java.util.ArrayList;
@@ -51,7 +52,12 @@ public class PortalCardItem extends Item {
     }
 
     @Override
+    //? if >=26.1 {
     public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay display, Consumer<Component> out, TooltipFlag flag) {
+    //?} else {
+    /*public void appendHoverText(ItemStack stack, TooltipContext context, java.util.List<Component> lines, TooltipFlag flag) {
+        final Consumer<Component> out = lines::add;
+    *///?}
         final Identifier id = stack.get(Portal.CARD);
         if (id == null) {
             out.accept(Component.translatable("tooltip.simplemachines.card_blank").withStyle(ChatFormatting.GRAY));

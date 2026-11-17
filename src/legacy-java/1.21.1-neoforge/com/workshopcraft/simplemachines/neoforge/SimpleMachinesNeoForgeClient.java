@@ -110,6 +110,10 @@ public class SimpleMachinesNeoForgeClient {
             e.registerBlockEntityRenderer(SimpleMachines.rollingMillEntity, WorktopRenderer::new);
             e.registerBlockEntityRenderer(SimpleMachines.electricFurnaceEntity, WorktopRenderer::new);
         });
+        com.workshopcraft.simplemachines.neoforge.ship.ShipNeoForgeClient.init(modBus);
+        com.workshopcraft.simplemachines.neoforge.portal.PortalNeoForgeClient.init(modBus);
+        modBus.addListener((net.neoforged.fml.event.lifecycle.FMLClientSetupEvent e) -> e.enqueueWork(() ->
+                com.workshopcraft.simplemachines.client.LegacyLayers.apply(net.minecraft.client.renderer.ItemBlockRenderTypes::setRenderLayer)));
     }
 
     @SuppressWarnings("unchecked")

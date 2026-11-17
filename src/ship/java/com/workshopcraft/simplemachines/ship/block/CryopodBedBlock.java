@@ -93,7 +93,7 @@ public class CryopodBedBlock extends BedBlock {
         if (refusesSleep(level, head)) {
             // no explosion in a pod: link spawn and say so, the player stays awake
             if (player instanceof ServerPlayer sp && linkSpawn(sp, (ServerLevel) level, head, headState)) {
-                player.sendOverlayMessage(Component.translatable("message.simplemachines.cryopod_linked"));
+                sp.sendOverlayMessage(Component.translatable("message.simplemachines.cryopod_linked"));
             }
             return InteractionResult.SUCCESS_SERVER;
         }
@@ -109,8 +109,8 @@ public class CryopodBedBlock extends BedBlock {
         final BedRule rule = bedRule(level, head);
         return rule.explodes() || !rule.canSetSpawn(level);
         //?} else {
-        return !level.dimensionType().bedWorks();
-        //?}
+        /*return !level.dimensionType().bedWorks();
+        *///?}
     }
 
     //? if >=26.1 {

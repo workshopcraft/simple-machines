@@ -40,8 +40,10 @@ import java.util.UUID;
  */
 public final class PortalRifts {
     /** Same kind of ticket as the 2.2 Chunk Loader: loads and ticks, never times out, rebuilt from saved data on start. */
+    //? if >=26.1 {
     public static final TicketType TICKET = new TicketType(TicketType.NO_TIMEOUT,
             TicketType.FLAG_LOADING | TicketType.FLAG_SIMULATION | TicketType.FLAG_KEEP_DIMENSION_ACTIVE);
+    //?}
 
     public enum Reason { EMPTY, OUT_OF_FUEL, DROPPED, DEPARTED, GATE_GONE, WORLD_GONE }
 
@@ -293,7 +295,11 @@ public final class PortalRifts {
     private static void hold(MinecraftServer server, PortalData.Rift r) {
         if (!PortalConfig.bool(server, PortalConfig.RIFT_CHUNK_LOADING) || !TICKETED.add(r.gate)) return;
         final ServerLevel level = server.getLevel(r.gate.dimension());
+        //? if >=26.1 {
         if (level != null) level.getChunkSource().addTicketWithRadius(TICKET, ChunkPos.containing(r.gate.pos()), 2);
+        //?} else {
+        /*if (level != null) com.workshopcraft.simplemachines.compat.mc.ChunkTickets.addRift(level, ChunkPos.containing(r.gate.pos()), 2);
+        *///?}
     }
 
     private static void release(MinecraftServer server, PortalData.Rift r) {
@@ -302,7 +308,11 @@ public final class PortalRifts {
         // two gates in one chunk share a ticket, so only the last one out takes it
         for (GlobalPos o : TICKETED) if (o.dimension().equals(r.gate.dimension()) && ChunkPos.containing(o.pos()).equals(c)) return;
         final ServerLevel level = server.getLevel(r.gate.dimension());
+        //? if >=26.1 {
         if (level != null) level.getChunkSource().removeTicketWithRadius(TICKET, c, 2);
+        //?} else {
+        /*if (level != null) com.workshopcraft.simplemachines.compat.mc.ChunkTickets.removeRift(level, c, 2);
+        *///?}
     }
 
     /** Server start: drops rifts whose gate or world is gone, and puts the chunk tickets back for the rest. */

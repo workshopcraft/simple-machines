@@ -22,6 +22,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
+//? if >=26.1
 import net.minecraft.world.item.component.TooltipDisplay;
 
 import java.util.function.Consumer;
@@ -83,7 +84,10 @@ public class MobScannerItem extends Item {
         sp.sendSystemMessage(Component.translatable("message.simplemachines.scanner.scanned", target.getType().getDescription(),
                 Math.min(n, match.scans()), match.scans()), true);
         if (n == match.scans()) ResearchStationBlockEntity.complete(level.getServer(), match, sp.getUUID());
+        //? if >=1.21.2 {
         if (PortalConfig.bool(level.getServer(), PortalConfig.SCANNER_KILLS_MOB)) target.kill(level);
+        //?} else
+        /*if (PortalConfig.bool(level.getServer(), PortalConfig.SCANNER_KILLS_MOB)) target.kill();*/
         return InteractionResult.SUCCESS;
     }
 
@@ -103,7 +107,12 @@ public class MobScannerItem extends Item {
     }
 
     @Override
+    //? if >=26.1 {
     public void appendHoverText(ItemStack stack, TooltipContext context, TooltipDisplay display, Consumer<Component> out, TooltipFlag flag) {
+    //?} else {
+    /*public void appendHoverText(ItemStack stack, TooltipContext context, java.util.List<Component> lines, TooltipFlag flag) {
+        final Consumer<Component> out = lines::add;
+    *///?}
         out.accept(Component.translatable("tooltip.simplemachines.mob_scanner").withStyle(ChatFormatting.GRAY));
         out.accept(Component.translatable("tooltip.simplemachines.energy", PowerTooltip.num(energy(stack)), PowerTooltip.num(CAPACITY))
                 .withStyle(ChatFormatting.GRAY));

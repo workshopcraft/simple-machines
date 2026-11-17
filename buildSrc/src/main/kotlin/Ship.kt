@@ -20,7 +20,7 @@ object Ship {
 
 /** Simple Machines 2.3 portal core (M2): src/portal, same versions and rules as Ship. Stonecutter constant `portal`. */
 object Portal {
-    val VERSIONS = setOf("26.1.2", "26.2", "26.3")
+    val VERSIONS = setOf("1.21.1", "26.1.2", "26.2", "26.3")
     fun enabled(mc: String) = mc in VERSIONS
 }
 

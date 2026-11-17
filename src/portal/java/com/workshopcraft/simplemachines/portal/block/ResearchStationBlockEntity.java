@@ -263,7 +263,12 @@ public class ResearchStationBlockEntity extends WorkBlockEntity implements com.w
         ItemStack icon = r.icon();
         if (icon.isEmpty() && r.entity() != null) {
             final var type = BuiltInRegistries.ENTITY_TYPE.getOptional(r.entity()).orElse(null);
+            //? if >=26.1 {
             if (type != null) icon = SpawnEggItem.byId(type).map(h -> new ItemStack(h)).orElse(ItemStack.EMPTY);
+            //?} else {
+            /*final SpawnEggItem egg = type == null ? null : SpawnEggItem.byId(type);
+            if (egg != null) icon = new ItemStack(egg);
+            *///?}
         }
         if (icon.isEmpty()) icon = new ItemStack(Items.PAPER);
         icon.set(DataComponents.ITEM_NAME, Component.literal(r.name()));

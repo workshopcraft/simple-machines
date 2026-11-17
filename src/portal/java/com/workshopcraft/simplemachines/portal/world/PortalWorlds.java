@@ -235,8 +235,13 @@ public final class PortalWorlds {
             final long stamp = Files.getLastModifiedTime(file).toMillis();
             final Pair<Long, String> cached = SAVED_DIMS.get(file);
             if (cached != null && cached.getFirst() == stamp) return cached.getSecond();
+            //? if >=26.1 {
             final String dim = net.minecraft.nbt.NbtIo.readCompressed(file, net.minecraft.nbt.NbtAccounter.unlimitedHeap())
                     .getStringOr("Dimension", "minecraft:overworld");
+            //?} else {
+            /*final net.minecraft.nbt.CompoundTag tag = net.minecraft.nbt.NbtIo.readCompressed(file, net.minecraft.nbt.NbtAccounter.unlimitedHeap());
+            final String dim = tag.contains("Dimension", net.minecraft.nbt.Tag.TAG_STRING) ? tag.getString("Dimension") : "minecraft:overworld";
+            *///?}
             SAVED_DIMS.put(file, Pair.of(stamp, dim));
             return dim;
         } catch (Exception e) {
@@ -246,7 +251,10 @@ public final class PortalWorlds {
 
     public static void toSpawn(MinecraftServer server, ServerPlayer p) {
         final ServerLevel overworld = server.overworld();
+        //? if >=26.1 {
         final BlockPos spawn = overworld.getRespawnData().pos();
+        //?} else
+        /*final BlockPos spawn = overworld.getSharedSpawnPos();*/
         p.teleport(new TeleportTransition(overworld, Vec3.atBottomCenterOf(spawn), Vec3.ZERO, p.getYRot(), p.getXRot(), TeleportTransition.DO_NOTHING));
     }
 
@@ -362,7 +370,30 @@ public final class PortalWorlds {
     }
 
     private static Field field(String name) throws NoSuchFieldException {
+        //? if >=26.1 {
         final Field f = MinecraftServer.class.getDeclaredField(name);
+        //?} else {
+        /*// Fabric runs 1.21.1 with intermediary names, so fall back to the one field of the right type
+        Field f;
+        try {
+            f = MinecraftServer.class.getDeclaredField(name);
+        } catch (NoSuchFieldException e) {
+            final Class<?> type = switch (name) {
+                case "levels" -> Map.class;
+                case "executor" -> Executor.class;
+                default -> LevelStorageSource.LevelStorageAccess.class;
+            };
+            f = null;
+            for (Field c : MinecraftServer.class.getDeclaredFields()) {
+                if (c.getType() != type || java.lang.reflect.Modifier.isStatic(c.getModifiers())) continue;
+                if (type == Map.class && !(c.getGenericType() instanceof java.lang.reflect.ParameterizedType pt
+                        && pt.getActualTypeArguments().length == 2 && pt.getActualTypeArguments()[1] == ServerLevel.class)) continue;
+                if (f != null) throw e;
+                f = c;
+            }
+            if (f == null) throw e;
+        }
+        *///?}
         f.setAccessible(true);
         return f;
     }
