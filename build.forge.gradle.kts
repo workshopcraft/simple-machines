@@ -25,6 +25,7 @@ sourceSets.main {
         outputDir = layout.buildDirectory.dir("generated/data120")
     }.map { it.outputDir })
     applyOverlays(rootProject.file("."), overlayChain(sc.current.version, "forge"), layout.buildDirectory.get().asFile)
+    skipDisabledExtras(mc)
 }
 
 legacyForge {

@@ -24,6 +24,16 @@ object Portal {
     fun enabled(mc: String) = mc in VERSIONS
 }
 
+/** Old-format data for an extra dir (src/<extra>/legacy/<mc>). It goes right after src/legacy so it hides the modern copy. */
+fun extraLegacyDirs(root: File, dirs: List<String>, versions: List<String>): List<File> =
+    versions.flatMap { v -> dirs.map { File(root, "$it/legacy/$v") } }.filter { it.isDirectory }
+
+/** Whole-file overlays for ship or portal classes are left out on versions that do not build that dir. */
+fun SourceSet.skipDisabledExtras(mc: String) {
+    if (!Ship.enabled(mc)) java.exclude("com/workshopcraft/simplemachines/ship/**", "com/workshopcraft/simplemachines/*/ship/**")
+    if (!Portal.enabled(mc)) java.exclude("com/workshopcraft/simplemachines/portal/**", "com/workshopcraft/simplemachines/*/portal/**")
+}
+
 /** The extra source dirs a version builds, in merge order. */
 fun extraDirs(mc: String): List<String> = buildList {
     if (Ship.enabled(mc)) add("src/ship")
