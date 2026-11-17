@@ -91,16 +91,16 @@ public class PortalChunkGenerator extends NoiseBasedChunkGenerator {
     //? if >=26.3 {
     /*@Override
     public WeightedList<MobSpawnSettings.SpawnerData> getMobsAt(Level level, StructureManager structureManager, MobCategory category, BlockPos pos) {
-        final WeightedList<MobSpawnSettings.SpawnerData> vanilla = super.getMobsAt(level, structureManager, category, pos);
+        final java.util.function.Supplier<WeightedList<MobSpawnSettings.SpawnerData>> vanilla = () -> super.getMobsAt(level, structureManager, category, pos);
     *///?} else {
     @Override
     public WeightedList<MobSpawnSettings.SpawnerData> getMobsAt(Holder<Biome> biome, StructureManager structureManager, MobCategory category, BlockPos pos) {
-        final WeightedList<MobSpawnSettings.SpawnerData> vanilla = super.getMobsAt(biome, structureManager, category, pos);
+        final java.util.function.Supplier<WeightedList<MobSpawnSettings.SpawnerData>> vanilla = () -> super.getMobsAt(biome, structureManager, category, pos);
     //?}
         final List<Weighted<MobSpawnSettings.SpawnerData>> extra = mobs.get(category);
-        if (extra == null || extra.isEmpty()) return plan.replaceMobs() ? WeightedList.of() : vanilla;
+        if (extra == null || extra.isEmpty()) return plan.replaceMobs() ? WeightedList.of() : vanilla.get();
         if (plan.replaceMobs()) return WeightedList.of(extra);
-        final List<Weighted<MobSpawnSettings.SpawnerData>> all = new ArrayList<>(vanilla.unwrap());
+        final List<Weighted<MobSpawnSettings.SpawnerData>> all = new ArrayList<>(vanilla.get().unwrap());
         all.addAll(extra);
         return WeightedList.of(all);
     }
@@ -118,9 +118,9 @@ public class PortalChunkGenerator extends NoiseBasedChunkGenerator {
     }
 
     private void placeOre(WorldGenLevel level, ChunkAccess chunk, RandomSource random, WorldPreset.Ore ore) {
-        final Optional<Holder.Reference<Block>> block = BuiltInRegistries.BLOCK.get(ore.block());
+        final Optional<Block> block = BuiltInRegistries.BLOCK.getOptional(ore.block());
         if (block.isEmpty()) return;
-        final BlockState state = block.get().value().defaultBlockState();
+        final BlockState state = block.get().defaultBlockState();
         final float want = ore.perChunk() * plan.richness();
         int count = (int) want;
         if (random.nextFloat() < want - count) count++;
