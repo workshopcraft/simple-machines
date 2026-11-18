@@ -106,6 +106,7 @@ public final class PortalFabric {
         CommandRegistrationCallback.EVENT.register((dispatcher, context, environment) -> PortalCommands.register(dispatcher));
         ServerTickEvents.END_SERVER_TICK.register(PortalEvents::serverTickEnd);
         ServerLifecycleEvents.SERVER_STARTED.register(PortalEvents::serverStarted);
+        ServerLifecycleEvents.SERVER_STARTING.register(PortalEvents::serverStarting);
         ServerLifecycleEvents.SERVER_STOPPED.register(PortalEvents::serverStopped);
         ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> PortalEvents.join(handler.player));
         ServerPlayConnectionEvents.DISCONNECT.register((handler, server) -> PortalEvents.leave(handler.player));

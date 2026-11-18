@@ -8,18 +8,25 @@ import net.minecraft.server.level.ServerPlayer;
 public final class PortalEvents {
     private PortalEvents() {}
 
+    public static void serverStarting(MinecraftServer server) {
+        PortalResources.bind(server);
+    }
+
     public static void serverTickEnd(MinecraftServer server) {
+        PortalResources.bind(server);
         PortalWorlds.tick(server);
         PortalTravel.tick(server);
         PortalRifts.keepAwake(server);
     }
 
     public static void serverStarted(MinecraftServer server) {
+        PortalResources.bind(server);
         PortalWorlds.serverStarted(server);
         PortalRifts.restore(server);
     }
 
     public static void serverStopped(MinecraftServer server) {
+        PortalResources.unbind(server);
         PortalWorlds.serverStopped();
         PortalTravel.serverStopped();
         PortalRifts.serverStopped();

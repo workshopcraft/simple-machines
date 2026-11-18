@@ -94,6 +94,15 @@ While digging, the bit's three cones turn, the chainsaw chain runs, the Overcloc
 
 With Simple Books installed, getting your first screwdriver (from any mod) gives you the Simple Machines Manual, a blueprint style guide to every machine, the assembly steps with recipes, tiers, finishes, cables, pipes, auto-output, upgrades and tools. Another copy is crafted from a book, any screwdriver and a copper ingot; the screwdriver is given back. Simple Books is optional; without it the manual, its recipe and advancement are simply not loaded.
 
+Quest packs can grant portal research with a Simple Books reward (needs Simple Books 1.3.0 or later, which added custom reward types):
+
+```json
+{ "type": "simplemachines:portal_research", "key": "preset:simplemachines:deep_caverns", "label": "Deep Caverns", "icon": "simplemachines:jump_card" }
+```
+
+`key` is the same as `/simplemachines portal unlock`: `research:<id>`, `preset:<id>`, `ore:<block>` or `mob:<entity>`. `label` and `icon` are optional; the book falls back to "Portal research: <name>" and a jump card. Each player claims the reward themselves, including members of a quest team. Without Simple Books the type is unused.
+
+
 ## Much More Storage and other mods
 
 - Worktops are tagged `c:worktops`. Any worktop in that tag fits a chassis, and Simple Machines worktops fit Much More Storage carcasses. Neither mod needs the other.

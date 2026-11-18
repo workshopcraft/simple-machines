@@ -21,6 +21,9 @@
         ],
         "jei_mod_plugin": [
             "com.workshopcraft.simplemachines.compat.jei.SimpleMachinesJei"
+        ],
+        "simplebooks": [
+            "com.workshopcraft.simplemachines.compat.SimpleBooksCompat"
         ]
     },
     "depends": {

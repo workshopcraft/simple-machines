@@ -29,8 +29,11 @@ import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.event.level.LevelEvent;
 import net.minecraftforge.event.server.ServerStartedEvent;
+import net.minecraftforge.event.server.ServerStartingEvent;
 import net.minecraftforge.event.server.ServerStoppedEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
+import net.minecraftforge.fml.InterModComms;
+import net.minecraftforge.fml.event.lifecycle.InterModEnqueueEvent;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.items.wrapper.InvWrapper;
 import net.minecraftforge.items.wrapper.SidedInvWrapper;
@@ -75,7 +78,10 @@ public final class PortalForge {
         });
         MinecraftForge.EVENT_BUS.addGenericListener(BlockEntity.class, PortalForge::onBlockCaps);
         MinecraftForge.EVENT_BUS.addGenericListener(ItemStack.class, PortalForge::onItemCaps);
+        modBus.addListener((InterModEnqueueEvent e) -> InterModComms.sendTo("simplebooks", "plugin",
+                () -> "com.workshopcraft.simplemachines.compat.SimpleBooksCompat"));
         MinecraftForge.EVENT_BUS.addListener((RegisterCommandsEvent e) -> PortalCommands.register(e.getDispatcher()));
+        MinecraftForge.EVENT_BUS.addListener((ServerStartingEvent e) -> PortalEvents.serverStarting(e.getServer()));
         MinecraftForge.EVENT_BUS.addListener((TickEvent.ServerTickEvent e) -> {
             if (e.phase == TickEvent.Phase.END) PortalEvents.serverTickEnd(e.getServer());
         });

@@ -11,6 +11,8 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.dimension.LevelStem;
 import net.neoforged.bus.api.IEventBus;
+import net.neoforged.fml.InterModComms;
+import net.neoforged.fml.event.lifecycle.InterModEnqueueEvent;
 import net.neoforged.neoforge.capabilities.Capabilities;
 import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
 import net.neoforged.neoforge.common.NeoForge;
@@ -18,6 +20,7 @@ import net.neoforged.neoforge.event.RegisterCommandsEvent;
 import net.neoforged.neoforge.event.entity.player.PlayerEvent;
 import net.neoforged.neoforge.event.level.LevelEvent;
 import net.neoforged.neoforge.event.server.ServerStartedEvent;
+import net.neoforged.neoforge.event.server.ServerStartingEvent;
 import net.neoforged.neoforge.event.server.ServerStoppedEvent;
 import net.neoforged.neoforge.event.tick.ServerTickEvent;
 import net.neoforged.neoforge.registries.RegisterEvent;
@@ -75,7 +78,10 @@ public final class PortalNeoForge {
             e.registerItem(Capabilities.Energy.ITEM, (stack, access) -> new ItemAccessEnergyHandler(access, SimpleMachines.ENERGY,
                     MobScannerItem.CAPACITY, MobScannerItem.RATE), Portal.mobScanner);
         });
+        modBus.addListener((InterModEnqueueEvent e) -> InterModComms.sendTo("simplebooks", "plugin",
+                () -> "com.workshopcraft.simplemachines.compat.SimpleBooksCompat"));
         NeoForge.EVENT_BUS.addListener((RegisterCommandsEvent e) -> PortalCommands.register(e.getDispatcher()));
+        NeoForge.EVENT_BUS.addListener((ServerStartingEvent e) -> PortalEvents.serverStarting(e.getServer()));
         NeoForge.EVENT_BUS.addListener((ServerTickEvent.Post e) -> PortalEvents.serverTickEnd(e.getServer()));
         NeoForge.EVENT_BUS.addListener((ServerStartedEvent e) -> PortalEvents.serverStarted(e.getServer()));
         NeoForge.EVENT_BUS.addListener((ServerStoppedEvent e) -> PortalEvents.serverStopped(e.getServer()));

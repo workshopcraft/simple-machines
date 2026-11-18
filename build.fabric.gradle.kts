@@ -115,3 +115,5 @@ tasks {
         from(rootProject.file("LICENSE")) { rename { "${it}_$name" } }
     }
 }
+
+addSimpleBooksApi()

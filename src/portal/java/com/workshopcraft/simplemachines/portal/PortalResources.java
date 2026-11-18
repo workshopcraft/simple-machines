@@ -9,9 +9,13 @@ import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.server.packs.resources.ResourceManager;
 
+import org.jspecify.annotations.Nullable;
+
 import java.io.Reader;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 import java.util.function.BiConsumer;
 
@@ -21,11 +25,56 @@ import java.util.function.BiConsumer;
  */
 public final class PortalResources {
     private static ResourceManager seen;
+    private static @Nullable MinecraftServer bound;
     private static Map<Identifier, WorldPreset> presets = Map.of();
     private static Map<Identifier, PortalCard> cards = Map.of();
     private static Map<Identifier, Research> research = Map.of();
 
     private PortalResources() {}
+
+    public static void bind(MinecraftServer server) {
+        if (bound != server) seen = null;
+        bound = server;
+    }
+
+    public static void unbind(MinecraftServer server) {
+        if (bound != server) return;
+        bound = null;
+        seen = null;
+        presets = Map.of();
+        cards = Map.of();
+        research = Map.of();
+    }
+
+    /** Research keys the commands and the Simple Books reward accept, or empty if no server is running yet. */
+    public static Set<String> knownKeys() {
+        return bound == null ? Set.of() : knownKeys(bound);
+    }
+
+    public static Set<String> knownKeys(MinecraftServer server) {
+        final Set<String> keys = new LinkedHashSet<>();
+        for (Research r : research(server).values()) {
+            keys.addAll(r.unlocks());
+            keys.add("research:" + r.id());
+        }
+        for (WorldPreset p : presets(server).values()) if (p.needsResearch()) keys.add("preset:" + p.id());
+        return keys;
+    }
+
+    /** A short name for a key, for reward labels: the research or preset title when known, otherwise the key itself. */
+    public static String keyName(String key) {
+        if (bound == null) return key;
+        if (key.startsWith("research:")) {
+            final Identifier id = Identifier.tryParse(key.substring("research:".length()));
+            final Research r = id == null ? null : research(bound).get(id);
+            if (r != null && !r.name().isBlank()) return r.name();
+        } else if (key.startsWith("preset:")) {
+            final Identifier id = Identifier.tryParse(key.substring("preset:".length()));
+            final WorldPreset p = id == null ? null : presets(bound).get(id);
+            if (p != null && !p.name().isBlank()) return p.name();
+        }
+        return key;
+    }
 
     private static synchronized void refresh(MinecraftServer server) {
         final ResourceManager rm = server.getResourceManager();
