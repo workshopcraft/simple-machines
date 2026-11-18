@@ -8,6 +8,7 @@ import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.suggestion.SuggestionProvider;
+import com.workshopcraft.simplemachines.compat.mc.Profiles;
 import com.workshopcraft.simplemachines.portal.block.GateControllerBlockEntity;
 import com.workshopcraft.simplemachines.portal.world.PortalWorlds;
 import com.workshopcraft.simplemachines.portal.world.WorldPreset;
@@ -80,24 +81,24 @@ public final class PortalCommands {
         portal.then(gate("enable", (g, b) -> b.then(Commands.argument("on", BoolArgumentType.bool()).executes(c -> enable(c, g)))));
         portal.then(gate("closedmode", (g, b) -> b.then(Commands.argument("on", BoolArgumentType.bool()).executes(c -> closedMode(c, g)))));
         portal.then(gate("info", (g, b) -> b.executes(c -> info(c, g))));
-        // research is per player: a player target (default @s), or everyone for keys that count for every player
+        // research is per player: a player target (default @s, names and UUIDs work offline), or everyone
         portal.then(Commands.literal("unlock")
                 .then(Commands.literal("all").executes(c -> unlockAll(c, self(c))))
                 .then(Commands.literal("everyone")
                         .then(Commands.literal("all").executes(c -> unlockAll(c, null)))
                         .then(Commands.argument("key", StringArgumentType.greedyString()).executes(c -> unlock(c, null, true))))
-                .then(Commands.argument("targets", EntityArgument.players())
-                        .then(Commands.literal("all").executes(c -> unlockAll(c, EntityArgument.getPlayers(c, "targets"))))
-                        .then(Commands.argument("key", StringArgumentType.greedyString()).executes(c -> unlock(c, EntityArgument.getPlayers(c, "targets"), true))))
+                .then(Commands.argument("targets", Profiles.argument())
+                        .then(Commands.literal("all").executes(c -> unlockAll(c, Profiles.get(c, "targets"))))
+                        .then(Commands.argument("key", StringArgumentType.greedyString()).executes(c -> unlock(c, Profiles.get(c, "targets"), true))))
                 .then(Commands.argument("key", StringArgumentType.greedyString()).executes(c -> unlock(c, self(c), true))));
         portal.then(Commands.literal("lock")
                 .then(Commands.literal("everyone").then(Commands.argument("key", StringArgumentType.greedyString()).executes(c -> unlock(c, null, false))))
-                .then(Commands.argument("targets", EntityArgument.players())
-                        .then(Commands.argument("key", StringArgumentType.greedyString()).executes(c -> unlock(c, EntityArgument.getPlayers(c, "targets"), false))))
+                .then(Commands.argument("targets", Profiles.argument())
+                        .then(Commands.argument("key", StringArgumentType.greedyString()).executes(c -> unlock(c, Profiles.get(c, "targets"), false))))
                 .then(Commands.argument("key", StringArgumentType.greedyString()).executes(c -> unlock(c, self(c), false))));
         portal.then(Commands.literal("unlocks").executes(c -> unlocks(c, self(c)))
                 .then(Commands.literal("everyone").executes(c -> unlocks(c, null)))
-                .then(Commands.argument("targets", EntityArgument.players()).executes(c -> unlocks(c, EntityArgument.getPlayers(c, "targets")))));
+                .then(Commands.argument("targets", Profiles.argument()).executes(c -> unlocks(c, Profiles.get(c, "targets")))));
         portal.then(Commands.literal("givecard").then(Commands.argument("card", IdentifierArgument.id()).suggests(CARDS)
                 .executes(c -> giveCard(c, null))
                 .then(Commands.argument("player", EntityArgument.player()).executes(c -> giveCard(c, EntityArgument.getPlayer(c, "player"))))));
@@ -329,12 +330,12 @@ public final class PortalCommands {
 
     // --- research and cards ---
 
-    private static java.util.Collection<ServerPlayer> self(CommandContext<CommandSourceStack> c) throws CommandSyntaxException {
-        return List.of(c.getSource().getPlayerOrException());
+    private static java.util.Collection<Profiles.Entry> self(CommandContext<CommandSourceStack> c) throws CommandSyntaxException {
+        return Profiles.of(c.getSource().getPlayerOrException());
     }
 
     /** targets null: unlock for everyone. */
-    private static int unlock(CommandContext<CommandSourceStack> c, java.util.@Nullable Collection<ServerPlayer> targets, boolean on) {
+    private static int unlock(CommandContext<CommandSourceStack> c, java.util.@Nullable Collection<Profiles.Entry> targets, boolean on) {
         final String key = StringArgumentType.getString(c, "key").trim();
         final PortalData data = PortalData.get(c.getSource().getServer());
         if (targets == null) {
@@ -342,15 +343,15 @@ public final class PortalCommands {
             else data.lockShared(key);
             return ok(c, on ? "commands.simplemachines.portal.unlocked_everyone" : "commands.simplemachines.portal.locked_everyone", key);
         }
-        for (ServerPlayer p : targets) {
-            if (on) data.unlock(p.getUUID(), key);
-            else data.lock(p.getUUID(), key);
+        for (Profiles.Entry p : targets) {
+            if (on) data.unlock(p.id(), key);
+            else data.lock(p.id(), key);
             if (!on && data.sharedUnlocks().contains(key)) fail(c, "commands.simplemachines.portal.still_shared", key);
         }
         return ok(c, on ? "commands.simplemachines.portal.unlocked" : "commands.simplemachines.portal.locked", key, names(targets));
     }
 
-    private static int unlockAll(CommandContext<CommandSourceStack> c, java.util.@Nullable Collection<ServerPlayer> targets) {
+    private static int unlockAll(CommandContext<CommandSourceStack> c, java.util.@Nullable Collection<Profiles.Entry> targets) {
         final MinecraftServer server = c.getSource().getServer();
         final PortalData data = PortalData.get(server);
         final List<String> keys = new java.util.ArrayList<>();
@@ -364,14 +365,14 @@ public final class PortalCommands {
             if (targets == null) {
                 if (data.unlockShared(k) && !k.startsWith("research:")) n++;
             } else {
-                for (ServerPlayer p : targets) if (data.unlock(p.getUUID(), k) && !k.startsWith("research:")) n++;
+                for (Profiles.Entry p : targets) if (data.unlock(p.id(), k) && !k.startsWith("research:")) n++;
             }
         }
         return ok(c, "commands.simplemachines.portal.unlocked_all", n, targets == null
                 ? Component.translatable("commands.simplemachines.portal.everyone") : names(targets));
     }
 
-    private static int unlocks(CommandContext<CommandSourceStack> c, java.util.@Nullable Collection<ServerPlayer> targets) {
+    private static int unlocks(CommandContext<CommandSourceStack> c, java.util.@Nullable Collection<Profiles.Entry> targets) {
         final PortalData data = PortalData.get(c.getSource().getServer());
         if (targets == null) {
             final var all = data.sharedUnlocks();
@@ -380,11 +381,11 @@ public final class PortalCommands {
             return all.size();
         }
         int n = 0;
-        for (ServerPlayer p : targets) {
-            final var own = data.ownUnlocks(p.getUUID());
+        for (Profiles.Entry p : targets) {
+            final var own = data.ownUnlocks(p.id());
             final var shared = data.sharedUnlocks();
             n += own.size();
-            c.getSource().sendSuccess(() -> Component.translatable("commands.simplemachines.portal.unlocks_player", p.getDisplayName(),
+            c.getSource().sendSuccess(() -> Component.translatable("commands.simplemachines.portal.unlocks_player", p.name(),
                     own.isEmpty() ? "-" : String.join(", ", own), shared.isEmpty() ? "-" : String.join(", ", shared)), false);
         }
         return n;
@@ -396,8 +397,8 @@ public final class PortalCommands {
         return p != null ? p.getDisplayName() : Component.literal(id.toString());
     }
 
-    private static Component names(java.util.Collection<ServerPlayer> targets) {
-        return targets.size() == 1 ? targets.iterator().next().getDisplayName() : Component.translatable("commands.simplemachines.portal.players", targets.size());
+    private static Component names(java.util.Collection<Profiles.Entry> targets) {
+        return targets.size() == 1 ? targets.iterator().next().name() : Component.translatable("commands.simplemachines.portal.players", targets.size());
     }
 
     private static int giveCard(CommandContext<CommandSourceStack> c, @Nullable ServerPlayer target) throws CommandSyntaxException {

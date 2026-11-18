@@ -2,6 +2,7 @@ package com.workshopcraft.simplemachines.portal.block;
 
 import com.mojang.serialization.Codec;
 import com.workshopcraft.simplemachines.assembly.Tier;
+import com.workshopcraft.simplemachines.entangled.EntangledAccess;
 import com.workshopcraft.simplemachines.cable.Voltage;
 import com.workshopcraft.simplemachines.machine.EnergyMenu;
 import com.workshopcraft.simplemachines.machine.MachineBlock;
@@ -444,10 +445,10 @@ public class GateControllerBlockEntity extends WorkBlockEntity implements com.wo
         return super.canOpen(player);
     }
 
-    /** Hoppers and pipes belong to nobody, so a private gate takes no cards from them; pellets, power and cores still go in. */
+    /** Hoppers and other automation cannot put cards into a private gate; a Simple Machines pipe placed by the gate's owner can. Pellets, power and cores still go in. */
     @Override
     public boolean canPlaceItemThroughFace(int slot, ItemStack stack, @Nullable Direction side) {
-        if (priv && slot == SLOT_CARD) return false;
+        if (priv && slot == SLOT_CARD && (owner == null || !owner.equals(EntangledAccess.actor(level, worldPosition)))) return false;
         return super.canPlaceItemThroughFace(slot, stack, side);
     }
 

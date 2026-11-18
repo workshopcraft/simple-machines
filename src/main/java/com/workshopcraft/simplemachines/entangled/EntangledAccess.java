@@ -27,8 +27,14 @@ public final class EntangledAccess {
     public static boolean allows(@Nullable Level level, BlockPos pos, @Nullable EntangledLink link) {
         if (link == null || !link.priv()) return true;
         if (level == null || level.isClientSide()) return false;
+        return link.owner().equals(actor(level, pos));
+    }
+
+    /** The placer of the Simple Machines pipe or cable currently inserting at pos, or null for a hopper or another mod. */
+    public static @Nullable UUID actor(@Nullable Level level, BlockPos pos) {
+        if (level == null) return null;
         synchronized (CURRENT) {
-            return link.owner().equals(CURRENT.get(new Key(level, pos)));
+            return CURRENT.get(new Key(level, pos));
         }
     }
 
