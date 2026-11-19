@@ -92,29 +92,36 @@ public final class PortalTravel {
 
     /** Where a trip arrives: the world's saved landing, or a safe spot worked out and saved on the first trip. */
     public static BlockPos landing(ServerLevel target, PortalData.@Nullable World w, BlockPos gate, ServerLevel from) {
-        if (w != null && w.landing != null) return w.landing;
-        BlockPos spot;
+        if (w != null && w.landing != null && isSafeStand(target, w.landing)) return w.landing;
+        BlockPos guess;
+        BlockState floor;
         if (target.dimension() == Level.END) {
-            spot = ServerLevel.END_SPAWN_POINT;
+            guess = ServerLevel.END_SPAWN_POINT;
             //? if >=1.20.5 {
-            EndPlatformFeature.createEndPlatform(target, spot.below(), true);
+            EndPlatformFeature.createEndPlatform(target, guess.below(), true);
             //?} else {
             /*ServerLevel.makeObsidianPlatform(target);
             *///?}
+            floor = Blocks.OBSIDIAN.defaultBlockState();
         } else if (target.dimension() == Level.NETHER) {
             final double scale = from.dimensionType().coordinateScale() / target.dimensionType().coordinateScale();
             final int x = (int) Math.floor(gate.getX() * scale), z = (int) Math.floor(gate.getZ() * scale);
             target.getChunk(x >> 4, z >> 4);
-            spot = new BlockPos(x, PortalChunkGenerator.siteY(target, x, z), z);
-            platform(target, spot, Blocks.OBSIDIAN.defaultBlockState());
+            guess = new BlockPos(x, PortalChunkGenerator.siteY(target, x, z), z);
+            floor = Blocks.OBSIDIAN.defaultBlockState();
         } else {
             target.getChunk(0, 0);
             final int y = target.dimensionType().hasCeiling() ? PortalChunkGenerator.siteY(target, 0, 0)
                     : target.getHeight(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, 0, 0);
-            spot = new BlockPos(0, y <= target.getMinY() + 1 ? 64 : y, 0);
+            guess = new BlockPos(0, y <= target.getMinY() + 1 ? 64 : y, 0);
             final PortalChunkGenerator.WorldPlan plan = PortalChunkGenerator.planOf(target);
-            platform(target, spot, plan == null ? Blocks.STONE_BRICKS.defaultBlockState()
-                    : BuiltInRegistries.BLOCK.getValue(plan.siteBlock()).defaultBlockState());
+            floor = plan == null ? Blocks.STONE_BRICKS.defaultBlockState()
+                    : BuiltInRegistries.BLOCK.getValue(plan.siteBlock()).defaultBlockState();
+        }
+        BlockPos spot = findSafeStand(target, guess, null);
+        if (spot == null) {
+            spot = guess.immutable();
+            bubble(target, spot, floor);
         }
         if (w != null) {
             w.landing = spot;
@@ -123,15 +130,92 @@ public final class PortalTravel {
         return spot;
     }
 
-    /** A 3 by 3 floor under the spot and room to stand, so a landing is never in a wall or over a drop. */
-    private static void platform(ServerLevel level, BlockPos spot, BlockState floor) {
+    private static boolean dry(BlockState s) {
+        return s.getFluidState().isEmpty();
+    }
+
+    /** Feet and head are air with no fluid, and the floor underfoot is solid and dry. */
+    static boolean isSafeStand(ServerLevel level, BlockPos feet) {
+        final int y = feet.getY();
+        if (y <= level.getMinY() || y >= level.getMaxY()) return false;
+        final BlockState floor = level.getBlockState(feet.below());
+        final BlockState legs = level.getBlockState(feet);
+        final BlockState head = level.getBlockState(feet.above());
+        return floor.isSolid() && dry(floor) && legs.isAir() && dry(legs) && head.isAir() && dry(head);
+    }
+
+    /** Closest dry air pocket with a solid floor near origin, or null if none in range. skip, if set, is never returned. */
+    static @Nullable BlockPos findSafeStand(ServerLevel level, BlockPos origin, @Nullable BlockPos skip) {
+        level.getChunk(origin);
+        if ((skip == null || !origin.equals(skip)) && isSafeStand(level, origin)) return origin.immutable();
+        BlockPos best = null;
+        int bestDist = Integer.MAX_VALUE;
+        final int radius = 16;
+        final int minY = level.getMinY() + 1;
+        final int maxY = level.getMaxY() - 1;
+        final BlockPos.MutableBlockPos m = new BlockPos.MutableBlockPos();
+        for (int dx = -radius; dx <= radius; dx++) {
+            for (int dz = -radius; dz <= radius; dz++) {
+                final int x = origin.getX() + dx, z = origin.getZ() + dz;
+                level.getChunk(x >> 4, z >> 4);
+                for (int y = minY; y <= maxY; y++) {
+                    m.set(x, y, z);
+                    if ((skip != null && skip.equals(m)) || !isSafeStand(level, m)) continue;
+                    final int dy = y - origin.getY();
+                    final int dist = dx * dx + dy * dy + dz * dz;
+                    if (dist < bestDist) {
+                        bestDist = dist;
+                        best = m.immutable();
+                    }
+                }
+            }
+        }
+        return best;
+    }
+
+    /**
+     * A standable column beside the landing for the return rift. Prefers two blocks east, then other nearby
+     * pockets, and builds a dry bubble if nothing safe is found.
+     */
+    public static BlockPos safeRift(ServerLevel level, BlockPos landing) {
+        final BlockPos prefer = landing.offset(2, 0, 0);
+        if (isSafeStand(level, prefer)) return prefer;
+        for (int[] o : new int[][]{{ -2, 0, 0 }, { 0, 0, 2 }, { 0, 0, -2 }, { 2, 0, 2 }, { 2, 0, -2 }, { -2, 0, 2 }, { -2, 0, -2 }}) {
+            final BlockPos p = landing.offset(o[0], o[1], o[2]);
+            level.getChunk(p);
+            if (isSafeStand(level, p)) return p;
+        }
+        final BlockPos found = findSafeStand(level, prefer, landing);
+        if (found != null) return found;
+        final PortalChunkGenerator.WorldPlan plan = PortalChunkGenerator.planOf(level);
+        BlockState floor = plan == null ? Blocks.STONE_BRICKS.defaultBlockState()
+                : BuiltInRegistries.BLOCK.getValue(plan.siteBlock()).defaultBlockState();
+        if (!floor.isSolid()) floor = Blocks.STONE_BRICKS.defaultBlockState();
+        bubble(level, prefer, floor);
+        return prefer;
+    }
+
+    /** A 3 by 3 by 3 air pocket on a solid floor, with fluid just outside sealed so the space does not flood again. */
+    static void bubble(ServerLevel level, BlockPos feet, BlockState floor) {
         for (int dx = -1; dx <= 1; dx++) {
-            for (int dz = -1; dz <= 1; dz++) {
-                final BlockPos f = spot.offset(dx, -1, dz);
-                if (!level.getBlockState(f).isSolid()) level.setBlockAndUpdate(f, floor);
-                for (int dy = 0; dy < 2; dy++) {
-                    final BlockPos a = spot.offset(dx, dy, dz);
-                    if (!level.getBlockState(a).isAir()) level.setBlockAndUpdate(a, Blocks.AIR.defaultBlockState());
+            for (int dy = -1; dy <= 2; dy++) {
+                for (int dz = -1; dz <= 1; dz++) {
+                    final BlockPos p = feet.offset(dx, dy, dz);
+                    if (dy < 0) {
+                        if (!level.getBlockState(p).isSolid() || !dry(level.getBlockState(p))) level.setBlockAndUpdate(p, floor);
+                    } else {
+                        final BlockState s = level.getBlockState(p);
+                        if (!s.isAir() || !dry(s)) level.setBlockAndUpdate(p, Blocks.AIR.defaultBlockState());
+                    }
+                }
+            }
+        }
+        for (int dx = -2; dx <= 2; dx++) {
+            for (int dy = -1; dy <= 3; dy++) {
+                for (int dz = -2; dz <= 2; dz++) {
+                    if (Math.abs(dx) <= 1 && dy >= -1 && dy <= 2 && Math.abs(dz) <= 1) continue;
+                    final BlockPos p = feet.offset(dx, dy, dz);
+                    if (!dry(level.getBlockState(p))) level.setBlockAndUpdate(p, floor);
                 }
             }
         }

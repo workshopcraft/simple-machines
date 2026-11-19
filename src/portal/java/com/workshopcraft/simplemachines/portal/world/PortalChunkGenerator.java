@@ -193,9 +193,13 @@ public class PortalChunkGenerator extends NoiseBasedChunkGenerator {
         final BlockPos.MutableBlockPos p = new BlockPos.MutableBlockPos();
         for (int y = level.getMinY() + 24; y < level.getMinY() + 110; y++) {
             p.set(x, y - 1, z);
-            if (!level.getBlockState(p).isSolid()) continue;
+            final BlockState floor = level.getBlockState(p);
+            if (!floor.isSolid() || !floor.getFluidState().isEmpty()) continue;
             boolean room = true;
-            for (int h = 0; h < 4 && room; h++) room = level.getBlockState(p.set(x, y + h, z)).isAir();
+            for (int h = 0; h < 4 && room; h++) {
+                final BlockState s = level.getBlockState(p.set(x, y + h, z));
+                room = s.isAir() && s.getFluidState().isEmpty();
+            }
             if (room) return y;
         }
         return level.getMinY() + 40;

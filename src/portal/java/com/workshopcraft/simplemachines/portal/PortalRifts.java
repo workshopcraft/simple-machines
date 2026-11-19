@@ -103,7 +103,7 @@ public final class PortalRifts {
             }
             collapse(server, old, Reason.DROPPED);
         }
-        final BlockPos at = landing.offset(2, 0, 0);
+        final BlockPos at = PortalTravel.safeRift(target, landing);
         final PortalData.Rift r = new PortalData.Rift(gate, target.dimension(), at, world, tierOf(server, target.dimension(), world));
         r.pelletTicks = pelletSeconds(server) * 20;
         r.held = held;
@@ -122,9 +122,15 @@ public final class PortalRifts {
 
     private static void place(ServerLevel level, BlockPos at) {
         final BlockPos floor = at.below();
-        if (!level.getBlockState(floor).isSolid()) {
-            final BlockState under = level.getBlockState(at.offset(-2, -1, 0));
-            level.setBlockAndUpdate(floor, under.isSolid() && !under.hasBlockEntity() ? under : Blocks.STONE_BRICKS.defaultBlockState());
+        final BlockState under = level.getBlockState(floor);
+        if (!under.isSolid() || !under.getFluidState().isEmpty()) {
+            final BlockState neighbour = level.getBlockState(at.offset(-2, -1, 0));
+            level.setBlockAndUpdate(floor, neighbour.isSolid() && neighbour.getFluidState().isEmpty() && !neighbour.hasBlockEntity()
+                    ? neighbour : Blocks.STONE_BRICKS.defaultBlockState());
+        }
+        for (BlockPos p : new BlockPos[]{at, at.above()}) {
+            final BlockState s = level.getBlockState(p);
+            if (!s.isAir() || !s.getFluidState().isEmpty()) level.setBlockAndUpdate(p, Blocks.AIR.defaultBlockState());
         }
         final BlockState lower = Portal.returnRift.defaultBlockState().setValue(ReturnRiftBlock.AXIS, Direction.Axis.Z);
         level.setBlock(at, lower.setValue(ReturnRiftBlock.HALF, DoubleBlockHalf.LOWER), Block.UPDATE_ALL);
