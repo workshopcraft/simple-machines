@@ -5,6 +5,7 @@
     "simplemachines:titanium_block",
     "simplemachines:steel_block",
     "simplemachines:portal_gate_controller",
-    "simplemachines:research_station"
+    "simplemachines:research_station",
+    "simplemachines:emergency_pad"
   ]
 }

@@ -171,5 +171,12 @@
   "tooltip.simplemachines.mob_scanner": "Use on a mob to scan it for research",
   "tooltip.simplemachines.unlock.mob": "Mob: %s",
   "tooltip.simplemachines.unlock.ore": "Ore: %s",
-  "tooltip.simplemachines.unlock.preset": "World: %s"
+  "tooltip.simplemachines.unlock.preset": "World: %s",
+  "block.simplemachines.emergency_pad": "Emergency Pad",
+  "entity.simplemachines.emergency_rocket": "Emergency Rocket",
+  "item.simplemachines.emergency_rocket": "Emergency Rocket",
+  "message.simplemachines.portal.emergency_pad_disabled": "Emergency pads are turned off on this server",
+  "message.simplemachines.portal.emergency_pad_spent": "This pad is cracked and dead",
+  "message.simplemachines.portal.emergency_rocket_disabled": "Emergency rockets are turned off on this server",
+  "message.simplemachines.portal.emergency_spawn": "The gate is gone. You arrive at world spawn."
 }

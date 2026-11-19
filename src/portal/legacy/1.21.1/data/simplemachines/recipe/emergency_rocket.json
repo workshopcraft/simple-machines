@@ -1,0 +1,23 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "I": {
+      "item": "minecraft:iron_ingot"
+    },
+    "P": {
+      "item": "simplemachines:entangled_pellet"
+    },
+    "G": {
+      "item": "minecraft:gunpowder"
+    }
+  },
+  "pattern": [
+    " I ",
+    "IPI",
+    " G "
+  ],
+  "result": {
+    "id": "simplemachines:emergency_rocket"
+  }
+}

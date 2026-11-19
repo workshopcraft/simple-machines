@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "spent=false": {
+      "model": "simplemachines:block/emergency_pad"
+    },
+    "spent=true": {
+      "model": "simplemachines:block/emergency_pad_spent"
+    }
+  }
+}

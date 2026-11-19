@@ -158,7 +158,7 @@ def lang():
         'titanium_ore': 'Titanium Ore', 'deepslate_titanium_ore': 'Deepslate Titanium Ore', 'titanium_block': 'Block of Titanium',
         'steel_block': 'Block of Steel', 'portal_gate_controller': 'Portal Gate Controller', 'portal_field': 'Portal Field',
         'objective_core': 'Objective Core', 'return_beacon': 'Return Beacon', 'research_station': 'Research Station',
-        'return_rift': 'Return Rift'}
+        'return_rift': 'Return Rift', 'emergency_pad': 'Emergency Pad'}
     for k, v in names.items():
         L[f'block.{NS}.{k}'] = v
     items = {
@@ -239,6 +239,14 @@ Built-in world types include Verdant Wilds, Sunscorched Badlands, Frozen Reach, 
      'Put a blank Jump Card in the card slot and press Imprint to program it with the chosen project. '
      'A gate also belongs to whoever placed it and picks world types from its owner\'s research.',
      [('craft', 'research_station'), ('craft', 'mob_scanner')]),
+    ('portal_emergency', 'Emergency Return', 'A one-shot way home',
+     'If the return rift is gone, you can still get back. An Emergency Pad and an Emergency Rocket each send you home once, '
+     'to the gate you used to get there, or to world spawn if that gate is gone. They work from any dimension.\n\n'
+     'The pad is a cobbled, one-use cousin of the Entangled Pad. Place it, then jump on it or right-click it. After it fires it is cracked and dead, and cannot be used again.\n\n'
+     'The rocket is used from the hand. You ride a short launch, then you are sent home. The rocket is consumed. In creative mode it is not used up.\n\n'
+     'A server can turn either or both off. Dying still sends you to your spawn or cryopod; these items are for getting home while you are alive.\n\n'
+     'Craft them before you go, and keep one in your pack.',
+     [('craft', 'emergency_pad'), ('craft', 'emergency_rocket')]),
 ]
 
 def recipe(name):

@@ -1,0 +1,48 @@
+{
+  "section": "portals",
+  "sort": 6,
+  "title": "Emergency Return",
+  "subtitle": "A one-shot way home",
+  "text": "If the return rift is gone, you can still get back. An Emergency Pad and an Emergency Rocket each send you home once, to the gate you used to get there, or to world spawn if that gate is gone. They work from any dimension.\n\nThe pad is a cobbled, one-use cousin of the Entangled Pad. Place it, then jump on it or right-click it. After it fires it is cracked and dead, and cannot be used again.\n\nThe rocket is used from the hand. You ride a short launch, then you are sent home. The rocket is consumed. In creative mode it is not used up.\n\nA server can turn either or both off. Dying still sends you to your spawn or cryopod; these items are for getting home while you are alive.\n\nCraft them before you go, and keep one in your pack.",
+  "right_title": "Recipes",
+  "steps": [
+    {
+      "kind": "craft_shaped",
+      "pattern": [
+        "CCC",
+        "CPC",
+        "CIC"
+      ],
+      "key": {
+        "C": "minecraft:cobblestone",
+        "P": "simplemachines:entangled_pellet",
+        "I": "minecraft:iron_ingot"
+      },
+      "output": {
+        "item": "simplemachines:emergency_pad",
+        "count": 1
+      },
+      "note": "Crafting Table\n7x Cobblestone, 1x Entangled Pellet, 1x Iron Ingot",
+      "title": "Emergency Pad"
+    },
+    {
+      "kind": "craft_shaped",
+      "pattern": [
+        " I ",
+        "IPI",
+        " G "
+      ],
+      "key": {
+        "I": "minecraft:iron_ingot",
+        "P": "simplemachines:entangled_pellet",
+        "G": "minecraft:gunpowder"
+      },
+      "output": {
+        "item": "simplemachines:emergency_rocket",
+        "count": 1
+      },
+      "note": "Crafting Table\n3x Iron Ingot, 1x Entangled Pellet, 1x Gunpowder",
+      "title": "Emergency Rocket"
+    }
+  ]
+}
