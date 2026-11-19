@@ -147,6 +147,8 @@ public class SimpleMachinesForge {
         e.register(Registries.MENU, h -> SimpleMachines.registerMenus(h::register));
         e.register(Registries.RECIPE_TYPE, h -> SimpleMachines.registerRecipeTypes(h::register));
         e.register(Registries.RECIPE_SERIALIZER, h -> SimpleMachines.registerRecipeSerializers(h::register));
+        e.register(Registries.COMMAND_ARGUMENT_TYPE, h -> h.register(SimpleMachines.id("profiles"),
+                com.workshopcraft.simplemachines.compat.mc.Profiles.bind()));
     }
 
     private static Set<BlockEntityType<?>> work;

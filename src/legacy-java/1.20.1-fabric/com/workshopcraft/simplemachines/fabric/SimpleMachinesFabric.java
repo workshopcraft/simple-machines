@@ -37,6 +37,11 @@ import java.util.function.BiConsumer;
 public class SimpleMachinesFabric implements ModInitializer {
     @Override
     public void onInitialize() {
+
+        net.fabricmc.fabric.api.command.v2.ArgumentTypeRegistry.registerArgumentType(
+                SimpleMachines.id("profiles"),
+                com.workshopcraft.simplemachines.compat.mc.Profiles.class,
+                com.workshopcraft.simplemachines.compat.mc.Profiles.typeInfo());
         SimpleMachines.registerComponents((id, t) -> t.bind(id.getPath()));
         SimpleMachines.registerSounds(direct(BuiltInRegistries.SOUND_EVENT));
         SimpleMachines.registerParticles(direct(BuiltInRegistries.PARTICLE_TYPE));

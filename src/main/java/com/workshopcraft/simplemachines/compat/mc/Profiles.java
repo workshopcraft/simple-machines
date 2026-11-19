@@ -28,6 +28,15 @@ public final class Profiles implements ArgumentType<Profiles.Result> {
         return new Profiles();
     }
 
+    public static net.minecraft.commands.synchronization.SingletonArgumentInfo<Profiles> typeInfo() {
+        return net.minecraft.commands.synchronization.SingletonArgumentInfo.contextFree(Profiles::argument);
+    }
+
+    /** Bind this argument type so the command tree can be sent to a joining player. */
+    public static net.minecraft.commands.synchronization.ArgumentTypeInfo<Profiles, ?> bind() {
+        return net.minecraft.commands.synchronization.ArgumentTypeInfos.registerByClass(Profiles.class, typeInfo());
+    }
+
     public static Collection<Entry> get(CommandContext<CommandSourceStack> c, String name) throws CommandSyntaxException {
         return c.getArgument(name, Result.class).resolve(c.getSource());
     }
