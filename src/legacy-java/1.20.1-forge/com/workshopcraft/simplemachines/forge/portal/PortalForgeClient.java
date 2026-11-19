@@ -3,6 +3,7 @@ package com.workshopcraft.simplemachines.forge.portal;
 import com.workshopcraft.simplemachines.portal.Portal;
 import com.workshopcraft.simplemachines.portal.client.EmergencyRocketRenderer;
 import com.workshopcraft.simplemachines.portal.client.GateScreen;
+import com.workshopcraft.simplemachines.portal.client.PortalFxClient;
 import com.workshopcraft.simplemachines.portal.client.ResearchScreen;
 import com.workshopcraft.simplemachines.portal.client.RiftHud;
 import net.minecraft.client.gui.screens.MenuScreens;
@@ -23,7 +24,8 @@ public final class PortalForgeClient {
         modBus.addListener((EntityRenderersEvent.RegisterRenderers e) ->
                 e.registerEntityRenderer(Portal.emergencyRocketEntity, EmergencyRocketRenderer::new));
         PortalForge.hudReceiver = RiftHud::receive;
+        PortalForge.fxReceiver = PortalFxClient::receive;
         modBus.addListener((RegisterGuiOverlaysEvent e) -> e.registerAbove(VanillaGuiOverlay.BOSS_EVENT_PROGRESS.id(), "rift_hud",
-                (gui, graphics, partialTick, width, height) -> RiftHud.render(graphics)));
+                (gui, graphics, partialTick, width, height) -> { RiftHud.render(graphics); PortalFxClient.render(graphics); }));
     }
 }

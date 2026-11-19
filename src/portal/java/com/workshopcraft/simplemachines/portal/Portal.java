@@ -16,6 +16,7 @@ import com.workshopcraft.simplemachines.portal.block.ResearchStationBlock;
 import com.workshopcraft.simplemachines.portal.block.ResearchStationBlockEntity;
 import com.workshopcraft.simplemachines.portal.block.ReturnBeaconBlock;
 import com.workshopcraft.simplemachines.portal.block.ReturnBeaconBlockEntity;
+import com.workshopcraft.simplemachines.entangled.EntangledPadBlockEntity;
 import com.workshopcraft.simplemachines.portal.block.EmergencyPadBlock;
 import com.workshopcraft.simplemachines.portal.block.ReturnRiftBlock;
 import com.workshopcraft.simplemachines.portal.entity.EmergencyRocketEntity;
@@ -105,6 +106,7 @@ public final class Portal {
 
     public static void init() {
         PortalConfig.init();
+        EntangledPadBlockEntity.fx = PortalFx::padJump;
     }
 
     public static void registerComponents(BiConsumer<Identifier, DataComponentType<?>> r) {

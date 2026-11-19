@@ -3,6 +3,7 @@ package com.workshopcraft.simplemachines.neoforge.portal;
 import com.workshopcraft.simplemachines.portal.Portal;
 import com.workshopcraft.simplemachines.portal.client.EmergencyRocketRenderer;
 import com.workshopcraft.simplemachines.portal.client.GateScreen;
+import com.workshopcraft.simplemachines.portal.client.PortalFxClient;
 import com.workshopcraft.simplemachines.portal.client.ResearchScreen;
 import com.workshopcraft.simplemachines.portal.client.RiftHud;
 import net.minecraft.resources.Identifier;
@@ -23,7 +24,9 @@ public final class PortalNeoForgeClient {
         modBus.addListener((EntityRenderersEvent.RegisterRenderers e) ->
                 e.registerEntityRenderer(Portal.emergencyRocketEntity, EmergencyRocketRenderer::new));
         PortalNeoForge.hudReceiver = RiftHud::receive;
+        PortalNeoForge.fxReceiver = PortalFxClient::receive;
         modBus.addListener((RegisterGuiLayersEvent e) -> e.registerAbove(VanillaGuiLayers.BOSS_OVERLAY,
-                Identifier.fromNamespaceAndPath("simplemachines", "rift_hud"), (graphics, delta) -> RiftHud.render(graphics)));
+                Identifier.fromNamespaceAndPath("simplemachines", "rift_hud"),
+                (graphics, delta) -> { RiftHud.render(graphics); PortalFxClient.render(graphics); }));
     }
 }

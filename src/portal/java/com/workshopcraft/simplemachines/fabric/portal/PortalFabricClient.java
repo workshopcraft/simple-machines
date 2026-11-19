@@ -1,9 +1,11 @@
 package com.workshopcraft.simplemachines.fabric.portal;
 
 import com.workshopcraft.simplemachines.portal.Portal;
+import com.workshopcraft.simplemachines.portal.PortalFxPayload;
 import com.workshopcraft.simplemachines.portal.RiftHudPayload;
 import com.workshopcraft.simplemachines.portal.client.EmergencyRocketRenderer;
 import com.workshopcraft.simplemachines.portal.client.GateScreen;
+import com.workshopcraft.simplemachines.portal.client.PortalFxClient;
 import com.workshopcraft.simplemachines.portal.client.ResearchScreen;
 import com.workshopcraft.simplemachines.portal.client.RiftHud;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
@@ -25,16 +27,21 @@ public final class PortalFabricClient {
         EntityRendererRegistry.register(Portal.emergencyRocketEntity, EmergencyRocketRenderer::new);
         //? if >=1.20.5 {
         ClientPlayNetworking.registerGlobalReceiver(RiftHudPayload.TYPE, (payload, ctx) -> ctx.client().execute(() -> RiftHud.receive(payload)));
+        ClientPlayNetworking.registerGlobalReceiver(PortalFxPayload.TYPE, (payload, ctx) -> ctx.client().execute(() -> PortalFxClient.receive(payload)));
         //?} else {
         /*ClientPlayNetworking.registerGlobalReceiver(RiftHudPayload.TYPE.id(), (client, handler, buf, sender) -> {
             final RiftHudPayload payload = RiftHudPayload.CODEC.decode(buf);
             client.execute(() -> RiftHud.receive(payload));
         });
+        ClientPlayNetworking.registerGlobalReceiver(PortalFxPayload.TYPE.id(), (client, handler, buf, sender) -> {
+            final PortalFxPayload payload = PortalFxPayload.CODEC.decode(buf);
+            client.execute(() -> PortalFxClient.receive(payload));
+        });
         *///?}
         //? if >=26.1 {
         HudElementRegistry.attachElementAfter(VanillaHudElements.BOSS_BAR, Identifier.fromNamespaceAndPath("simplemachines", "rift_hud"),
-                (graphics, delta) -> RiftHud.render(graphics));
+                (graphics, delta) -> { RiftHud.render(graphics); PortalFxClient.render(graphics); });
         //?} else
-        /*HudRenderCallback.EVENT.register((graphics, delta) -> RiftHud.render(graphics));*/
+        /*HudRenderCallback.EVENT.register((graphics, delta) -> { RiftHud.render(graphics); PortalFxClient.render(graphics); });*/
     }
 }

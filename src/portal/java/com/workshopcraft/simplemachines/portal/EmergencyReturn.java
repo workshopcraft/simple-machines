@@ -11,18 +11,28 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
 import org.jspecify.annotations.Nullable;
 
+import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Shared emergency-return logic for the one-shot pad and the rocket.
- * Visual effects are left as no-op hooks for M5.
+ * Visual effects live in {@link PortalFx}; flight length, wind-up and spent drops are config keys.
  */
 public final class EmergencyReturn {
     public static final String PAD = PortalConfig.EMERGENCY_PAD;
     public static final String ROCKET = PortalConfig.EMERGENCY_ROCKET;
+    public static final int DEFAULT_FLIGHT_TICKS = 40;
+    public static final int DEFAULT_WINDUP_TICKS = 20;
+
+    private record Windup(UUID player, long endTick) {}
+    private static final Map<GlobalPos, Windup> WINDING = new ConcurrentHashMap<>();
 
     private EmergencyReturn() {}
 
@@ -32,6 +42,89 @@ public final class EmergencyReturn {
 
     public static boolean rocketEnabled(Level level) {
         return PortalConfig.bool(level.getServer(), ROCKET);
+    }
+
+    public static int flightTicks(MinecraftServer server) {
+        final int n = PortalConfig.integer(server, PortalConfig.EMERGENCY_ROCKET_FLIGHT_TICKS);
+        return n < 5 ? DEFAULT_FLIGHT_TICKS : Math.min(200, n);
+    }
+
+    public static int windupTicks(MinecraftServer server) {
+        final int n = PortalConfig.integer(server, PortalConfig.EMERGENCY_PAD_WINDUP_TICKS);
+        return n < 1 ? DEFAULT_WINDUP_TICKS : Math.min(80, n);
+    }
+
+    public static String spentDrop(MinecraftServer server) {
+        final String v = PortalConfig.string(server, PortalConfig.EMERGENCY_SPENT_DROP).trim().toLowerCase();
+        if (v.equals("cobble") || v.equals("cobblestone")) return "cobble";
+        if (v.equals("pad") || v.equals("item")) return "pad";
+        return "none";
+    }
+
+    public static void dropSpent(Level level, BlockPos pos) {
+        if (level.isClientSide()) return;
+        final String drop = spentDrop(level.getServer());
+        if (drop.equals("none")) return;
+        final var stack = drop.equals("cobble") ? new ItemStack(Blocks.COBBLESTONE) : new ItemStack(Portal.emergencyPad);
+        Block.popResource(level, pos, stack);
+    }
+
+    /**
+     * Starts the pad wind-up (sparks and glitch) and schedules the fire. Returns false if this pad is already winding.
+     */
+    public static boolean beginPad(ServerLevel level, BlockPos pos, ServerPlayer player) {
+        final GlobalPos key = GlobalPos.of(level.dimension(), pos);
+        if (WINDING.containsKey(key)) return false;
+        final int ticks = windupTicks(level.getServer());
+        WINDING.put(key, new Windup(player.getUUID(), level.getGameTime() + ticks));
+        PortalFx.emergencyWindup(level, pos, player);
+        return true;
+    }
+
+    /** @return true if the pad is still winding and should keep a scheduled tick */
+    public static boolean tickPad(ServerLevel level, BlockPos pos, BlockState state) {
+        final GlobalPos key = GlobalPos.of(level.dimension(), pos);
+        final Windup w = WINDING.get(key);
+        if (w == null) return false;
+        final long now = level.getGameTime();
+        final int left = (int) Math.max(0, w.endTick() - now);
+        final int total = Math.max(1, windupTicks(level.getServer()));
+        PortalFx.emergencySparks(level, pos, Math.max(0, 3 - left * 3 / total));
+        if (now < w.endTick()) return true;
+        WINDING.remove(key);
+        firePad(level, pos, state, w.player());
+        return false;
+    }
+
+    public static boolean winding(ServerLevel level, BlockPos pos) {
+        return WINDING.containsKey(GlobalPos.of(level.dimension(), pos));
+    }
+
+    /** If the player is mid wind-up, fire that pad now (logout or mid-flight). */
+    public static void finishWindup(ServerPlayer player) {
+        if (!(player.level() instanceof ServerLevel sl)) return;
+        GlobalPos found = null;
+        for (var e : WINDING.entrySet()) {
+            if (e.getValue().player().equals(player.getUUID()) && e.getKey().dimension().equals(sl.dimension())) {
+                found = e.getKey();
+                break;
+            }
+        }
+        if (found == null) return;
+        WINDING.remove(found);
+        sl.getChunk(found.pos());
+        firePad(sl, found.pos(), sl.getBlockState(found.pos()), player.getUUID());
+    }
+
+    private static void firePad(ServerLevel level, BlockPos pos, BlockState state, UUID player) {
+        if (state.getBlock() instanceof com.workshopcraft.simplemachines.portal.block.EmergencyPadBlock
+                && !state.getValue(com.workshopcraft.simplemachines.portal.block.EmergencyPadBlock.SPENT)) {
+            level.setBlock(pos, state.setValue(com.workshopcraft.simplemachines.portal.block.EmergencyPadBlock.SPENT, true), 3);
+            fxPadSpent(level, pos);
+        }
+        final ServerPlayer sp = level.getServer().getPlayerList().getPlayer(player);
+        if (sp != null) finish(sp);
+        else markPending(level.getServer(), player);
     }
 
     /** Whether a recorded gate still has its controller. */
@@ -98,15 +191,18 @@ public final class EmergencyReturn {
         PortalData.get(server).markPendingReturn(player);
     }
 
-    /** M5 hook: launch effects at the rocket. No-op in M4. */
+    /** Launch effects at the rocket. */
     public static void fxLaunch(ServerLevel level, Vec3 pos) {
+        PortalFx.emergencyLaunch(level, pos);
     }
 
-    /** M5 hook: arrival effects after the player is sent home. No-op in M4. */
+    /** Arrival effects after the player is sent home. */
     public static void fxArrive(ServerLevel level, ServerPlayer player) {
+        PortalFx.emergencyArrive(level, player);
     }
 
-    /** M5 hook: the pad has just spent itself. No-op in M4. */
+    /** The pad has just spent itself: pop and smoke. */
     public static void fxPadSpent(ServerLevel level, BlockPos pos) {
+        PortalFx.emergencyPop(level, pos);
     }
 }

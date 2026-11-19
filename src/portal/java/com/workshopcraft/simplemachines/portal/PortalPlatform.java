@@ -20,6 +20,8 @@ public final class PortalPlatform {
     /** NeoForge LevelStem carries a seed override, which keeps its structure check in step with the world seed. */
     /** Sends the rift countdown to one player (Fabric ServerPlayNetworking, NeoForge PacketDistributor). */
     public static java.util.function.BiConsumer<net.minecraft.server.level.ServerPlayer, RiftHudPayload> sendHud = (p, m) -> {};
+    /** Sends a short visual/sound cue (portal state or teleport) to one player. */
+    public static java.util.function.BiConsumer<net.minecraft.server.level.ServerPlayer, PortalFxPayload> sendFx = (p, m) -> {};
     public static StemFactory stem = (type, generator, seed) -> new LevelStem(type, generator);
 
     public interface StemFactory {

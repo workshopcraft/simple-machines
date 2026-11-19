@@ -1,6 +1,7 @@
 package com.workshopcraft.simplemachines.portal.block;
 
 import com.workshopcraft.simplemachines.portal.PortalData;
+import com.workshopcraft.simplemachines.portal.PortalFx;
 import com.workshopcraft.simplemachines.portal.PortalRifts;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -100,11 +101,15 @@ public class ReturnRiftBlock extends Block {
                 level.playLocalSound(pos, SoundEvents.BEACON_DEACTIVATE, SoundSource.BLOCKS, 0.25F, 1.6F + random.nextFloat() * 0.3F, false);
             }
         } else {
-            for (int i = 0; i < 2; i++) {
-                level.addParticle(ParticleTypes.REVERSE_PORTAL, onX ? x + spread : x, y, onX ? z : z + spread, 0, 0.04, 0);
+            final boolean opening = PortalFx.openingAt.test(new net.minecraft.world.phys.Vec3(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5));
+            final int n = opening ? 6 : 2;
+            for (int i = 0; i < n; i++) {
+                level.addParticle(ParticleTypes.REVERSE_PORTAL, onX ? x + spread : x, y, onX ? z : z + spread, 0, opening ? 0.1 : 0.04, 0);
             }
-            if (state.getValue(HALF) == DoubleBlockHalf.LOWER && random.nextInt(60) == 0) {
-                level.playLocalSound(pos, SoundEvents.PORTAL_AMBIENT, SoundSource.BLOCKS, 0.15F, 1.5F + random.nextFloat() * 0.2F, false);
+            if (opening) level.addParticle(ParticleTypes.END_ROD, x, y, z, 0, 0.05, 0);
+            if (state.getValue(HALF) == DoubleBlockHalf.LOWER && random.nextInt(opening ? 20 : 60) == 0) {
+                level.playLocalSound(pos, SoundEvents.PORTAL_AMBIENT, SoundSource.BLOCKS, opening ? 0.4F : 0.15F,
+                        (opening ? 1.2F : 1.5F) + random.nextFloat() * 0.2F, false);
             }
         }
     }

@@ -1,9 +1,15 @@
 {
   "variants": {
-    "axis=x": {
+    "axis=x,low=false": {
       "model": "simplemachines:block/portal_field_ns"
     },
-    "axis=z": {
+    "axis=x,low=true": {
+      "model": "simplemachines:block/portal_field_ns"
+    },
+    "axis=z,low=false": {
+      "model": "simplemachines:block/portal_field_ew"
+    },
+    "axis=z,low=true": {
       "model": "simplemachines:block/portal_field_ew"
     }
   }

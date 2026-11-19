@@ -56,10 +56,15 @@ public class EmergencyRocketEntity extends Entity implements ItemSupplier {
         super.tick();
         setDeltaMovement(new Vec3(0, ASCENT, 0));
         setPos(getX(), getY() + ASCENT, getZ());
-        if (level().isClientSide()) return;
+        if (level().isClientSide()) {
+            // a light local trail; the server also sends a few particles
+            return;
+        }
         flight++;
+        if (flight % 2 == 0) com.workshopcraft.simplemachines.portal.PortalFx.rocketTrail((ServerLevel) level(), position());
+        final int limit = EmergencyReturn.flightTicks(((ServerLevel) level()).getServer());
         final boolean noRider = getPassengers().isEmpty();
-        if (flight >= FLIGHT_TICKS || (noRider && flight > 1)) complete();
+        if (flight >= limit || (noRider && flight > 1)) complete();
     }
 
     /** Called when the launch ends, the rider dismounts, or they log out mid-flight. */

@@ -1,9 +1,13 @@
 package com.workshopcraft.simplemachines.portal.block;
 
+import com.workshopcraft.simplemachines.portal.PortalFx;
+
 import com.workshopcraft.simplemachines.portal.PortalTravel;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleTypes;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.Entity;
@@ -17,6 +21,7 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
@@ -24,17 +29,18 @@ import net.minecraft.world.phys.shapes.VoxelShape;
 /** The field that fills an open gate. Anything that walks in goes to the gate's target. It clears itself when its gate closes. */
 public class PortalFieldBlock extends Block {
     public static final EnumProperty<Direction.Axis> AXIS = BlockStateProperties.HORIZONTAL_AXIS;
+    public static final BooleanProperty LOW = BooleanProperty.create("low");
     private static final VoxelShape X = Block.box(0, 0, 6, 16, 16, 10);
     private static final VoxelShape Z = Block.box(6, 0, 0, 10, 16, 16);
 
     public PortalFieldBlock(Properties properties) {
         super(properties);
-        registerDefaultState(stateDefinition.any().setValue(AXIS, Direction.Axis.X));
+        registerDefaultState(stateDefinition.any().setValue(AXIS, Direction.Axis.X).setValue(LOW, false));
     }
 
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
-        builder.add(AXIS);
+        builder.add(AXIS, LOW);
     }
 
     @Override
@@ -64,9 +70,28 @@ public class PortalFieldBlock extends Block {
 
     @Override
     public void animateTick(BlockState state, Level level, BlockPos pos, RandomSource random) {
-        if (random.nextInt(3) == 0) {
-            level.addParticle(ParticleTypes.REVERSE_PORTAL, pos.getX() + random.nextDouble(), pos.getY() + random.nextDouble(),
-                    pos.getZ() + random.nextDouble(), 0, 0.05, 0);
+        final double x = pos.getX() + random.nextDouble(), y = pos.getY() + random.nextDouble(), z = pos.getZ() + random.nextDouble();
+        final boolean opening = PortalFx.openingAt.test(new net.minecraft.world.phys.Vec3(pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5));
+        if (state.getValue(LOW)) {
+            if (random.nextInt(4) == 0) return;
+            level.addParticle(ParticleTypes.ELECTRIC_SPARK, x, y, z, 0, 0.02, 0);
+            if (random.nextInt(3) == 0) level.addParticle(ParticleTypes.SMOKE, x, y, z, 0, 0.03, 0);
+            if (random.nextInt(40) == 0) {
+                level.playLocalSound(pos, SoundEvents.BEACON_DEACTIVATE, SoundSource.BLOCKS, 0.2F, 1.6F + random.nextFloat() * 0.3F, false);
+            }
+        } else {
+            final int n = opening ? 4 : 1;
+            for (int i = 0; i < n; i++) {
+                level.addParticle(ParticleTypes.REVERSE_PORTAL, pos.getX() + random.nextDouble(), pos.getY() + random.nextDouble(),
+                        pos.getZ() + random.nextDouble(), 0, opening ? 0.1 : 0.05, 0);
+            }
+            if (opening && random.nextInt(4) == 0) {
+                level.addParticle(ParticleTypes.END_ROD, x, y, z, 0, 0.04, 0);
+            }
+            if (random.nextInt(opening ? 20 : 70) == 0) {
+                level.playLocalSound(pos, SoundEvents.PORTAL_AMBIENT, SoundSource.BLOCKS, opening ? 0.35F : 0.12F,
+                        (opening ? 1.2F : 1.4F) + random.nextFloat() * 0.2F, false);
+            }
         }
     }
 

@@ -14,6 +14,7 @@ import com.workshopcraft.simplemachines.portal.Portal;
 import com.workshopcraft.simplemachines.portal.PortalApi;
 import com.workshopcraft.simplemachines.portal.PortalCard;
 import com.workshopcraft.simplemachines.portal.PortalConfig;
+import com.workshopcraft.simplemachines.portal.PortalFx;
 import com.workshopcraft.simplemachines.portal.PortalData;
 import com.workshopcraft.simplemachines.portal.PortalResources;
 import com.workshopcraft.simplemachines.portal.PortalRifts;
@@ -96,6 +97,7 @@ public class GateControllerBlockEntity extends WorkBlockEntity implements com.wo
     private @Nullable Identifier nextPreset;
     private @Nullable Identifier rolledFor;
     private int openTicks, openTotal;
+    private boolean fieldLow;
     private boolean starting;
     private @Nullable GateFrame frame;
     private int status = NO_FRAME;
@@ -278,6 +280,12 @@ public class GateControllerBlockEntity extends WorkBlockEntity implements com.wo
             if (!starting) {
                 openTicks--;
                 if (openTicks % 20 == 0) placeField(level);
+                final boolean low = openTicks > 0 && openTicks <= lowFieldTicks();
+                if (low != fieldLow) {
+                    fieldLow = low;
+                    refreshField(level);
+                    if (low && frame != null) PortalFx.gateLow(level, frame.box().getCenter());
+                }
             }
             if (openTicks <= 0 || !enabled) close(level);
         }
@@ -756,23 +764,51 @@ public class GateControllerBlockEntity extends WorkBlockEntity implements com.wo
 
     public void close(ServerLevel level) {
         if (frame != null) {
+            final boolean had = frame.opening().stream().anyMatch(p -> level.getBlockState(p).getBlock() instanceof PortalFieldBlock);
             for (BlockPos p : frame.opening()) if (level.getBlockState(p).getBlock() instanceof PortalFieldBlock) level.removeBlock(p, false);
+            if (had) PortalFx.gateCollapse(level, frame.box().getCenter());
         }
         PortalTravel.deactivate(level, worldPosition);
         openTicks = 0;
+        fieldLow = false;
         starting = false;
         status = OK;
         setChanged();
     }
 
+    private int lowFieldTicks() {
+        final int total = Math.max(1, openTotal);
+        return Math.min(100, Math.max(40, total / 5));
+    }
+
+    private void refreshField(ServerLevel level) {
+        if (frame == null) return;
+        final BlockState field = Portal.portalField.defaultBlockState()
+                .setValue(PortalFieldBlock.AXIS, frame.axis())
+                .setValue(PortalFieldBlock.LOW, fieldLow);
+        for (BlockPos p : frame.opening()) {
+            final BlockState s = level.getBlockState(p);
+            if (s.getBlock() instanceof PortalFieldBlock && s.getValue(PortalFieldBlock.LOW) != fieldLow) {
+                level.setBlock(p, s.setValue(PortalFieldBlock.LOW, fieldLow), 2);
+            }
+        }
+    }
+
     private void placeField(ServerLevel level) {
         if (frame == null) return;
-        final BlockState field = Portal.portalField.defaultBlockState().setValue(PortalFieldBlock.AXIS, frame.axis());
+        final boolean first = frame.opening().stream().noneMatch(p -> level.getBlockState(p).getBlock() instanceof PortalFieldBlock);
+        final BlockState field = Portal.portalField.defaultBlockState()
+                .setValue(PortalFieldBlock.AXIS, frame.axis())
+                .setValue(PortalFieldBlock.LOW, fieldLow);
         for (BlockPos p : frame.opening()) {
             final BlockState s = level.getBlockState(p);
             if (s.isAir()) level.setBlock(p, field, 2);
+            else if (s.getBlock() instanceof PortalFieldBlock && s.getValue(PortalFieldBlock.LOW) != fieldLow) {
+                level.setBlock(p, s.setValue(PortalFieldBlock.LOW, fieldLow), 2);
+            }
         }
         PortalTravel.activate(level, worldPosition, frame.box());
+        if (first) PortalFx.gateOpen(level, frame.box().getCenter());
     }
 
     /** Sends an entity standing in the field to the gate's target. */

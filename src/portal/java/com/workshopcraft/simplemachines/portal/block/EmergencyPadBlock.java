@@ -85,7 +85,11 @@ public class EmergencyPadBlock extends Block {
             STANDING.remove(key(level, pos));
             return;
         }
-        if (scanJump(level, pos, state)) level.scheduleTick(pos, this, 1);
+        if (EmergencyReturn.winding(level, pos)) {
+            if (EmergencyReturn.tickPad(level, pos, state)) level.scheduleTick(pos, this, 1);
+            return;
+        }
+        if (scanJump(level, pos, state) || EmergencyReturn.winding(level, pos)) level.scheduleTick(pos, this, 1);
     }
 
     private static GlobalPos key(ServerLevel level, BlockPos pos) {
@@ -126,13 +130,17 @@ public class EmergencyPadBlock extends Block {
 
     private static void tryUse(ServerLevel level, BlockPos pos, BlockState state, ServerPlayer player) {
         if (state.getValue(SPENT) || !level.getBlockState(pos).is(state.getBlock())) return;
+        if (EmergencyReturn.winding(level, pos)) return;
         if (!EmergencyReturn.padEnabled(level)) {
             player.sendOverlayMessage(Component.translatable("message.simplemachines.portal.emergency_pad_disabled"));
             return;
         }
-        level.setBlock(pos, state.setValue(SPENT, true), 3);
         STANDING.remove(key(level, pos));
-        EmergencyReturn.fxPadSpent(level, pos);
-        EmergencyReturn.finish(player);
+        if (EmergencyReturn.beginPad(level, pos, player)) level.scheduleTick(pos, state.getBlock(), 1);
+    }
+
+    @Override
+    protected void affectNeighborsAfterRemoval(BlockState state, ServerLevel level, BlockPos pos, boolean movedByPiston) {
+        if (state.getValue(SPENT)) EmergencyReturn.dropSpent(level, pos);
     }
 }

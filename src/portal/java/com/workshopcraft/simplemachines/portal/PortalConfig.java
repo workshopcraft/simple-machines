@@ -54,6 +54,12 @@ public final class PortalConfig {
     public static final String EMERGENCY_PAD = "portal_emergency_pad";
     /** Craftable emergency rocket. Off: using the item does nothing. */
     public static final String EMERGENCY_ROCKET = "portal_emergency_rocket";
+    /** Ticks the emergency rocket rides before sending the player home. Default 40. */
+    public static final String EMERGENCY_ROCKET_FLIGHT_TICKS = "portal_emergency_rocket_flight_ticks";
+    /** Ticks the emergency pad sparks and glitches before it fires. Default 20. */
+    public static final String EMERGENCY_PAD_WINDUP_TICKS = "portal_emergency_pad_windup_ticks";
+    /** What a spent emergency pad drops: none, cobble, or pad. */
+    public static final String EMERGENCY_SPENT_DROP = "portal_emergency_spent_drop";
 
     private PortalConfig() {}
 
@@ -80,6 +86,13 @@ public final class PortalConfig {
         ServerConfig.define(KEEP_ONE_OFF_WORLDS, "false");
         ServerConfig.define(EMERGENCY_PAD, "true");
         ServerConfig.define(EMERGENCY_ROCKET, "true");
+        ServerConfig.define(EMERGENCY_ROCKET_FLIGHT_TICKS, "40");
+        ServerConfig.define(EMERGENCY_PAD_WINDUP_TICKS, "20");
+        ServerConfig.define(EMERGENCY_SPENT_DROP, "none");
+    }
+
+    public static String string(MinecraftServer server, String key) {
+        return server == null ? "" : ServerConfig.string(server, key);
     }
 
     public static boolean bool(MinecraftServer server, String key) {

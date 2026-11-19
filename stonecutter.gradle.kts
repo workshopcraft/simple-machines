@@ -20,6 +20,7 @@ stonecutter parameters {
 
     replacements.string(current.parsed < "1.21.11") {
         replace("Identifier", "ResourceLocation")
+        replace("GuiGraphicsExtractor", "GuiGraphics")
     }
 
     // 26.x useItemOn returns InteractionResult; 1.21.1 gets a bridge to ItemInteractionResult

@@ -35,6 +35,11 @@ import java.util.UUID;
  * of x and z distance, at most 50,000. A private pad only sends its owner.
  */
 public class EntangledPadBlockEntity extends EntangledDeviceBlockEntity {
+    /** Set by the portal extra to play the short glitch and coloured pop on a successful jump. */
+    public static java.util.function.Consumer<Jump> fx = j -> {};
+
+    public record Jump(ServerLevel from, BlockPos fromPos, ServerLevel to, BlockPos toPos, ServerPlayer player, String code) {}
+
     public static final int CAPACITY = 100_000, BASE = 2_000, PER_BLOCK = 20, MAX_COST = 50_000, COOLDOWN = 60;
     public static final int READY = 0, NO_CODE = 1, ALONE = 2, FULL = 3, LOW = 4;
     public static final int DATA_COUNT = EntangledDeviceBlockEntity.DATA_COUNT + 5;
@@ -219,6 +224,7 @@ public class EntangledPadBlockEntity extends EntangledDeviceBlockEntity {
         setChanged();
         data.padCooldown.put(p.getUUID(), now + COOLDOWN);
         if (data.padCooldown.size() > 64) data.padCooldown.values().removeIf(t -> t <= now);
+        fx.accept(new Jump(level, worldPosition, there, to.pos(), p, link == null ? "" : link.digits()));
         level.playSound(null, worldPosition.above(), SoundEvents.PLAYER_TELEPORT, SoundSource.BLOCKS, 1, 1);
         p.teleportTo(there, dest.x, dest.y, dest.z, Set.of(), p.getYRot(), p.getXRot(), true);
         p.resetFallDistance();

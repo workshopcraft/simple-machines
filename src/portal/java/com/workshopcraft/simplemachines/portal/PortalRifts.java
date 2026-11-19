@@ -116,6 +116,8 @@ public final class PortalRifts {
         target.playSound(null, at, SoundEvents.BEACON_ACTIVATE, SoundSource.BLOCKS, 1.0F, 1.4F);
         target.playSound(null, at, SoundEvents.PORTAL_TRIGGER, SoundSource.BLOCKS, 0.3F, 1.8F);
         target.sendParticles(ParticleTypes.REVERSE_PORTAL, at.getX() + 0.5, at.getY() + 1.0, at.getZ() + 0.5, 60, 0.2, 0.8, 0.2, 0.1);
+        target.sendParticles(ParticleTypes.END_ROD, at.getX() + 0.5, at.getY() + 1.0, at.getZ() + 0.5, 12, 0.2, 0.6, 0.2, 0.02);
+        PortalFx.riftOpen(target, at);
         PortalApi.fireRift(r, true, null);
         return r;
     }
@@ -152,6 +154,7 @@ public final class PortalRifts {
                 level.playSound(null, r.pos, SoundEvents.BEACON_DEACTIVATE, SoundSource.BLOCKS, 1.2F, 0.7F);
                 level.sendParticles(ParticleTypes.LARGE_SMOKE, r.pos.getX() + 0.5, r.pos.getY() + 1.0, r.pos.getZ() + 0.5, 20, 0.2, 0.7, 0.2, 0.02);
                 level.sendParticles(ParticleTypes.ELECTRIC_SPARK, r.pos.getX() + 0.5, r.pos.getY() + 1.0, r.pos.getZ() + 0.5, 30, 0.3, 0.8, 0.3, 0.3);
+                PortalFx.riftCollapse(level, r.pos);
             }
             if (reason != Reason.EMPTY && reason != Reason.WORLD_GONE) {
                 for (UUID u : r.away) {

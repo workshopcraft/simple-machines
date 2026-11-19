@@ -52,6 +52,7 @@ import java.util.function.Consumer;
 public final class PortalForge {
     /** Set by the client glue; a dedicated server never receives the countdown. */
     public static Consumer<RiftHudPayload> hudReceiver = p -> {};
+    public static Consumer<com.workshopcraft.simplemachines.portal.PortalFxPayload> fxReceiver = p -> {};
 
     private PortalForge() {}
 
@@ -66,7 +67,15 @@ public final class PortalForge {
                     ctx.get().enqueueWork(() -> hudReceiver.accept(p));
                     ctx.get().setPacketHandled(true);
                 }, Optional.of(NetworkDirection.PLAY_TO_CLIENT));
+        SimpleMachinesForge.CHANNEL.registerMessage(2, com.workshopcraft.simplemachines.portal.PortalFxPayload.class,
+                (p, buf) -> com.workshopcraft.simplemachines.portal.PortalFxPayload.CODEC.encode(buf, p),
+                com.workshopcraft.simplemachines.portal.PortalFxPayload.CODEC::decode,
+                (p, ctx) -> {
+                    ctx.get().enqueueWork(() -> fxReceiver.accept(p));
+                    ctx.get().setPacketHandled(true);
+                }, Optional.of(NetworkDirection.PLAY_TO_CLIENT));
         PortalPlatform.sendHud = (player, payload) -> SimpleMachinesForge.CHANNEL.send(PacketDistributor.PLAYER.with(() -> player), payload);
+        PortalPlatform.sendFx = (player, payload) -> SimpleMachinesForge.CHANNEL.send(PacketDistributor.PLAYER.with(() -> player), payload);
         modBus.addListener((RegisterEvent e) -> {
             e.register(Registries.BLOCK, h -> Portal.registerBlocks(h::register));
             e.register(Registries.ITEM, h -> Portal.registerItems(h::register));

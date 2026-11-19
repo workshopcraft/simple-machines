@@ -35,6 +35,7 @@ import net.neoforged.neoforge.registries.RegisterEvent;
 public final class PortalNeoForge {
     /** Set by the client glue; a dedicated server never receives the countdown. */
     public static java.util.function.Consumer<com.workshopcraft.simplemachines.portal.RiftHudPayload> hudReceiver = p -> {};
+    public static java.util.function.Consumer<com.workshopcraft.simplemachines.portal.PortalFxPayload> fxReceiver = p -> {};
 
     private PortalNeoForge() {}
 
@@ -44,9 +45,14 @@ public final class PortalNeoForge {
         PortalPlatform.loaded = level -> NeoForge.EVENT_BUS.post(new LevelEvent.Load(level));
         PortalPlatform.unloaded = level -> NeoForge.EVENT_BUS.post(new LevelEvent.Unload(level));
         PortalPlatform.sendHud = net.neoforged.neoforge.network.PacketDistributor::sendToPlayer;
-        modBus.addListener((net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent e) -> e.registrar("1").optional().playToClient(
-                com.workshopcraft.simplemachines.portal.RiftHudPayload.TYPE, com.workshopcraft.simplemachines.portal.RiftHudPayload.CODEC,
-                (payload, ctx) -> ctx.enqueueWork(() -> hudReceiver.accept(payload))));
+        PortalPlatform.sendFx = net.neoforged.neoforge.network.PacketDistributor::sendToPlayer;
+        modBus.addListener((net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent e) -> {
+            final var r = e.registrar("1").optional();
+            r.playToClient(com.workshopcraft.simplemachines.portal.RiftHudPayload.TYPE, com.workshopcraft.simplemachines.portal.RiftHudPayload.CODEC,
+                    (payload, ctx) -> ctx.enqueueWork(() -> hudReceiver.accept(payload)));
+            r.playToClient(com.workshopcraft.simplemachines.portal.PortalFxPayload.TYPE, com.workshopcraft.simplemachines.portal.PortalFxPayload.CODEC,
+                    (payload, ctx) -> ctx.enqueueWork(() -> fxReceiver.accept(payload)));
+        });
         modBus.addListener((RegisterEvent e) -> {
             e.register(Registries.DATA_COMPONENT_TYPE, h -> Portal.registerComponents(h::register));
             e.register(Registries.BLOCK, h -> Portal.registerBlocks(h::register));

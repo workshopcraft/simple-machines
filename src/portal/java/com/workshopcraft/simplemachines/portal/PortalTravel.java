@@ -449,6 +449,7 @@ public final class PortalTravel {
         if (p.getVehicle() instanceof com.workshopcraft.simplemachines.portal.entity.EmergencyRocketEntity rocket) {
             rocket.complete();
         }
+        EmergencyReturn.finishWindup(p);
         final String id = PortalWorlds.idOf(p.level().dimension());
         if (id != null) PortalData.get(p.level().getServer()).addOccupant(id, p.getUUID());
     }

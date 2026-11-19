@@ -48,11 +48,15 @@ public final class PortalFabric {
         PortalPlatform.unloaded = level -> ServerLevelEvents.UNLOAD.invoker().onLevelUnload(level.getServer(), level);
         net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry.clientboundPlay().register(
                 com.workshopcraft.simplemachines.portal.RiftHudPayload.TYPE, com.workshopcraft.simplemachines.portal.RiftHudPayload.CODEC);
+        net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry.clientboundPlay().register(
+                com.workshopcraft.simplemachines.portal.PortalFxPayload.TYPE, com.workshopcraft.simplemachines.portal.PortalFxPayload.CODEC);
         //?} else if >=1.20.5 {
         /*PortalPlatform.loaded = level -> ServerWorldEvents.LOAD.invoker().onWorldLoad(level.getServer(), level);
         PortalPlatform.unloaded = level -> ServerWorldEvents.UNLOAD.invoker().onWorldUnload(level.getServer(), level);
         net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry.playS2C().register(
                 com.workshopcraft.simplemachines.portal.RiftHudPayload.TYPE, com.workshopcraft.simplemachines.portal.RiftHudPayload.CODEC);
+        net.fabricmc.fabric.api.networking.v1.PayloadTypeRegistry.playS2C().register(
+                com.workshopcraft.simplemachines.portal.PortalFxPayload.TYPE, com.workshopcraft.simplemachines.portal.PortalFxPayload.CODEC);
         *///?} else {
         /*PortalPlatform.loaded = level -> ServerWorldEvents.LOAD.invoker().onWorldLoad(level.getServer(), level);
         PortalPlatform.unloaded = level -> ServerWorldEvents.UNLOAD.invoker().onWorldUnload(level.getServer(), level);
@@ -63,12 +67,24 @@ public final class PortalFabric {
                 net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking.send(player, payload);
             }
         };
+        PortalPlatform.sendFx = (player, payload) -> {
+            if (net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking.canSend(player, payload.type())) {
+                net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking.send(player, payload);
+            }
+        };
         Portal.registerComponents(direct(BuiltInRegistries.DATA_COMPONENT_TYPE));
         //?} else {
         /*PortalPlatform.sendHud = (player, payload) -> {
             if (net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking.canSend(player, payload.type().id())) {
                 final var buf = net.fabricmc.fabric.api.networking.v1.PacketByteBufs.create();
                 com.workshopcraft.simplemachines.portal.RiftHudPayload.CODEC.encode(buf, payload);
+                net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking.send(player, payload.type().id(), buf);
+            }
+        };
+        PortalPlatform.sendFx = (player, payload) -> {
+            if (net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking.canSend(player, payload.type().id())) {
+                final var buf = net.fabricmc.fabric.api.networking.v1.PacketByteBufs.create();
+                com.workshopcraft.simplemachines.portal.PortalFxPayload.CODEC.encode(buf, payload);
                 net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking.send(player, payload.type().id(), buf);
             }
         };
