@@ -78,7 +78,7 @@ tasks {
             "author" to sc.properties.get<String>("mod.author"),
             "description" to sc.properties.get<String>("mod.description"),
             "minecraft" to sc.properties.get<String>("mod.mc_compat"),
-            "logo_key" to if (sc.current.parsed >= "26.3") "iconFile" else "logoFile",
+            "logo_key" to if (sc.current.parsed >= "26.2") "iconFile" else "logoFile",
             "neoforge" to when { sc.current.parsed >= "26.3" -> "[26.3,)"; modern -> "[26.1.0.0-beta,)"; else -> "[21.1,)" },
         )
         inputs.properties(props)
