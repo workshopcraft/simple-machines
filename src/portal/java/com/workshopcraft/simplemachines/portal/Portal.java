@@ -16,7 +16,10 @@ import com.workshopcraft.simplemachines.portal.block.ResearchStationBlock;
 import com.workshopcraft.simplemachines.portal.block.ResearchStationBlockEntity;
 import com.workshopcraft.simplemachines.portal.block.ReturnBeaconBlock;
 import com.workshopcraft.simplemachines.portal.block.ReturnBeaconBlockEntity;
+import com.workshopcraft.simplemachines.portal.block.EmergencyPadBlock;
 import com.workshopcraft.simplemachines.portal.block.ReturnRiftBlock;
+import com.workshopcraft.simplemachines.portal.entity.EmergencyRocketEntity;
+import com.workshopcraft.simplemachines.portal.item.EmergencyRocketItem;
 import com.workshopcraft.simplemachines.portal.item.MobScannerItem;
 import com.workshopcraft.simplemachines.portal.item.PortalCardItem;
 import com.workshopcraft.simplemachines.portal.world.ConfigFilter;
@@ -29,6 +32,8 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.tags.TagKey;
 import net.minecraft.util.valueproviders.UniformInt;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.flag.FeatureFlags;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.BlockItem;
@@ -81,9 +86,10 @@ public final class Portal {
     *///?}
 
     public static Block titaniumOre, deepslateTitaniumOre, titaniumBlock, steelBlock;
-    public static Block gateController, portalField, objectiveCore, returnBeacon, researchStation, returnRift;
+    public static Block gateController, portalField, objectiveCore, returnBeacon, researchStation, returnRift, emergencyPad;
     public static Item rawTitanium, titaniumDust, titaniumIngot, titaniumSheet, titaniumRod;
-    public static Item entangledPellet, entangledCore, jumpCard, storyCard, netherCard, endCard, mobScanner;
+    public static Item entangledPellet, entangledCore, jumpCard, storyCard, netherCard, endCard, mobScanner, emergencyRocket;
+    public static EntityType<EmergencyRocketEntity> emergencyRocketEntity;
 
     public static BlockEntityType<GateControllerBlockEntity> GATE_ENTITY;
     public static BlockEntityType<ResearchStationBlockEntity> RESEARCH_ENTITY;
@@ -178,6 +184,8 @@ public final class Portal {
         researchStation = block(r, "research_station", new ResearchStationBlock(props("research_station").mapColor(MapColor.METAL)
                 .requiresCorrectToolForDrops().strength(3.5F).sound(SoundType.METAL)
                 .lightLevel(s -> s.getValue(BlockStateProperties.LIT) ? 9 : 0)));
+        emergencyPad = block(r, "emergency_pad", new EmergencyPadBlock(props("emergency_pad").mapColor(MapColor.STONE)
+                .strength(1.5F, 6.0F).sound(SoundType.STONE).noOcclusion()));
     }
 
     private static Item item(BiConsumer<Identifier, Item> r, String name, Item item) {
@@ -222,6 +230,8 @@ public final class Portal {
         CARD.setDefault(endCard, SimpleMachines.id("end"));
         *///?}
         mobScanner = item(r, "mob_scanner", new MobScannerItem(itemProps("mob_scanner").stacksTo(1)));
+        blockItem(r, "emergency_pad", emergencyPad);
+        emergencyRocket = item(r, "emergency_rocket", new EmergencyRocketItem(itemProps("emergency_rocket").stacksTo(16)));
         // placed by worldgen and gates only; items exist so creative players and commands can use them.
         // The Return Beacon was the 2.3.0-alpha.2 stand-in for the return rift; it stays registered so old test worlds load.
         r.accept(SimpleMachines.id("objective_core"), new BlockItem(objectiveCore, blockItemProps("objective_core")));
@@ -235,6 +245,12 @@ public final class Portal {
         r.accept(SimpleMachines.id("research_station"), RESEARCH_ENTITY);
         BEACON_ENTITY = Registration.blockEntity(ReturnBeaconBlockEntity::new, Set.of(returnBeacon));
         r.accept(SimpleMachines.id("return_beacon"), BEACON_ENTITY);
+    }
+
+    public static void registerEntities(BiConsumer<Identifier, EntityType<?>> r) {
+        emergencyRocketEntity = Registration.entity(EmergencyRocketEntity::new, MobCategory.MISC, 0.8F, 1.2F,
+                SimpleMachines.id("emergency_rocket"));
+        r.accept(SimpleMachines.id("emergency_rocket"), emergencyRocketEntity);
     }
 
     //? if >=26.1 {

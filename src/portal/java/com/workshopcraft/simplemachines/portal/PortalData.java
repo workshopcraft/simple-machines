@@ -157,7 +157,9 @@ public class PortalData extends SavedData {
             Codec.INT.optionalFieldOf("next", 1).forGetter(d -> d.next),
             Codec.unboundedMap(Codec.STRING, UUIDUtil.STRING_CODEC.listOf()).optionalFieldOf("occupants", Map.of()).forGetter(d -> d.occupants),
             Rift.CODEC.listOf().optionalFieldOf("rifts", List.of()).forGetter(d -> List.copyOf(d.rifts.values())),
-            Codec.unboundedMap(UUIDUtil.STRING_CODEC, PlayerResearch.CODEC).optionalFieldOf("research", Map.of()).forGetter(d -> d.research)
+            Codec.unboundedMap(UUIDUtil.STRING_CODEC, PlayerResearch.CODEC).optionalFieldOf("research", Map.of()).forGetter(d -> d.research),
+            Codec.unboundedMap(UUIDUtil.STRING_CODEC, GlobalPos.CODEC).optionalFieldOf("return_gates", Map.of()).forGetter(d -> d.returnGates),
+            UUIDUtil.STRING_CODEC.listOf().optionalFieldOf("pending_returns", List.of()).forGetter(d -> List.copyOf(d.pendingReturns))
     ).apply(i, PortalData::new));
 
     /** One player's research: what they have unlocked and how far each entry has got. */
@@ -184,12 +186,17 @@ public class PortalData extends SavedData {
     final Map<String, List<UUID>> occupants = new LinkedHashMap<>();
     final Map<GlobalPos, Rift> rifts = new LinkedHashMap<>();
     final Map<UUID, PlayerResearch> research = new LinkedHashMap<>();
+    /** Last Simple Machines gate each player walked through, used by emergency return. */
+    final Map<UUID, GlobalPos> returnGates = new LinkedHashMap<>();
+    /** Players who logged out mid emergency-rocket flight and should be sent home on join. */
+    final Set<UUID> pendingReturns = new LinkedHashSet<>();
 
     public PortalData() {
     }
 
     private PortalData(List<World> worlds, List<String> unlocks, List<String> pending, int next,
-                       Map<String, List<UUID>> occupants, List<Rift> rifts, Map<UUID, PlayerResearch> research) {
+                       Map<String, List<UUID>> occupants, List<Rift> rifts, Map<UUID, PlayerResearch> research,
+                       Map<UUID, GlobalPos> returnGates, List<UUID> pendingReturns) {
         this.research.putAll(research);
         for (Rift r : rifts) this.rifts.put(r.gate, r);
         for (Map.Entry<String, List<UUID>> e : occupants.entrySet()) this.occupants.put(e.getKey(), new ArrayList<>(e.getValue()));
@@ -197,6 +204,8 @@ public class PortalData extends SavedData {
         this.unlocks.addAll(unlocks);
         this.pendingDelete.addAll(pending);
         this.next = next;
+        this.returnGates.putAll(returnGates);
+        this.pendingReturns.addAll(pendingReturns);
     }
 
     public static PortalData get(MinecraftServer server) {
@@ -346,4 +355,31 @@ public class PortalData extends SavedData {
     public List<String> pendingDelete() {
         return pendingDelete;
     }
+
+    // --- emergency return: last gate and mid-flight logouts ---
+
+    public void setReturnGate(UUID player, GlobalPos gate) {
+        returnGates.put(player, gate);
+        setDirty();
+    }
+
+    public @Nullable GlobalPos returnGate(UUID player) {
+        return returnGates.get(player);
+    }
+
+    public void clearReturnGate(UUID player) {
+        if (returnGates.remove(player) != null) setDirty();
+    }
+
+    public void markPendingReturn(UUID player) {
+        if (pendingReturns.add(player)) setDirty();
+    }
+
+    /** True if this player had a pending emergency return, which is then cleared. */
+    public boolean takePendingReturn(UUID player) {
+        final boolean removed = pendingReturns.remove(player);
+        if (removed) setDirty();
+        return removed;
+    }
+
 }

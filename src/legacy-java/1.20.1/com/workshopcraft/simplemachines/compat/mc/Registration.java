@@ -9,6 +9,9 @@ import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeSerializer;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.MobCategory;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
@@ -55,5 +58,11 @@ public final class Registration {
 
     public static <T extends BlockEntity> BlockEntityType<T> blockEntity(BlockEntityType.BlockEntitySupplier<T> factory, Set<Block> blocks) {
         return BlockEntityType.Builder.of(factory, blocks.toArray(new Block[0])).build(null);
+    }
+
+    public static <T extends Entity> EntityType<T> entity(EntityType.EntityFactory<T> factory, MobCategory category,
+                                                         float width, float height, ResourceLocation id) {
+        return EntityType.Builder.of(factory, category).sized(width, height).clientTrackingRange(8).updateInterval(1)
+                .fireImmune().build(id.toString());
     }
 }

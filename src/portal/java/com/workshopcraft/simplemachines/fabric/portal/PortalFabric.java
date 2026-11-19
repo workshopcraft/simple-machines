@@ -78,6 +78,7 @@ public final class PortalFabric {
         Portal.registerItems(direct(BuiltInRegistries.ITEM));
         Portal.registerTabs(direct(BuiltInRegistries.CREATIVE_MODE_TAB));
         Portal.registerBlockEntities(direct(BuiltInRegistries.BLOCK_ENTITY_TYPE));
+        Portal.registerEntities(direct(BuiltInRegistries.ENTITY_TYPE));
         Portal.registerMenus(direct(BuiltInRegistries.MENU));
         //? if >=26.1
         Portal.registerTicketTypes(direct(BuiltInRegistries.TICKET_TYPE));

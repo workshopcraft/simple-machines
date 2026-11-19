@@ -85,7 +85,10 @@ public final class PortalTravel {
                 entity.getXRot(), TeleportTransition.PLAY_PORTAL_SOUND.then(TeleportTransition.PLACE_PORTAL_TICKET)));
         if (moved != null) {
             COOLDOWN.put(moved.getUUID(), now);
-            if (moved instanceof ServerPlayer p) PortalRifts.arrived(from, gate, target, landing, worldId, p);
+            if (moved instanceof ServerPlayer p) {
+                PortalData.get(server).setReturnGate(p.getUUID(), gp);
+                PortalRifts.arrived(from, gate, target, landing, worldId, p);
+            }
             PortalApi.fireAfter(moved, gp, targetKey);
         }
     }
@@ -333,6 +336,10 @@ public final class PortalTravel {
         }
         final BlockPos g = gate.pos();
         level.getChunk(g.getX() >> 4, g.getZ() >> 4);
+        if (!(level.getBlockEntity(g) instanceof GateControllerBlockEntity)) {
+            PortalWorlds.toSpawn(server, player);
+            return;
+        }
         Direction front = Direction.NORTH;
         final BlockState s = level.getBlockState(g);
         if (s.hasProperty(com.workshopcraft.simplemachines.machine.MachineBlock.FACING)) front = s.getValue(com.workshopcraft.simplemachines.machine.MachineBlock.FACING);
@@ -439,6 +446,9 @@ public final class PortalTravel {
 
     /** Remembers players who log out inside a portal world, so the world is kept for them. */
     public static void loggedOut(ServerPlayer p) {
+        if (p.getVehicle() instanceof com.workshopcraft.simplemachines.portal.entity.EmergencyRocketEntity rocket) {
+            rocket.complete();
+        }
         final String id = PortalWorlds.idOf(p.level().dimension());
         if (id != null) PortalData.get(p.level().getServer()).addOccupant(id, p.getUUID());
     }
@@ -451,10 +461,17 @@ public final class PortalTravel {
         final MinecraftServer server = p.level().getServer();
         final PortalData data = PortalData.get(server);
         data.removeOccupant(p.getUUID());
+        final java.util.UUID uuid = p.getUUID();
+        if (data.takePendingReturn(uuid)) {
+            PortalWorlds.later(s -> {
+                final ServerPlayer now = s.getPlayerList().getPlayer(uuid);
+                if (now != null) EmergencyReturn.finish(now);
+            });
+            return;
+        }
         final String id = PortalWorlds.idOf(p.level().dimension());
         final PortalData.World w = id == null ? null : data.world(id);
         if (w == null || !w.oneOff || !w.retired) return;
-        final java.util.UUID uuid = p.getUUID();
         PortalWorlds.later(s -> {
             final ServerPlayer now = s.getPlayerList().getPlayer(uuid);
             if (now == null || !now.level().dimension().equals(PortalWorlds.key(w.id))) return;

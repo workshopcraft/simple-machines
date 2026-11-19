@@ -72,6 +72,7 @@ public final class PortalForge {
             e.register(Registries.ITEM, h -> Portal.registerItems(h::register));
             e.register(Registries.CREATIVE_MODE_TAB, h -> Portal.registerTabs(h::register));
             e.register(Registries.BLOCK_ENTITY_TYPE, h -> Portal.registerBlockEntities(h::register));
+            e.register(Registries.ENTITY_TYPE, h -> Portal.registerEntities(h::register));
             e.register(Registries.MENU, h -> Portal.registerMenus(h::register));
             e.register(Registries.CHUNK_GENERATOR, h -> Portal.registerChunkGenerators((id, c) -> h.register(id, c.codec())));
             e.register(Registries.PLACEMENT_MODIFIER_TYPE, h -> Portal.registerPlacementModifiers(h::register));

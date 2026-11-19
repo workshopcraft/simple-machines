@@ -50,6 +50,10 @@ public final class PortalConfig {
      * (after portal_empty_world_seconds). True keeps them on disk.
      */
     public static final String KEEP_ONE_OFF_WORLDS = "portal_keep_one_off_worlds";
+    /** One-shot emergency pad. Off: the block can still be placed but will not send anyone home. */
+    public static final String EMERGENCY_PAD = "portal_emergency_pad";
+    /** Craftable emergency rocket. Off: using the item does nothing. */
+    public static final String EMERGENCY_ROCKET = "portal_emergency_rocket";
 
     private PortalConfig() {}
 
@@ -74,6 +78,8 @@ public final class PortalConfig {
         ServerConfig.define(RIFT_EMPTY_CLOSE, "15");
         ServerConfig.define(RIFT_CHUNK_LOADING, "true");
         ServerConfig.define(KEEP_ONE_OFF_WORLDS, "false");
+        ServerConfig.define(EMERGENCY_PAD, "true");
+        ServerConfig.define(EMERGENCY_ROCKET, "true");
     }
 
     public static boolean bool(MinecraftServer server, String key) {
