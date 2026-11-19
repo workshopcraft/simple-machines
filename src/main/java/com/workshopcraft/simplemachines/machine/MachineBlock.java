@@ -118,4 +118,12 @@ public abstract class MachineBlock extends BaseEntityBlock {
         level.addParticle(ParticleTypes.SMOKE, x + dx, y + dy, z + dz, 0.0, 0.0, 0.0);
         level.addParticle(ParticleTypes.FLAME, x + dx, y + dy, z + dz, 0.0, 0.0, 0.0);
     }
+
+    // 1.21.1 entity blocks are invisible unless they ask for their model
+    //? if <1.21.2 {
+    /*@Override
+    protected net.minecraft.world.level.block.RenderShape getRenderShape(BlockState state) {
+        return net.minecraft.world.level.block.RenderShape.MODEL;
+    }
+    *///?}
 }
