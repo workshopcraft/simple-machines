@@ -10,38 +10,37 @@
       "kind": "craft_shaped",
       "pattern": [
         "CCC",
-        "CPC",
-        "CIC"
+        "IOI",
+        "CCC"
       ],
       "key": {
-        "C": "minecraft:cobblestone",
-        "P": "simplemachines:entangled_pellet",
-        "I": "minecraft:iron_ingot"
+        "C": "#c:cobblestones",
+        "I": "minecraft:iron_ingot",
+        "O": "#minecraft:coals"
       },
       "output": {
         "item": "simplemachines:emergency_pad",
         "count": 1
       },
-      "note": "Crafting Table\n7x Cobblestone, 1x Entangled Pellet, 1x Iron Ingot",
+      "note": "Crafting Table\n6x Cobblestone, 2x Iron Ingot, 1x Coal or Charcoal",
       "title": "Emergency Pad"
     },
     {
       "kind": "craft_shaped",
       "pattern": [
-        " I ",
-        "IPI",
-        " G "
+        "III",
+        "CRC"
       ],
       "key": {
         "I": "minecraft:iron_ingot",
-        "P": "simplemachines:entangled_pellet",
-        "G": "minecraft:gunpowder"
+        "C": "#minecraft:coals",
+        "R": "minecraft:redstone"
       },
       "output": {
         "item": "simplemachines:emergency_rocket",
         "count": 1
       },
-      "note": "Crafting Table\n3x Iron Ingot, 1x Entangled Pellet, 1x Gunpowder",
+      "note": "Crafting Table\n3x Iron Ingot, 2x Coal or Charcoal, 1x Redstone",
       "title": "Emergency Rocket"
     }
   ]

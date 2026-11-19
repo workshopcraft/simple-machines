@@ -3,19 +3,19 @@
   "category": "misc",
   "key": {
     "C": {
-      "item": "minecraft:cobblestone"
-    },
-    "P": {
-      "item": "simplemachines:entangled_pellet"
+      "tag": "c:cobblestones"
     },
     "I": {
       "item": "minecraft:iron_ingot"
+    },
+    "O": {
+      "tag": "minecraft:coals"
     }
   },
   "pattern": [
     "CCC",
-    "CPC",
-    "CIC"
+    "IOI",
+    "CCC"
   ],
   "result": {
     "id": "simplemachines:emergency_pad"

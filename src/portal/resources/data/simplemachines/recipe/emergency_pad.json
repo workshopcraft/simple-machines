@@ -2,14 +2,14 @@
   "type": "minecraft:crafting_shaped",
   "category": "misc",
   "key": {
-    "C": "minecraft:cobblestone",
-    "P": "simplemachines:entangled_pellet",
-    "I": "minecraft:iron_ingot"
+    "C": "#c:cobblestones",
+    "I": "minecraft:iron_ingot",
+    "O": "#minecraft:coals"
   },
   "pattern": [
     "CCC",
-    "CPC",
-    "CIC"
+    "IOI",
+    "CCC"
   ],
   "result": {
     "id": "simplemachines:emergency_pad"

@@ -3,13 +3,12 @@
   "category": "misc",
   "key": {
     "I": "minecraft:iron_ingot",
-    "P": "simplemachines:entangled_pellet",
-    "G": "minecraft:gunpowder"
+    "C": "#minecraft:coals",
+    "R": "minecraft:redstone"
   },
   "pattern": [
-    " I ",
-    "IPI",
-    " G "
+    "III",
+    "CRC"
   ],
   "result": {
     "id": "simplemachines:emergency_rocket"

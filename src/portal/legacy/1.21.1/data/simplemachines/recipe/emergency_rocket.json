@@ -5,17 +5,16 @@
     "I": {
       "item": "minecraft:iron_ingot"
     },
-    "P": {
-      "item": "simplemachines:entangled_pellet"
+    "C": {
+      "tag": "minecraft:coals"
     },
-    "G": {
-      "item": "minecraft:gunpowder"
+    "R": {
+      "item": "minecraft:redstone"
     }
   },
   "pattern": [
-    " I ",
-    "IPI",
-    " G "
+    "III",
+    "CRC"
   ],
   "result": {
     "id": "simplemachines:emergency_rocket"
