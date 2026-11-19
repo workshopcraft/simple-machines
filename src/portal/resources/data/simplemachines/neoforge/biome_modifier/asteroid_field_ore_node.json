@@ -1,0 +1,12 @@
+{
+  "neoforge:conditions": [
+    {
+      "type": "neoforge:mod_loaded",
+      "modid": "nodeores"
+    }
+  ],
+  "type": "neoforge:add_features",
+  "biomes": "simplemachines:asteroid_field",
+  "features": "nodeores:ore_node",
+  "step": "surface_structures"
+}

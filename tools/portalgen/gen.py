@@ -224,7 +224,9 @@ PAGES = [
      'A blank Jump Card makes a random world the first time it is used. After that the card is bound to that world for good and always goes back to it.\n\n'
      'Program a blank card at a Research Station to choose its world type or add ores and mobs you have researched. A bound card cannot be programmed.\n\n'
      'Nether and End Cards open to the Nether and the End.\n\n'
-     'Story Cards come from quests. They lead to a world with an objective. Collect it to finish the story. If you come back without it, the next jump makes a fresh world to try again.',
+     'Story Cards come from quests. They lead to a world with an objective. Collect it to finish the story. If you come back without it, the next jump makes a fresh world to try again.
+
+Built-in world types include Verdant Wilds, Sunscorched Badlands, Frozen Reach, Ember Hollows, Deep Caverns, Shattered Isles and the Asteroid Field. The Asteroid Field is a dark void of stone islands, rich in ores. Deep Caverns and the Asteroid Field (and a few others) need research, or a Homebound locale, before a gate will open to them.',
      [('craft', 'jump_card'), ('craft', 'nether_card'), ('craft', 'end_card')]),
     ('portal_research', 'Research', 'Feed it to learn',
      'The Research Station is a powered machine that eats resources. Choose a project with the arrows and feed it the items it asks for. '

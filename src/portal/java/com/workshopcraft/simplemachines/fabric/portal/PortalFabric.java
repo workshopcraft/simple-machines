@@ -10,6 +10,7 @@ import com.workshopcraft.simplemachines.portal.PortalPlatform;
 import com.workshopcraft.simplemachines.portal.item.MobScannerItem;
 import net.fabricmc.fabric.api.biome.v1.BiomeModifications;
 import net.fabricmc.fabric.api.biome.v1.BiomeSelectors;
+import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
@@ -103,6 +104,13 @@ public final class PortalFabric {
         EnergyStorage.ITEM.registerForItems((stack, ctx) -> new ItemEnergyStorage(ctx, MobScannerItem.CAPACITY, MobScannerItem.RATE), Portal.mobScanner);
         BiomeModifications.addFeature(BiomeSelectors.foundInOverworld(), GenerationStep.Decoration.UNDERGROUND_ORES,
                 ResourceKey.create(Registries.PLACED_FEATURE, SimpleMachines.id("ore_titanium")));
+        // Node Ores only adds nodes to the Overworld; hook the asteroid field when that mod is present
+        if (FabricLoader.getInstance().isModLoaded("nodeores")) {
+            BiomeModifications.addFeature(
+                    BiomeSelectors.includeByKey(ResourceKey.create(Registries.BIOME, SimpleMachines.id("asteroid_field"))),
+                    GenerationStep.Decoration.SURFACE_STRUCTURES,
+                    ResourceKey.create(Registries.PLACED_FEATURE, Identifier.parse("nodeores:ore_node")));
+        }
         CommandRegistrationCallback.EVENT.register((dispatcher, context, environment) -> PortalCommands.register(dispatcher));
         ServerTickEvents.END_SERVER_TICK.register(PortalEvents::serverTickEnd);
         ServerLifecycleEvents.SERVER_STARTED.register(PortalEvents::serverStarted);

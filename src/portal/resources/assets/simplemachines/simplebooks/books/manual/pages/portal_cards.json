@@ -3,7 +3,7 @@
   "sort": 4,
   "title": "Cards and Worlds",
   "subtitle": "Every card is one world",
-  "text": "A blank Jump Card makes a random world the first time it is used. After that the card is bound to that world for good and always goes back to it.\n\nProgram a blank card at a Research Station to choose its world type or add ores and mobs you have researched. A bound card cannot be programmed.\n\nNether and End Cards open to the Nether and the End.\n\nStory Cards come from quests. They lead to a world with an objective. Collect it to finish the story. If you come back without it, the next jump makes a fresh world to try again.",
+  "text": "A blank Jump Card makes a random world the first time it is used. After that the card is bound to that world for good and always goes back to it.\n\nProgram a blank card at a Research Station to choose its world type or add ores and mobs you have researched. A bound card cannot be programmed.\n\nNether and End Cards open to the Nether and the End.\n\nStory Cards come from quests. They lead to a world with an objective. Collect it to finish the story. If you come back without it, the next jump makes a fresh world to try again.\n\nBuilt-in world types include Verdant Wilds, Sunscorched Badlands, Frozen Reach, Ember Hollows, Deep Caverns, Shattered Isles and the Asteroid Field. The Asteroid Field is a dark void of stone islands, rich in ores. Deep Caverns and the Asteroid Field (and a few others) need research, or a Homebound locale, before a gate will open to them.",
   "right_title": "Recipes",
   "steps": [
     {

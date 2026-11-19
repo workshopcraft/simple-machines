@@ -1,0 +1,10 @@
+{
+  "kind": "resource",
+  "name": "Asteroid Survey",
+  "item": "simplemachines:titanium_ingot",
+  "count": 128,
+  "energy_per_item": 12000,
+  "unlocks": [
+    "preset:simplemachines:asteroid_field"
+  ]
+}

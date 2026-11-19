@@ -118,10 +118,15 @@ public final class PortalTravel {
             floor = plan == null ? Blocks.STONE_BRICKS.defaultBlockState()
                     : BuiltInRegistries.BLOCK.getValue(plan.siteBlock()).defaultBlockState();
         }
-        BlockPos spot = findSafeStand(target, guess, null);
+        BlockPos spot = isSafeStand(target, guess) ? guess.immutable() : findSafeStand(target, guess, null);
+        if (spot == null) spot = findIslandStand(target, guess, 80);
         if (spot == null) {
-            spot = guess.immutable();
-            bubble(target, spot, floor);
+            if (!target.dimensionType().hasCeiling() && target.dimension() != Level.NETHER && target.dimension() != Level.END) {
+                spot = placeLandingAsteroid(target, guess, floor);
+            } else {
+                spot = guess.immutable();
+                bubble(target, spot, floor);
+            }
         }
         if (w != null) {
             w.landing = spot;
@@ -174,8 +179,99 @@ public final class PortalTravel {
     }
 
     /**
+     * Closest column near origin whose heightmap is solid island ground, or null.
+     * Only used in open-sky worlds: a ceiling heightmap is the roof, not a floor.
+     */
+    static @Nullable BlockPos findIslandStand(ServerLevel level, BlockPos origin, int radius) {
+        if (level.dimensionType().hasCeiling()) return null;
+        final BlockPos.MutableBlockPos m = new BlockPos.MutableBlockPos();
+        for (int r = 0; r <= radius; r++) {
+            for (int dx = -r; dx <= r; dx++) {
+                for (int dz = -r; dz <= r; dz++) {
+                    if (r > 0 && Math.abs(dx) != r && Math.abs(dz) != r) continue;
+                    final int x = origin.getX() + dx, z = origin.getZ() + dz;
+                    level.getChunk(x >> 4, z >> 4);
+                    final int y = level.getHeight(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, x, z);
+                    if (y <= level.getMinY() + 1) continue;
+                    m.set(x, y, z);
+                    if (isSafeStand(level, m)) return m.immutable();
+                }
+            }
+        }
+        return null;
+    }
+
+    /** A small stone asteroid with a flat stand on top, used when the void search finds no island. */
+    static BlockPos placeLandingAsteroid(ServerLevel level, BlockPos around, BlockState floor) {
+        final int cx = around.getX(), cz = around.getZ();
+        int cy = around.getY();
+        if (cy <= level.getMinY() + 8 || cy >= level.getMaxY() - 16) cy = Math.max(level.getMinY() + 40, 64);
+        final int radius = 6;
+        final var random = level.getRandom();
+        final BlockPos.MutableBlockPos m = new BlockPos.MutableBlockPos();
+        for (int dx = -radius; dx <= radius; dx++) {
+            for (int dy = -radius; dy <= radius; dy++) {
+                for (int dz = -radius; dz <= radius; dz++) {
+                    if (dx * dx + dy * dy * 1.2 + dz * dz > radius * radius) continue;
+                    m.set(cx + dx, cy + dy, cz + dz);
+                    BlockState b = floor.isSolid() ? floor : Blocks.STONE.defaultBlockState();
+                    if (dx * dx + dy * dy + dz * dz < 8) b = Blocks.DEEPSLATE.defaultBlockState();
+                    else if (random.nextInt(5) == 0) b = (random.nextBoolean() ? Blocks.ANDESITE : Blocks.TUFF).defaultBlockState();
+                    else if (random.nextInt(8) == 0) b = Blocks.GRANITE.defaultBlockState();
+                    level.setBlockAndUpdate(m, b);
+                }
+            }
+        }
+        int top = cy + radius;
+        while (top > cy && !level.getBlockState(m.set(cx, top, cz)).isSolid()) top--;
+        final BlockPos feet = new BlockPos(cx, top + 1, cz);
+        for (int dx = -1; dx <= 1; dx++) {
+            for (int dz = -1; dz <= 1; dz++) {
+                final BlockPos f = feet.offset(dx, -1, dz);
+                if (!level.getBlockState(f).isSolid() || !dry(level.getBlockState(f))) {
+                    level.setBlockAndUpdate(f, Blocks.STONE.defaultBlockState());
+                }
+                for (int dy = 0; dy < 2; dy++) {
+                    final BlockPos a = feet.offset(dx, dy, dz);
+                    final BlockState s = level.getBlockState(a);
+                    if (!s.isAir() || !dry(s)) level.setBlockAndUpdate(a, Blocks.AIR.defaultBlockState());
+                }
+            }
+        }
+        return feet;
+    }
+
+    /** Extends solid ground from the landing to the preferred rift column so the rift is not left in the void. */
+    static BlockPos extendPad(ServerLevel level, BlockPos landing, BlockPos prefer, BlockState floor) {
+        final int y = landing.getY();
+        final BlockPos at = new BlockPos(prefer.getX(), y, prefer.getZ());
+        if (!floor.isSolid()) floor = Blocks.STONE.defaultBlockState();
+        for (int dx = -1; dx <= 1; dx++) {
+            for (int dz = -1; dz <= 1; dz++) {
+                final BlockPos f = at.offset(dx, -1, dz);
+                if (!level.getBlockState(f).isSolid() || !dry(level.getBlockState(f))) level.setBlockAndUpdate(f, floor);
+                for (int dy = 0; dy < 2; dy++) {
+                    final BlockPos a = at.offset(dx, dy, dz);
+                    final BlockState s = level.getBlockState(a);
+                    if (!s.isAir() || !dry(s)) level.setBlockAndUpdate(a, Blocks.AIR.defaultBlockState());
+                }
+            }
+        }
+        // fill a one-block-wide bridge back to the landing if they do not already touch
+        int x = landing.getX(), z = landing.getZ();
+        final int tx = at.getX(), tz = at.getZ();
+        while (x != tx || z != tz) {
+            if (x != tx) x += Integer.signum(tx - x);
+            else z += Integer.signum(tz - z);
+            final BlockPos f = new BlockPos(x, y - 1, z);
+            if (!level.getBlockState(f).isSolid() || !dry(level.getBlockState(f))) level.setBlockAndUpdate(f, floor);
+        }
+        return isSafeStand(level, at) ? at : landing;
+    }
+
+    /**
      * A standable column beside the landing for the return rift. Prefers two blocks east, then other nearby
-     * pockets, and builds a dry bubble if nothing safe is found.
+     * pockets, and extends a pad from the landing if nothing safe is found.
      */
     public static BlockPos safeRift(ServerLevel level, BlockPos landing) {
         final BlockPos prefer = landing.offset(2, 0, 0);
@@ -187,12 +283,13 @@ public final class PortalTravel {
         }
         final BlockPos found = findSafeStand(level, prefer, landing);
         if (found != null) return found;
+        final BlockPos island = findIslandStand(level, landing, 24);
+        if (island != null && !island.equals(landing)) return island;
         final PortalChunkGenerator.WorldPlan plan = PortalChunkGenerator.planOf(level);
         BlockState floor = plan == null ? Blocks.STONE_BRICKS.defaultBlockState()
                 : BuiltInRegistries.BLOCK.getValue(plan.siteBlock()).defaultBlockState();
         if (!floor.isSolid()) floor = Blocks.STONE_BRICKS.defaultBlockState();
-        bubble(level, prefer, floor);
-        return prefer;
+        return extendPad(level, landing, prefer, floor);
     }
 
     /** A 3 by 3 by 3 air pocket on a solid floor, with fluid just outside sealed so the space does not flood again. */

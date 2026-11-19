@@ -45,3 +45,28 @@ class Feature263(input: Reader) : FilterReader(StringReader(convert(input.readTe
         }
     }
 }
+
+/** 26.3 biomes: mob lists moved to the gameplay/natural_mob_spawns attribute. Empty spawners are dropped. */
+class Biome263(input: Reader) : FilterReader(StringReader(convert(input.readText()))) {
+    companion object {
+        private const val SPAWNS = "minecraft:gameplay/natural_mob_spawns"
+
+        @Suppress("UNCHECKED_CAST")
+        fun convert(text: String): String {
+            val j = JsonSlurper().parseText(text) as MutableMap<String, Any?>
+            j.remove("spawn_costs")
+            val spawners = j.remove("spawners") as? Map<String, Any?>
+            val hasMobs = spawners?.values?.any { it is List<*> && it.isNotEmpty() } == true
+            if (hasMobs) {
+                val attrs = (j["attributes"] as? MutableMap<String, Any?>) ?: LinkedHashMap<String, Any?>().also { j["attributes"] = it }
+                if (SPAWNS !in attrs) {
+                    attrs[SPAWNS] = linkedMapOf(
+                        "modifier" to "overlay",
+                        "argument" to linkedMapOf("spawn_costs" to emptyMap<String, Any?>(), "spawns_by_category" to spawners),
+                    )
+                }
+            }
+            return JsonOutput.prettyPrint(JsonOutput.toJson(j))
+        }
+    }
+}
