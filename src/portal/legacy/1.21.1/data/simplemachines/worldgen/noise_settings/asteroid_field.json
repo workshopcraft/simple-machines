@@ -28,43 +28,7 @@
           "type": "minecraft:interpolated",
           "argument": {
             "type": "minecraft:blend_density",
-            "argument": {
-              "type": "minecraft:add",
-              "argument1": -0.38,
-              "argument2": {
-                "type": "minecraft:mul",
-                "argument1": {
-                  "type": "minecraft:y_clamped_gradient",
-                  "from_value": 0.0,
-                  "from_y": 8,
-                  "to_value": 1.0,
-                  "to_y": 40
-                },
-                "argument2": {
-                  "type": "minecraft:add",
-                  "argument1": 0.38,
-                  "argument2": {
-                    "type": "minecraft:add",
-                    "argument1": -23.4375,
-                    "argument2": {
-                      "type": "minecraft:mul",
-                      "argument1": {
-                        "type": "minecraft:y_clamped_gradient",
-                        "from_value": 1.0,
-                        "from_y": 232,
-                        "to_value": 0.0,
-                        "to_y": 280
-                      },
-                      "argument2": {
-                        "type": "minecraft:add",
-                        "argument1": 23.4375,
-                        "argument2": "minecraft:end/base_3d_noise"
-                      }
-                    }
-                  }
-                }
-              }
-            }
+            "argument": "simplemachines:asteroid_field_islands"
           }
         }
       }
