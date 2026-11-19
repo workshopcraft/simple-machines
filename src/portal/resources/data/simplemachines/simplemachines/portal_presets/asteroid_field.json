@@ -1,6 +1,6 @@
 {
   "name": "Asteroid Field",
-  "terrain": "floating_islands",
+  "terrain": "simplemachines:asteroid_field",
   "dimension_type": "simplemachines:portal_space",
   "biomes": [
     "simplemachines:asteroid_field"
@@ -17,112 +17,113 @@
       "per_chunk": 14,
       "size": 24,
       "min_y": 0,
-      "max_y": 72
+      "max_y": 80
     },
     {
       "block": "minecraft:tuff",
       "per_chunk": 12,
       "size": 20,
       "min_y": 0,
-      "max_y": 140
+      "max_y": 200
     },
     {
       "block": "minecraft:andesite",
       "per_chunk": 10,
       "size": 16,
       "min_y": 16,
-      "max_y": 200
+      "max_y": 248
     },
     {
       "block": "minecraft:granite",
       "per_chunk": 6,
       "size": 12,
       "min_y": 16,
-      "max_y": 180
+      "max_y": 248
     },
     {
       "block": "minecraft:diorite",
       "per_chunk": 6,
       "size": 12,
       "min_y": 16,
-      "max_y": 180
+      "max_y": 248
     },
     {
       "block": "minecraft:calcite",
       "per_chunk": 4,
       "size": 10,
       "min_y": 32,
-      "max_y": 200
+      "max_y": 248
     },
     {
       "block": "minecraft:smooth_basalt",
       "per_chunk": 4,
       "size": 10,
       "min_y": 0,
-      "max_y": 80
+      "max_y": 120
     },
     {
       "block": "minecraft:coal_ore",
       "per_chunk": 16,
       "size": 12,
-      "min_y": 16,
-      "max_y": 200
+      "min_y": 32,
+      "max_y": 248
     },
     {
       "block": "minecraft:iron_ore",
       "per_chunk": 10,
       "size": 8,
-      "min_y": 0,
-      "max_y": 200
+      "min_y": 32,
+      "max_y": 248
     },
     {
       "block": "minecraft:copper_ore",
       "per_chunk": 12,
       "size": 8,
-      "min_y": 16,
-      "max_y": 200
+      "min_y": 32,
+      "max_y": 248
     },
     {
       "block": "minecraft:gold_ore",
       "per_chunk": 6,
       "size": 8,
-      "min_y": 0,
-      "max_y": 128
+      "min_y": 32,
+      "max_y": 248
     },
     {
       "block": "minecraft:redstone_ore",
       "per_chunk": 8,
       "size": 6,
-      "min_y": 0,
-      "max_y": 80
+      "min_y": 32,
+      "max_y": 248
     },
     {
       "block": "minecraft:lapis_ore",
       "per_chunk": 6,
       "size": 6,
-      "min_y": 0,
-      "max_y": 96
+      "min_y": 32,
+      "max_y": 248
     },
     {
       "block": "minecraft:diamond_ore",
       "per_chunk": 4,
       "size": 6,
-      "min_y": 0,
-      "max_y": 64
+      "min_y": 32,
+      "max_y": 248
     },
     {
       "block": "minecraft:emerald_ore",
       "per_chunk": 3,
       "size": 4,
       "min_y": 32,
-      "max_y": 200
+      "max_y": 248
     },
     {
       "block": "simplemachines:titanium_ore",
       "per_chunk": 5,
       "size": 6,
-      "min_y": 0,
-      "max_y": 160
+      "min_y": 32,
+      "max_y": 248
     }
-  ]
+  ],
+  "surface_block": "minecraft:stone"
 }

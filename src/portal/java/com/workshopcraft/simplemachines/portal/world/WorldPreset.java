@@ -93,6 +93,7 @@ public record WorldPreset(Identifier id, String name, String terrain, @Nullable 
             case "large_biomes" -> Identifier.withDefaultNamespace("large_biomes");
             case "caves", "caverns" -> Identifier.withDefaultNamespace("caves");
             case "floating_islands", "islands" -> Identifier.withDefaultNamespace("floating_islands");
+            case "asteroid_field", "asteroids" -> com.workshopcraft.simplemachines.SimpleMachines.id("asteroid_field");
             case "nether" -> Identifier.withDefaultNamespace("nether");
             case "end" -> Identifier.withDefaultNamespace("end");
             default -> Identifier.parse(terrain);
@@ -107,6 +108,7 @@ public record WorldPreset(Identifier id, String name, String terrain, @Nullable 
             case "nether" -> "portal_cavern";
             case "caves" -> "portal_deep";
             case "end", "floating_islands" -> "portal_void";
+            case "asteroid_field" -> "portal_space";
             default -> "portal_surface";
         });
     }

@@ -169,13 +169,26 @@ public class PortalChunkGenerator extends NoiseBasedChunkGenerator {
         final int z0 = chunk.getPos().getMinBlockZ();
         final BlockPos.MutableBlockPos p = new BlockPos.MutableBlockPos();
         for (int n = 0; n < count; n++) {
-            int x = random.nextInt(16), y = minY + random.nextInt(maxY - minY + 1), z = random.nextInt(16);
+            int x = 0, y = minY, z = 0;
+            boolean found = false;
+            // Islands are mostly air: keep trying until a replaceable stone is found, or give up this vein.
+            for (int attempt = 0; attempt < 32; attempt++) {
+                x = random.nextInt(16);
+                z = random.nextInt(16);
+                y = minY + random.nextInt(maxY - minY + 1);
+                p.set(x0 + x, y, z0 + z);
+                if (replaceable(level.getBlockState(p))) {
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) continue;
             for (int k = 0; k < Math.max(1, ore.size()); k++) {
                 p.set(x0 + x, y, z0 + z);
                 if (replaceable(level.getBlockState(p))) level.setBlock(p, state, 2);
-                x = Math.clamp(x + random.nextInt(3) - 1, 0, 15);
-                y = Math.clamp(y + random.nextInt(3) - 1, minY, maxY);
-                z = Math.clamp(z + random.nextInt(3) - 1, 0, 15);
+                x = Math.max(0, Math.min(15, x + random.nextInt(3) - 1));
+                y = Math.max(minY, Math.min(maxY, y + random.nextInt(3) - 1));
+                z = Math.max(0, Math.min(15, z + random.nextInt(3) - 1));
             }
         }
     }
